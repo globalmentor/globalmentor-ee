@@ -2,6 +2,7 @@ package com.garretwilson.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
 import java.util.*;
+import static java.util.Collections.*;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
@@ -12,7 +13,6 @@ import javax.faces.render.Renderer;
 import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
-import static com.garretwilson.util.CollectionUtilities.*;;
 
 /**Encapsulates basic XHTML rendering functionality.
 <p>Inspired by <code>com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.java</code>.</p>
