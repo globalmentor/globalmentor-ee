@@ -46,7 +46,7 @@ public class ComponentConstants
 	/**The UInput.valueChangeListener attribute.*/
 	public final static String INPUT_VALUE_CHANGE_LISTENER_ATTRIBUTE="valueChangeListener";
 
-	//UISelectItem attributes
+		//UISelectItem attributes
 	/**The UISelectItem.itemValue attribute.*/
 	public final static String SELECT_ITEM_ITEM_VALUE_ATTRIBUTE="itemValue";
 	/**The UISelectItem.itemLabel attribute.*/

@@ -19,13 +19,22 @@ This version creates a span of bare objects.
 public class DataRenderer extends AbstractXHTMLRenderer
 {
 
-	/**@return The name of the XML element for the component.*/
-//G***del	protected String getComponentElementName() {return ELEMENT_SPAN;}
+	/**Determines the name of the XML element for a row in a column.
+	This version defaults to not providing an element, writing the
+		bare contents.
+	@param rowIndex The zero-based index of the row.
+	@return The name of the XML element for a row in a column, or
+		<code>null</code> if no element should be rendered for a row in this column.
+	*/
+	protected String getRowElementName(final int rowIndex)
+	{
+		return null;
+	}
 
 	/**Determines the name of the XML element for an item in a column.
 	This version defaults to not providing an element for item, writing the
 		bare contents.
-	@param column The column for which to return the list item name.
+	@param column The column for which to return the data item name.
 	@return The name of the XML element for an item in a column, or
 		<code>null</code> if no element should be rendered for items in this column.
 	*/
@@ -34,7 +43,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 		return null;
 	}
 
-	/**@return <code>true</code>, as a list renderer renders its children.*/
+	/**@return <code>true</code>, as a data renderer renders its children.*/
 	public boolean getRendersChildren()
 	{
 		return true;
@@ -55,7 +64,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 		getPassthroughAttributeSet().remove("rows");	//don't pass through the rows attribute TODO use a constant
 	}
 
-	/**Begins encoding the list.
+	/**Begins encoding the data.
 	@param context The JSF context.
 	@param component The component being rendered.
 	@exception IOException Thrown if there is an error writing the output.
@@ -67,7 +76,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
-			final UIData data=(UIData) component;	//get the component as a data component
+			final UIData data=(UIData)component;	//get the component as a data component
 			data.setRowIndex(-1);	//start before the beginning of the data
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 //TODO fix        Util.renderPassThruAttributes(writer, component, new String[]{"rows"});
@@ -76,7 +85,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	}
 
 
-	/**Encodes the children of the list.
+	/**Encodes the children of the data.
 	@param context The JSF context.
 	@param component The component being rendered.
 	@exception IOException Thrown if there is an error writing the output.
@@ -97,6 +106,12 @@ public class DataRenderer extends AbstractXHTMLRenderer
 				data.setRowIndex(++rowIndex);	//go to the next row and select it
 				if(data.isRowAvailable())	//if this row is available
 				{
+					writer.write('\t');	//write a tab before the row
+					final String rowElementName=getRowElementName(rowIndex);	//get the element name for this row
+					if(rowElementName!=null)	//if there is an element name for this row
+					{
+						writer.startElement(rowElementName, component);	//start the element for the row
+					}
 					final Iterator childIterator=component.getChildren().iterator();	//get an iterator to the children
 					while(childIterator.hasNext())	//while there are more children
 					{
@@ -106,6 +121,11 @@ public class DataRenderer extends AbstractXHTMLRenderer
 							encodeColumn(context, (UIColumn)child);	//encode this column child
 						}
 					}
+					if(rowElementName!=null)	//if there is an element name for this row
+					{
+						writer.endElement(rowElementName);	//end the element for the row
+					}
+					writer.writeText("\n", null);	//write a newline after the row
 				}
 				else	//if this row isn't available
 				{
@@ -129,7 +149,6 @@ public class DataRenderer extends AbstractXHTMLRenderer
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 		if(column.isRendered())	//if the column is rendered
 		{
-			writer.write('\t');	//write a tab before the list
 			final String itemElementName=getItemElementName(column);	//get the element name for this item
 			if(itemElementName!=null)	//if there is an element name for an item in this column
 			{
@@ -140,11 +159,10 @@ public class DataRenderer extends AbstractXHTMLRenderer
 			{
 				writer.endElement(itemElementName);	//end the element for the item
 			}
-			writer.writeText("\n", null);	//write a newline after the column
 		}		
 	}
 
-	/**Encodes the end of the list.
+	/**Encodes the end of the data.
 	@param context The JSF context.
 	@param component The component being rendered.
 	@exception IOException Thrown if there is an error writing the output.

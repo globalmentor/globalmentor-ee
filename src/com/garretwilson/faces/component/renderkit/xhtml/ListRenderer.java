@@ -1,15 +1,11 @@
 package com.garretwilson.faces.component.renderkit.xhtml;
 
-import java.io.IOException;
-import java.util.Iterator;
 import javax.faces.component.*;
-import javax.faces.context.*;
 import com.garretwilson.faces.component.UIList;
 
-import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
-/**The default renderer for a XHTML ordered list
+/**The default renderer for an XHTML ordered list
 @author Garret Wilson
 */
 public class ListRenderer extends DataRenderer
