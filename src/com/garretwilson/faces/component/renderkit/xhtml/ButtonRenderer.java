@@ -79,13 +79,13 @@ Debug.setVisible(true);
 Debug.setDebug(true);
 Debug.setVisible(true);
 Debug.trace("decoding command", component, "client id", component.getClientId(context));
-Debug.trace("ready to decode button!");
 */
 		if(isMutable(component))	//if the component is mutable
 		{
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
 			final String clientID=component.getClientId(context);	//get the component's client ID
 			final String value=(String)requestParameterMap.get(clientID);	//see if there is a value for our component
+//G***del Debug.trace("found value:", value);
 				//if our button was the one pressed (check for an image map click for this button, too)
 			if(value!=null || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
 			{

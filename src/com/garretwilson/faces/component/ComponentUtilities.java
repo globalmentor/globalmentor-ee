@@ -25,6 +25,7 @@ public class ComponentUtilities
 {
 
 	/**Creates a <code>UICommand</code> component rendered as a link with the given action.
+	@param application The current JSF application
 	@param action The command action.
 	@return A new <code>UICommand</code> component with the given values.
 	*/
@@ -36,13 +37,13 @@ public class ComponentUtilities
 	}
 
 	/**Creates a <code>UICommand</code> component with the given action.
+	@param application The current JSF application
 	@param action The command action.
 	@return A new <code>UICommand</code> component with the given values.
 	*/
 	public static UICommand createCommand(final Application application, final String action)
 	{
-		final UICommand command=(UICommand)application.createComponent(UICommand.COMPONENT_TYPE);	//create a command component
-		command.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		final UICommand command=(UICommand)createComponent(application, UICommand.COMPONENT_TYPE);	//create a command component
 		if(action!=null)	//if we have an action
 		{
 				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
@@ -52,29 +53,98 @@ public class ComponentUtilities
 	}
 
 	/**Creates a <code>UIGraphic</code> component with the given URL and alternate text.
+	@param application The current JSF application
 	@param url The context-relative URL of the graphic.
 	@param alt The alternate text of the graphic.
 	@return A new <code>UIGraphic</code> component with the given values.
 	*/
 	public static UIGraphic createGraphic(final Application application, final String url, final String alt)
 	{
-		final UIGraphic graphic=(UIGraphic)application.createComponent(UIGraphic.COMPONENT_TYPE);	//create a graphic component
-		graphic.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		final UIGraphic graphic=(UIGraphic)createComponent(application, UIGraphic.COMPONENT_TYPE);	//create a graphic component
 		setStringValue(graphic, GRAPHIC_URL_ATTRIBUTE, url);	//store the URL, creating a value binding if necessary
 		setStringValue(graphic, GRAPHIC_ALT_ATTRIBUTE, alt);	//store the alternate text, creating a value binding if necessary
 		return graphic;	//return the component
 	}
 
+	/**Creates a <code>UIInput</code> component rendered as hidden with the given id and value.
+	@param application The current JSF application
+	@param id The new ID.
+	@param value The new value.
+	@return A new <code>UIInput</code> component with the given values.
+	*/
+	public static UIInput createInputHidden(final Application application, final String id, final String value)
+	{
+		final UIInput input=createInput(application, id, value);	//create an input component with the given ID and value
+		input.setRendererType(HIDDEN_RENDER_TYPE);	//render the input hidden
+		return input;	//return the component
+	}
+
+	/**Creates a <code>UIInput</code> component with the given id and value.
+	@param application The current JSF application
+	@param id The new ID.
+	@param value The new value.
+	@return A new <code>UIInput</code> component with the given values.
+	*/
+	public static UIInput createInput(final Application application, final String id, final String value)
+	{
+		final UIInput input=(UIInput)createComponent(application, UIInput.COMPONENT_TYPE, id);	//create an input component with the given ID
+		setStringValue(input, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		return input;	//return the component
+	}
+
 	/**Creates a <code>UIOutput</code> component with the given value.
+	@param application The current JSF application
 	@param value The value of the output to create.
 	@return A new <code>UIOutput</code> component with the given values.
 	*/
 	public static UIOutput createOutput(final Application application, final String value)
 	{
-		final UIOutput output=(UIOutput)application.createComponent(UIOutput.COMPONENT_TYPE);	//create an output component
-		output.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		final UIOutput output=(UIOutput)createComponent(application, UIOutput.COMPONENT_TYPE);	//create an output component
 		setStringValue(output, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
 		return output;	//return the component
+	}
+
+	/**Creates a <code>UIPanel</code> component rendered as a group.
+	@param application The current JSF application
+	@return A new <code>UIPanel</code> component.
+	*/
+	public static UIPanel createPanelGroup(final Application application)
+	{
+		final UIPanel panel=createPanel(application);	//create a panel component
+		panel.setRendererType(GROUP_RENDER_TYPE);	//render the panel as a group
+		return panel;	//return the component
+	}
+
+	/**Creates a <code>UIPanel</code> component.
+	@param application The current JSF application
+	@return A new <code>UIPanel</code> component.
+	*/
+	public static UIPanel createPanel(final Application application)
+	{
+		final UIPanel panel=(UIPanel)createComponent(application, UIPanel.COMPONENT_TYPE);	//create a panel component
+		return panel;	//return the component
+	}
+
+	/**Creates a <code>UIComponent</code> with a unique ID.
+	@param application The current JSF application
+	@param componentType The type of component to create.
+	@return A new component.
+	*/
+	public static UIComponent createComponent(final Application application, final String componentType)
+	{
+		return createComponent(application, componentType, FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+	}
+
+	/**Creates a <code>UIComponent</code> with the given ID.
+	@param application The current JSF application
+	@param componentType The type of component to create.
+	@return A new component with the given ID.
+	*/
+	public static UIComponent createComponent(final Application application, final String componentType, final String id)
+	{
+		final UIComponent component=application.createComponent(componentType);	//create The component
+		component.setId(id);	//set the component ID
+		return component;	//return the component we created
 	}
 
 	/**Searches up the component hierarchy and returns the first found instance
