@@ -67,6 +67,17 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		*/
 		public void setImmediate(final String immediate) {this.immediate=immediate;}
 
+	/**The value of the popup URI.*/
+	private String popupURI=null;
+
+		/**@return The value of the popup URI.*/
+		protected String getPopupURI() {return popupURI;}
+
+		/**Sets the value of the popup URI.
+		@param uri A string representation of the popup URI.
+		*/
+		public void setPopupURI(final String uri) {popupURI=uri;}
+
 	/**Sets the component properties from the tag's attributes.
 	@param component The component the properties of which should be set.
 	*/
@@ -84,6 +95,10 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
 		setBooleanValue(component, IMMEDIATE_ATTRIBUTE, getImmediate());	//set the immediate attribute
 		setMethodBindingAttribute(component, COMMAND_ACTION_LISTENER_ATTRIBUTE, getActionListener(), ActionEvent.class);	//set the action listener attribute
+		if(command instanceof UIBasicCommand)	//if this is one of our special commands with extended functionality
+		{
+			setURIValue(component, UIBasicCommand.POPUP_URI_VAR, getPopupURI());	//tell the component the popup URI 			
+		}
    }
 
 	/**Release our resources.*/

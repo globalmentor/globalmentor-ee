@@ -1,6 +1,7 @@
 package com.garretwilson.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 import javax.faces.component.*;
@@ -8,6 +9,7 @@ import javax.faces.context.*;
 import javax.faces.event.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
+import com.garretwilson.faces.component.UIBasicCommand;
 import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
@@ -73,12 +75,13 @@ Debug.setVisible(true);
 				//render the hidden field
 			if(component.isRendered())	//if the component should be rendered
 			{
-				writer.startElement(ELEMENT_INPUT, component);	//<input>
+				writer.startElement(ELEMENT_INPUT, null);	//<input>
 				writer.writeAttribute(ATTRIBUTE_NAME, hiddenFieldClientID, ATTRIBUTE_NAME);	//name="xxx:button"
 				writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN, ELEMENT_INPUT_ATTRIBUTE_TYPE);	//type="hidden"
 				writer.endElement(ELEMENT_INPUT);	//</input>
 			}
 		}
+//G***del		renderPopupJavaScript(writer, null);	//G***testing
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
@@ -131,15 +134,35 @@ Debug.setVisible(true);
 				final UIForm parentForm=(UIForm)ComponentUtilities.getParent(component, UIForm.class);	//get the parent form, if there is one
 				assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
 				final String parentFormID=parentForm.getClientId(context);	//get the ID of the parent form
+				final URI popupURI;	//see if we have a popup URI
+				if(command instanceof UIBasicCommand)	//if this is an extended command component
+				{
+					final UIBasicCommand basicCommand=(UIBasicCommand)command;	//cast the command to a basic command
+					popupURI=basicCommand.getPopupURI();	//get the popup URI, if there is one
+				}
+				else	//if this is a normal command component
+				{
+					popupURI=null;	//we don't have a popup URI
+				}
 //TODO make sure decode knows to check if a custom value was passed
-				final String onmousedownJavaScript=
-							//document.forms['formID']['hiddenFieldClientID'].value='clientID';
-						createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", (value!=null ? value.toString() : clientID)))
-							//document.forms['formID'].submit();
-						+createStatement(submitForm(parentFormID))
-							//document.forms['formID']['hiddenFieldClientID'].value='';
-						+createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", ""));
-				writer.writeAttribute("onmousedown", onmousedownJavaScript, null);	//TODO use a constant
+				final StringBuilder onclickJavaScript=new StringBuilder();	//we'll construct JavaScript code to be executed when the button is clicked
+
+				
+//G***fix the window name				public static String createName(final String string)
+				
+				if(popupURI!=null)	//if we have a popup URI
+				{
+					onclickJavaScript.append(popupWindow(popupURI, "popupwindow"));	//TODO fix the window name
+				}
+						
+					//document.forms['formID']['hiddenFieldClientID'].value='clientID';
+				onclickJavaScript.append(createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", (value!=null ? value.toString() : clientID))));
+					//document.forms['formID'].submit();
+				onclickJavaScript.append(createStatement(submitForm(parentFormID)));
+					//document.forms['formID']['hiddenFieldClientID'].value='';
+				onclickJavaScript.append(createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", "")));
+//TODO return false here
+				writer.writeAttribute(ATTRIBUTE_ONCLICK, onclickJavaScript, null);	//write the JavaScript
 			}
 		}
 	}

@@ -1,8 +1,5 @@
 package com.garretwilson.faces.taglib.xhtml;
 
-import javax.faces.webapp.UIComponentTag;
-
-import com.garretwilson.faces.*;
 
 import static com.garretwilson.faces.FacesConstants.*;
 
