@@ -131,8 +131,9 @@ Debug.setVisible(true);
 				final UIForm parentForm=(UIForm)ComponentUtilities.getParent(component, UIForm.class);	//get the parent form, if there is one
 				assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
 				final String parentFormID=parentForm.getClientId(context);	//get the ID of the parent form
+//TODO make sure decode knows to check if a custom value was passed
 				final String onmousedownJavaScript=
-							//document.forms['formID']['hiddenFieldClientID'].value='value';
+							//document.forms['formID']['hiddenFieldClientID'].value='clientID';
 						createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", (value!=null ? value.toString() : clientID)))
 							//document.forms['formID'].submit();
 						+createStatement(submitForm(parentFormID))

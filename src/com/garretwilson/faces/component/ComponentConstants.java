@@ -7,6 +7,8 @@ public class ComponentConstants
 {
 	/**The rendered attribute.*/
 	public final static String RENDERED_ATTRIBUTE="rendered";
+	/**The style class attribute.*/
+	public final static String STYLE_CLASS_ATTRIBUTE="styleClass";
 
 			//TODO are these XHTML attributes?
 	/**The disabled attribute.*/
