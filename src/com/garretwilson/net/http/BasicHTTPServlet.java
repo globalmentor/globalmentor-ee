@@ -36,10 +36,8 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
-*/
 Debug.trace("servicing method", request.getMethod());
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
@@ -189,9 +187,16 @@ Debug.trace("path info:", request.getPathInfo());
 	*/
 	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPRedirectException, HTTPUnauthorizedException
 	{
-		final URI resourceURI=getResourceURI(request);	//get the requested URI
-		final AuthenticateCredentials credentials=getAuthorization(request);	//get the credentials from this request, if any
-		checkAuthorization(resourceURI, request.getMethod(), request.getRequestURI(), credentials);	//check authorization for these credentials
+		try
+		{
+			final URI resourceURI=getResourceURI(request);	//get the requested URI
+			final AuthenticateCredentials credentials=getAuthorization(request);	//get the credentials from this request, if any
+			checkAuthorization(resourceURI, request.getMethod(), request.getRequestURI(), credentials);	//check authorization for these credentials
+		}
+		catch(final SyntaxException syntaxException)	//if the credentials weren't syntactically correct
+		{
+			throw new HTTPInternalServerErrorException(syntaxException);	//TODO change this to an HTTPBadRequestException when implemented
+		}
 	}
 
 	/**Checks whether the given credentials provide authorization for the given method.
