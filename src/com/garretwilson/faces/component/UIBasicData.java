@@ -143,7 +143,6 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 	*/
 	public void broadcast(final FacesEvent event) throws AbortProcessingException
 	{
-		final FacesContext context=getFacesContext();	//get the current JSF context
 		if(ComponentUtilities.getParent(this, UIData.class)!=null)	//if we're nested within another UIData
 		{
 			if(getValueBinding("value")!=null)	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
@@ -151,20 +150,7 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 				setValue(null);	//remove our local value, uncaching the data model in the process
 			}
 		}
-		if(getSupport()!=null)	//if we have a support variable
-		{
-			//add a new support variable to the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().put(getSupportVariableName(getSupport().getClass()), getSupport());
-		}
-		updateValue(context);	//update our value before further processing
 		super.broadcast(event);	//do the default broadcasting
-/*G***fix
-		if(getSupport()!=null)	//if we have a support variable
-		{
-			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().remove(getSupportVariableName(getSupport().getClass()));
-		}
-*/
 	}
 	
 }

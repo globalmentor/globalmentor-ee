@@ -6,6 +6,7 @@ import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.garretwilson.faces.component.UIColumnFacet;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
@@ -63,7 +64,9 @@ public class TableRenderer extends DataRenderer
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			int columnCount=0;	//we'll determine how many columns there are so that we can create a table header and/or footer
 			int columnHeaderCount=0;	//we'll determine how many column headers there are
+			int columnMultipleHeaderCount=0;	//we'll determine how many column headers there are containing multiple headers
 			int columnFooterCount=0;	//we'll determine how many column footers there are
+			int columnMultipleFooterCount=0;	//we'll determine how many column headers there are containing multiple footers
 			for(final Object child:component.getChildren())	//look at each child
 			{
 				if(child instanceof UIColumn)	//if this is a column
@@ -76,11 +79,19 @@ public class TableRenderer extends DataRenderer
 						if(header!=null && header.isRendered())	//if the header is rendered
 						{
 							++columnHeaderCount;	//show that we found another rendered column header
+							if(header instanceof UIColumnFacet)	//if this is a special header containing multiple headers
+							{
+								++columnMultipleHeaderCount;	//show that we've found another multiple header holder
+							}
 						}
 						final UIComponent footer=column.getHeader();	//get the column footer
 						if(footer!=null && footer.isRendered())	//if the footer is rendered
 						{
 							++columnFooterCount;	//show that we found another rendered column footer
+							if(footer instanceof UIColumnFacet && footer.getChildCount()>0)	//if this is a special footer containing multiple footers
+							{
+								++columnMultipleFooterCount;	//show that we've found another multiple header holder
+							}
 						}
 					}
 				}
@@ -131,24 +142,63 @@ public class TableRenderer extends DataRenderer
 					//column footers
 				if(columnFooterCount>0)	//if we have any column footers to render
 				{
-					writer.startElement(ELEMENT_TR, component);	//<tr>
-					for(final Object child:component.getChildren())	//look at each child
+					int row=0;	//keep count of what row we're on, with -1 representing the normal footer row
+					boolean multipleFootersRemain=columnMultipleFooterCount>0;	//see if there are multiple footers as we're starting
+					do
 					{
-						if(child instanceof UIColumn)	//if this is a column
+						if(!multipleFootersRemain)	//if we don't have multiple footers to encode
 						{
-							final UIColumn column=(UIColumn)child;	//cast the column to a child
-							if(column.isRendered())	//if the column is rendered
+							row=-1;	//encode the normal footers
+						}
+						multipleFootersRemain=false;	//see if there are multiple footers remainining on this row
+						writer.startElement(ELEMENT_TR, component);	//<tr>
+						for(final Object child:component.getChildren())	//look at each child
+						{
+							if(child instanceof UIColumn)	//if this is a column
 							{
-								final UIComponent footer=column.getFooter();	//get the column footer
-								if(footer!=null)	//if there is a footer
+								final UIColumn column=(UIColumn)child;	//cast the column to a child
+								if(column.isRendered())	//if the column is rendered
 								{
-									encodeFooterCell(context, writer, footer, 1);	//encode the column footer
+									final UIComponent footer=column.getFooter();	//get the column footer
+									if(footer!=null)	//if there is a footer
+									{
+										if(row>=0)	//if we're encoding the special footers
+										{
+											if(footer instanceof UIColumnFacet && footer.getChildCount()>row)	//if this is a special footer with enough children
+											{
+												encodeFooterCell(context, writer, (UIComponent)footer.getChildren().get(row), 1);	//encode the appropriate footer child
+												if(footer.getChildCount()>row+1)	//if there are enough footers for next time
+												{
+													multipleFootersRemain=true;	//show that we still have multiple footers to be encoded
+												}
+											}
+											else	//if this isn't a special footer, or it doesn't have enough children, just write a placeholder
+											{
+												writer.startElement(ELEMENT_TD, column);	//<td>
+												writer.endElement(ELEMENT_TD);	//</td>												
+											}
+										}
+										else	//if we're encoding the normal footers
+										{
+											encodeFooterCell(context, writer, footer, 1);	//encode the column footer
+										}
+									}
+									else	//if there is no footer, write a placeholder
+									{
+										writer.startElement(ELEMENT_TD, column);	//<td>
+										writer.endElement(ELEMENT_TD);	//</td>												
+									}
 								}
 							}
 						}
+						writer.endElement(ELEMENT_TR);	//</tr>
+						writer.write('\n');	//create a newline after the row
+						if(row>=0)	//if we were encoding the special rows
+						{
+							++row;	//go to the next row
+						}
 					}
-					writer.endElement(ELEMENT_TR);	//</tr>
-					writer.write('\n');	//create a newline after the row
+					while(row>=0);	//keep going until we render the normal footer row 
 				}
 					//table footer
 				if(tableFooter!=null && tableFooter.isRendered())	//if we have a rendered header
@@ -183,7 +233,7 @@ public class TableRenderer extends DataRenderer
 			writer.endElement(ELEMENT_TBODY);	//end the body of the table
 		}
 	}
-
+	
 	/**Encodes a header cell.
 	@param context The JSF context.
 	@param writer The response writer used to write output.

@@ -4,8 +4,7 @@ import javax.faces.application.*;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 
-import com.garretwilson.faces.component.UIInputFile;
-import com.garretwilson.faces.component.UIParameterFormat;
+import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.el.ExpressionMethodBinding;
 
 import static com.garretwilson.faces.FacesConstants.*;
@@ -33,6 +32,17 @@ Debug.setVisible(true);
 Debug.trace("created column with ID", id);
 */
 		return column;	//return the component
+	}
+
+	/**Creates a <code>UIColumnFacet</code> component.
+	@param application The current JSF application
+	@param id The unique ID of the new component.
+	@return A new <code>UIColumnFacet</code> component.
+	*/
+	public static UIColumnFacet createColumnFacet(final Application application, final String id)
+	{
+		final UIColumnFacet columnFacet=(UIColumnFacet)createComponent(application, UIColumnFacet.COMPONENT_TYPE, id);	//create a column facet component
+		return columnFacet;	//return the component
 	}
 
 	/**Creates a <code>UICommand</code> component rendered as a link with the given action.
