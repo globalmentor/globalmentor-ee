@@ -13,7 +13,7 @@ public class FacesMessageUtilities
 	@return A Faces message appropriate for the error. 
 	*/
 	public static FacesMessage createMessage(final Throwable throwable)
-	{		
+	{
 		final String messageString=throwable.getMessage();	//get the throwable's message
 		final FacesMessage message=new FacesMessage(messageString!=null ? messageString : throwable.toString());	//create a new faces message from the message string
     message.setSeverity(FacesMessage.SEVERITY_ERROR);	//show that this was an error		
