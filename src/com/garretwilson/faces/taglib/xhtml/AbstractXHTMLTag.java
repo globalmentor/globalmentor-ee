@@ -14,7 +14,7 @@ import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 /**The abstract base class for XHTML tags.
 @author Garret Wilson
 */
-public abstract class XHTMLTag extends UIComponentTag
+public abstract class AbstractXHTMLTag extends UIComponentTag
 {
 
 	/**The style class.*/

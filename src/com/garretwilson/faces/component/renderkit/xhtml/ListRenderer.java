@@ -18,11 +18,11 @@ public class ListRenderer extends AbstractListRenderer
 	/**The type of renderer for XHTML &lt;ol&gt;.*/
 	public static final String RENDERER_TYPE=UIList.COMPONENT_TYPE;
 
-	/**The name of the XML element for the list.*/
-	private final String listElementName;
+	/**The name of the XML element for the component.*/
+	private final String componentElementName;
 
-		/**@return The name of the XML element for the list.*/
-		protected String getListElementName() {return listElementName;}
+		/**@return The name of the XML element for the component.*/
+		protected String getComponentElementName() {return componentElementName;}
 
 	/**The name of the XML element for an item in a column.*/
 	private final String itemElementName;
@@ -50,7 +50,7 @@ public class ListRenderer extends AbstractListRenderer
 	*/
 	public ListRenderer(final String listElementName, final String itemElementName)
 	{
-		this.listElementName=listElementName;
+		this.componentElementName=listElementName;
 		this.itemElementName=itemElementName;
 	}
 

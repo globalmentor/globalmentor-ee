@@ -4,7 +4,7 @@ import javax.faces.webapp.UIComponentTag;
 import com.garretwilson.faces.component.UIItem;
 
 //TODO comment
-public class ItemTag extends XHTMLTag
+public class ItemTag extends AbstractXHTMLTag
 {
 
     public String getRendererType() {

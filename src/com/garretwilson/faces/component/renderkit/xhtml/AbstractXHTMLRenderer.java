@@ -1,6 +1,7 @@
 package com.garretwilson.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
+import java.util.*;
 
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
@@ -8,6 +9,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.Renderer;
 
+import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
@@ -15,8 +17,127 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 <p>Inspired by <code>com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.java</code>.</p>
 @author Garret Wilson
 */
-public class AbstractXHTMLRenderer extends Renderer
+public abstract class AbstractXHTMLRenderer extends Renderer
 {
+
+	/**Default XHTML attributes to pass through when rendering.*/
+	public final static String[] DEFAULT_PASSTHROUGH_ATTRIBUTES=new String[]	//TODO use constants
+			{
+        "accept",
+        "accesskey",
+        "alt",
+        "bgcolor",
+        "border",
+        "cellpadding",
+        "cellspacing",
+        "charset",
+        "cols",
+        "coords",
+        "dir",
+        "enctype",
+        "frame",
+        "height",
+        "hreflang",
+        "lang",
+        "longdesc",
+        "maxlength",
+        "onblur",
+        "onchange",
+        "onclick",
+        "ondblclick",
+        "onfocus",
+        "onkeydown",
+        "onkeypress",
+        "onkeyup",
+        "onload",
+        "onmousedown",
+        "onmousemove",
+        "onmouseout",
+        "onmouseover",
+        "onmouseup",
+        "onreset",
+        "onselect",
+        "onsubmit",
+        "onunload",
+        "rel",
+        "rev",
+        "rows",
+        "rules",
+        "shape",
+        "size",
+        "style",
+        "summary",
+        "tabindex",
+        "target",
+        "title",
+        "usemap",
+        "width"
+			};
+
+    /**
+     * This array contains attributes that have a boolean value in JSP,
+     * but have have no value in HTML.  For example "disabled" or
+     * "readonly". <P>
+     *
+     * @see renderBooleanPassthruAttributes
+     */
+/*TODO decide what to do with these
+    private static String booleanPassthruAttributes[] = {
+        "disabled",
+        "readonly",
+        "ismap"
+    };
+*/
+
+	/**@return The attributes to pass through when rendering.*/
+	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
+
+	/**@return The name of the XML element for the component.*/
+	protected abstract String getComponentElementName();
+
+	/**Begins encoding the component.
+	@param context The JSF context.
+	@param component The component being rendered.
+	@exception IOException Thrown if there is an error writing the output.
+	@exception NullPointerException Thrown if <var>context</var> or
+		<var>component</var> is <code>null</code>.
+	*/
+	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
+	{
+		super.encodeBegin(context, component);	//do the default encoding
+		if(component.isRendered())	//if the component should be rendered
+		{
+			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
+			final Map attributeMap=component.getAttributes();	//get the map of attributes
+			writer.startElement(getComponentElementName(), component);	//write the starting tag
+			writeIDAttribute(context, writer, component);	//write the ID attribute
+			final String styleClass=(String)attributeMap.get(STYLE_CLASS_ATTRIBUTE);	//get the style class, if there is one
+			if(styleClass!=null)	//if there is a style class attribute
+			{
+				writer.writeAttribute(ATTRIBUTE_CLASS, styleClass, STYLE_CLASS_ATTRIBUTE);	//write the style class attribute
+			}
+			renderPassthroughAttributes(writer, component, getPassthroughAttributes());	//render the XHTML passthrough attributes
+//TODO fix        Util.renderBooleanPassThruAttributes(writer, component);
+		}
+	}
+
+	/**Encodes the end of the component.
+	@param context The JSF context.
+	@param component The component being rendered.
+	@exception IOException Thrown if there is an error writing the output.
+	@exception NullPointerException Thrown if <var>context</var> or
+		<var>component</var> is <code>null</code>.
+	*/
+	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException
+	{
+		if(component.isRendered())	//if the component should be rendered
+		{
+			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
+			writer.endElement(getComponentElementName());	//write the ending tag
+			writer.write('\n');	//write a newline after the ending tag
+    }
+		super.encodeEnd(context, component);	//do the default encoding
+	}
 
 	/**@return <code>true</code> if the component has an <code>id</code> attribute that isn't automatically generated.*/ 
 	protected boolean hasCustomID(final UIComponent component)

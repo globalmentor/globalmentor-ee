@@ -17,7 +17,7 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 public class DefinitionListRenderer extends ListRenderer
 {
 
-	/**The type of renderer for XHTML &lt;dl&gt;.*/
+	/**The type of renderer for an XHTML definition list.*/
 	public static final String RENDERER_TYPE=UIDefinitionList.COMPONENT_TYPE;
 
 	/**Default constructor.*/

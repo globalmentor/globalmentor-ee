@@ -13,7 +13,7 @@ import com.garretwilson.faces.el.*;
 /**A tag representing a list component.
 @author Garret Wilson
 */
-public class ListTag extends XHTMLTag
+public class ListTag extends AbstractXHTMLTag
 {
 
 	/**@return The type of the component to use for this tag.*/

@@ -1,17 +1,14 @@
 package com.garretwilson.faces.component;
 
-import javax.faces.component.UIData;
+import javax.faces.component.UICommand;
 import com.garretwilson.faces.el.*;
 
-/**Basic data component with enhanced functionality.
+/**Basic command component with enhanced functionality.
 @author Garret Wilson
 */
-public class UIBasicData extends UIData
+public class UIBasicCommand extends UICommand
 {
 
-	/**The attribute for storing the variable name.*/
-	public final static String VAR_ATTRIBUTE="var";
-	
 	/**The expression representing the value, or <code>null</code> if there is no value expression.*/
 	private Expression<?> valueExpression=null;
 
@@ -26,10 +23,9 @@ public class UIBasicData extends UIData
 		public void setValueExpression(final Expression<?> valueExpression) {this.valueExpression=valueExpression;}
 
 	/**Default constructor.*/
-	public UIBasicData()
+	public UIBasicCommand()
 	{
 		super();	//construct the parent class
-		setVar(VAR_ATTRIBUTE);	//show which attribute we use for storing the variable name
 	}
 
 	/**Return the value of the component.  This value must either be 

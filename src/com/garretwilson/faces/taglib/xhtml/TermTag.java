@@ -6,7 +6,7 @@ import com.garretwilson.faces.component.UIDefinition;
 import com.garretwilson.faces.component.UITerm;
 
 //TODO comment
-public class TermTag extends XHTMLTag {
+public class TermTag extends AbstractXHTMLTag {
 
     public String getRendererType() {
         return null;
