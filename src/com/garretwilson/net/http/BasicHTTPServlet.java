@@ -98,7 +98,8 @@ Debug.trace("path info:", request.getPathInfo());
   }
 
 	/**Services an HTTP request based upon its method.
-  Any subclass overriding this method must call the superclass version for normal handling of the standard
+  Any subclass overriding this method must call the superclass version
+  	for normal handling of the standard HTTP methods.
   @param method The HTTP method being serviced. 
   @param request The HTTP request.
   @param response The HTTP response.
