@@ -15,16 +15,51 @@ import org.apache.commons.fileupload.*;
 
 /**Basic form component with enhanced functionality to process multipart form
 	submissions.
+<p>This class has the following enhancements:</p>
+<ul>
+	<li>Automatic conversion of multipart form submissions.</li>
+	<li>A map of render-scope variables.</li>
+</ul>
 @author Garret Wilson
 */
 public class UIBasicForm extends UIForm
 {
+
+	/**The map of encode-scope variables and values.*/
+	private final Map<?, ?> encodeMap=new HashMap(); 
+			
+		/**@return A mutable <code>Map</code> representing the encode scope
+		 	attributes for the current response rendering.
+		 */
+		public Map<?, ?> getEncodeMap() {return encodeMap;}
 
 	/**Default constructor.*/
 	public UIBasicForm()
 	{
 		super();	//construct the parent class
 	}
+
+  /**Performs encoding after first initializing the map of encode attributes.
+  @param context The JSF context.
+  @exception IOException if There is an error encoding the response.
+  @exception NullPointerException {@inheritDoc}   
+  */ 
+	public void encodeBegin(final FacesContext context) throws IOException
+	{
+  	getEncodeMap().clear();	//make sure the encode map is clear
+  	super.encodeBegin(context);	//do the default encoding
+  }
+
+  /**Finishes encoding and then clears the map of encode attributes.
+  @param context The JSF context.
+  @exception IOException if There is an error encoding the response.
+  @exception NullPointerException {@inheritDoc}   
+  */ 
+  public void encodeEnd(final FacesContext context) throws IOException
+	{
+  	super.encodeEnd(context);	//do the default end encoding
+  	getEncodeMap().clear();	//reset the encode map
+  }
 
 	/**Performs the component tree processing required by the
 		<em>Apply Request Values</em> phase of the request processing
@@ -124,7 +159,7 @@ Debug.trace("processing decodes in UIBasicForm");
 		super.processDecodes(decodeContext);	//do the default decode processing with either the context we received, or the one we wrapped to return our extra parameters
 	}
 
-	
+
 		//TODO delete this class if not needed
 	/**A map of form fields that populates itself from a multipart request
 		through its <code>FileItemFactory</code> interface.

@@ -8,10 +8,10 @@ import javax.faces.context.*;
 import javax.faces.event.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
-import com.garretwilson.text.xml.XMLUtilities;
 import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
+import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.javascript.JavaScriptUtilities.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;

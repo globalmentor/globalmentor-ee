@@ -11,6 +11,7 @@ import com.garretwilson.io.ContentTypeUtilities;
 import com.garretwilson.text.xml.XMLUtilities;
 
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
+import static com.garretwilson.text.xml.XMLConstants.*;
 import static com.garretwilson.text.xml.XMLUtilities.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
