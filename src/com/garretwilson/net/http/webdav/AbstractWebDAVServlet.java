@@ -6,29 +6,29 @@ import java.util.*;
 import static java.util.Collections.*;
 
 import javax.mail.internet.ContentType;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.DocumentBuilder;
 
-import org.apache.catalina.util.XMLWriter;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
+import org.w3c.dom.*;
 
+import static com.garretwilson.io.ContentTypeConstants.*;
+import com.garretwilson.io.ContentTypeUtilities;
+import com.garretwilson.io.InputStreamUtilities;
 import com.garretwilson.io.OutputStreamUtilities;
 import static com.garretwilson.io.ContentTypeUtilities.*;
+import com.garretwilson.lang.CharacterUtilities;
 import com.garretwilson.model.Resource;
 import static com.garretwilson.net.URIUtilities.*;
+import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
+import static com.garretwilson.text.CharacterEncodingConstants.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import com.garretwilson.text.xml.QualifiedName;
+import com.garretwilson.text.xml.XMLDOMImplementation;
 import com.garretwilson.text.xml.XMLProcessor;
+import com.garretwilson.text.xml.XMLSerializer;
+import com.garretwilson.text.xml.XMLUtilities;
+import static com.garretwilson.text.xml.XMLUtilities.*;
 import com.garretwilson.util.*;
 
 /**The base servlet class for implementing a WebDAV server as defined by
@@ -43,10 +43,16 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends HttpServ
 	private final static boolean READ_ONLY=false;	//TODO fix
 
 	/**The constant property list indicating all properties.*/
-	protected final static List<QualifiedName> ALL_PROPERTIES=emptyList();
+	protected final static IDMappedList<URI, QualifiedName> ALL_PROPERTIES=new IDMappedList<URI, QualifiedName>((Map<URI, QualifiedName>)emptyMap(), (List<QualifiedName>)emptyList());
 
 	/**The constant property list indicating all property names.*/
-	protected final static List<QualifiedName> PROPERTY_NAMES=emptyList();
+	protected final static IDMappedList<URI, QualifiedName> PROPERTY_NAMES=new IDMappedList<URI, QualifiedName>((Map<URI, QualifiedName>)emptyMap(), (List<QualifiedName>)emptyList());
+
+	/**The DOM implementation used as a document factory.*/
+	private final DOMImplementation domImplementation=new XMLDOMImplementation();	//TODO get this in a general way
+
+		/**@return The DOM implementation used as a document factory.*/
+		protected DOMImplementation getDOMImplementation() {return domImplementation;}
 
 	/**Determines the URI of the requested resource.
   @param request The HTTP request indicating the requested resource.
@@ -67,20 +73,20 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends HttpServ
 	protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final String method=request.getMethod();	//get the method
+/*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
+*/
 Debug.trace("servicing method", method);
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
-		/*G***TODO fix other methods
-		if(WebDAVMethod.GET.toString().equals(method))	//GET
+		if(WebDAVMethod.PROPFIND.toString().equals(method))	//PROPFIND
 		{
-			
+			doPropfind(request, response);	//delegate to the propfind method
 		}
 		else	//if the request was not recognized
-*/
 		{
 			super.service(request, response);	//do the default servicing
 		}
@@ -115,9 +121,8 @@ Debug.trace("path info:", request.getPathInfo());
   */
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-Debug.trace("doing options");
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("using resource URI", resourceURI);
+Debug.trace("doing options for URI", resourceURI);
 		response.addHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
 		final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
 		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
@@ -232,20 +237,55 @@ Debug.trace("using resource URI", resourceURI);
 	protected void doPropfind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+Debug.trace("doing propfind for URI", resourceURI);
 		if(LIST_DIRECTORIES)	//if we allow directory listing
 		{
 			final int depth=getDepth(request);	//determine the requested depth
-			List<QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+			IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
 			try
 			{
 				final Document document=getXML(request);	//get the XML from the request body
-				final Element documentElement=document.getDocumentElement();	//get the document element
-					//TODO check to make sure the document element is correct
-				propertyList=getProperties(documentElement);	//get the property list from the XML document
+				if(document!=null)	//if there was an XML document in the request
+				{
+Debug.trace("Found XML request content:", XMLUtilities.toString(document));
+					final Element documentElement=document.getDocumentElement();	//get the document element
+						//TODO check to make sure the document element is correct
+					propertyList=getProperties(documentElement);	//get the property list from the XML document
+				}
 			}
-			catch(final IOException ioException)	//if there was a problem reading the XML body content
+			catch(final DOMException domException)	//any XML problem here is the client's fault
 			{
-				Debug.warn(ioException);	//assume there is no content and keep going, keeping the default ALL_PROPERTIES TODO fix better
+	      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
+			}
+			try
+			{
+				final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
+				if(resourceList!=null)	//if we found the resource
+				{
+					final Document multistatusDocument=createMultistatusDocument();	//create a multistatus document
+					for(final R resource:resourceList)	//for each resource
+					{
+						final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
+						addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
+						final Element propstatElement=addPropstat(responseElement);	//add a property container
+						final Element propElement=addProp(propstatElement);	//add a property element
+						findProperties(resource, propElement, propertyList);	//find the properties for this resource
+						addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
+						//TODO add a response description here
+					}
+					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
+	Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument));
+					setXML(response, multistatusDocument);	//put the XML in our response and send it back
+				}
+				else	//if we couldn't get the list of resource
+				{
+    			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+				}
+			}
+			catch(final DOMException domException)	//any XML problem here is the server's fault
+			{
+				Debug.error(domException);	//report the error
+	      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
 			}
 		}
 		else	//if directory listing is not allowed
@@ -255,148 +295,6 @@ Debug.trace("using resource URI", resourceURI);
 			response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
       response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);	//show that we don't allow listing properties
 		}
-
-/*TODO fix
-
-      boolean exists = true;
-      Object object = null;
-      try {
-          object = resources.lookup(path);
-      } catch (NamingException e) {
-          exists = false;
-          int slash = path.lastIndexOf('/');
-          if (slash != -1) {
-              String parentPath = path.substring(0, slash);
-              Vector currentLockNullResources =
-                  (Vector) lockNullResources.get(parentPath);
-              if (currentLockNullResources != null) {
-                  Enumeration lockNullResourcesList =
-                      currentLockNullResources.elements();
-                  while (lockNullResourcesList.hasMoreElements()) {
-                      String lockNullPath = (String)
-                          lockNullResourcesList.nextElement();
-                      if (lockNullPath.equals(path)) {
-                          resp.setStatus(WebdavStatus.SC_MULTI_STATUS);
-                          resp.setContentType("text/xml; charset=UTF-8");
-                          // Create multistatus object
-                          XMLWriter generatedXML =
-                              new XMLWriter(resp.getWriter());
-                          generatedXML.writeXMLHeader();
-                          generatedXML.writeElement
-                              (null, "multistatus"
-                               + generateNamespaceDeclarations(),
-                               XMLWriter.OPENING);
-                          parseLockNullProperties
-                              (req, generatedXML, lockNullPath, type,
-                               properties);
-                          generatedXML.writeElement(null, "multistatus",
-                                                    XMLWriter.CLOSING);
-                          generatedXML.sendData();
-                          return;
-                      }
-                  }
-              }
-          }
-      }
-
-      if (!exists) {
-          resp.sendError(HttpServletResponse.SC_NOT_FOUND, path);
-          return;
-      }
-
-      resp.setStatus(WebdavStatus.SC_MULTI_STATUS);
-
-      resp.setContentType("text/xml; charset=UTF-8");
-
-      // Create multistatus object
-      XMLWriter generatedXML = new XMLWriter(resp.getWriter());
-      generatedXML.writeXMLHeader();
-
-      generatedXML.writeElement(null, "multistatus"
-                                + generateNamespaceDeclarations(),
-                                XMLWriter.OPENING);
-
-      if (depth == 0) {
-          parseProperties(req, generatedXML, path, type,
-                          properties);
-      } else {
-          // The stack always contains the object of the current level
-          Stack stack = new Stack();
-          stack.push(path);
-
-          // Stack of the objects one level below
-          Stack stackBelow = new Stack();
-
-          while ((!stack.isEmpty()) && (depth >= 0)) {
-
-              String currentPath = (String) stack.pop();
-              parseProperties(req, generatedXML, currentPath,
-                              type, properties);
-
-              try {
-                  object = resources.lookup(currentPath);
-              } catch (NamingException e) {
-                  continue;
-              }
-
-              if ((object instanceof DirContext) && (depth > 0)) {
-
-                  try {
-                      NamingEnumeration enumeration = resources.list(currentPath);
-                      while (enumeration.hasMoreElements()) {
-                          NameClassPair ncPair =
-                              (NameClassPair) enumeration.nextElement();
-                          String newPath = currentPath;
-                          if (!(newPath.endsWith("/")))
-                              newPath += "/";
-                          newPath += ncPair.getName();
-                          stackBelow.push(newPath);
-                      }
-                  } catch (NamingException e) {
-                      resp.sendError
-                          (HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                           path);
-                      return;
-                  }
-
-                  // Displaying the lock-null resources present in that
-                  // collection
-                  String lockPath = currentPath;
-                  if (lockPath.endsWith("/"))
-                      lockPath =
-                          lockPath.substring(0, lockPath.length() - 1);
-                  Vector currentLockNullResources =
-                      (Vector) lockNullResources.get(lockPath);
-                  if (currentLockNullResources != null) {
-                      Enumeration lockNullResourcesList =
-                          currentLockNullResources.elements();
-                      while (lockNullResourcesList.hasMoreElements()) {
-                          String lockNullPath = (String)
-                              lockNullResourcesList.nextElement();
-                          parseLockNullProperties
-                              (req, generatedXML, lockNullPath, type,
-                               properties);
-                      }
-                  }
-
-              }
-
-              if (stack.isEmpty()) {
-                  depth--;
-                  stack = stackBelow;
-                  stackBelow = new Stack();
-              }
-
-              generatedXML.sendData();
-
-          }
-      }
-
-      generatedXML.writeElement(null, "multistatus",
-                                XMLWriter.CLOSING);
-
-      generatedXML.sendData();
-*/
   }
 
 	/**Services the GET method.
@@ -502,14 +400,124 @@ Debug.trace("serving resource", resourceURI);
 	
 	/**Retrieves an XML document from the body of an HTTP request.
 	@param request The request from which to get the XML document.
-	@return A document representing the XML information.
+	@return A document representing the XML information, or <code>null</code>
+		if nothing but whitespace was included in the request.
 	@exception IOException if there is an error reading the XML.
 	*/
 	protected Document getXML(final HttpServletRequest request) throws IOException
 	{
-		final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
-		final XMLProcessor xmlProcessor=new XMLProcessor();	//create a new XML processor to process the information TODO use a generic way of getting the XML processor
-		return xmlProcessor.parseDocument(inputStream, null);	//parse the document
+		final int contentLength=request.getContentLength();	//get the length of the request
+		assert contentLength>=0 : "Missing content length";
+		if(contentLength>0)	//if content is present
+		{
+			final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
+			final byte[] content=InputStreamUtilities.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
+			boolean hasContent=false;	//we'll start out assuming there actually is no content
+			for(final byte b:content)	//look at each byte in the content
+			{
+				if(!CharacterUtilities.isWhitespace((char)b))	//if this byte doesn't represent whitespace (ignoring the encoding is fine, because another encoding would require content, so if we find non-whitespace it means there is some content)
+				{
+					hasContent=true;	//we have content
+					break;	//stop looking for content
+				}
+			}
+			if(hasContent)	//if we have content
+			{
+				final InputStream xmlInputStream=new ByteArrayInputStream(content);	//create a new input stream from the bytes we read
+				final XMLProcessor xmlProcessor=new XMLProcessor();	//create a new XML processor to process the information TODO use a generic way of getting the XML processor
+				return xmlProcessor.parseDocument(xmlInputStream, null);	//parse the document				
+			}
+		}
+		return null;	//show that there is no content to return
+	}
+
+	/**Places an XML document into the body of an HTTP response.
+	@param response The response into which to place the XML document.
+	@param document The XML document to place into the response.
+	@exception IOException if there is an error writing the XML.
+	*/
+	protected void setXML(final HttpServletResponse response, final Document document) throws IOException
+	{
+		final ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();	//create a byte array output stream to hold our outgoing data
+		new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8);	//serialize the document to the byte array
+		final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
+			//set the content type to text/xml; charset=UTF-8
+		response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
+		response.setContentLength(bytes.length);	//tell the response how many bytes to expect
+		final OutputStream outputStream=response.getOutputStream();	//get an output stream to the response
+		final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
+		try
+		{
+			OutputStreamUtilities.write(inputStream, outputStream);	//write the bytes to the response
+		}
+		catch(final IOException ioException)	//if anything goes wrong
+		{
+			inputStream.close();	//always close our input stream
+		}
+	}
+
+	/**@return A new XML document representing multistatus.
+	@exception DOMException if there is an error creating the document.
+	*/
+	protected Document createMultistatusDocument() throws DOMException
+	{
+		return getDOMImplementation().createDocument(WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_MULTISTATUS), null);	//create a multistatus document
+	}
+
+	/**Creates a response and appends it to the given element.
+	@param element An XML element representing a multistatus.
+	@return A WebDAV response XML element.
+	@exception DOMException if there is an error creating the element.
+	*/
+	protected Element addResponse(final Element element) throws DOMException
+	{
+		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_RESPONSE));	//create a response element
+	}
+
+	/**Creates an href element with the URI as its content and adds it to the given element.
+	@param element An XML element representing, for example, a response.
+	@param uri The URI to use as the href.
+	@return A WebDAV href XML element with the URI as its content.
+	@exception DOMException if there is an error creating the element.
+	*/
+	protected Element addHref(final Element element, final URI uri) throws DOMException
+	{
+			//create an href element with the URI as its content and append it to the given element
+		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_HREF), uri.toString());
+	}
+
+	/**Creates a property container element.
+	@param element An XML element representing, for example, a response.
+	@return A WebDAV propstat XML element.
+	@exception DOMException if there is an error creating the element.
+	*/
+	protected Element addPropstat(final Element element) throws DOMException
+	{
+			//create a propstat element and append it to the given element
+		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_PROPSTAT));
+	}
+
+	/**Creates a property element.
+	@param element An XML element representing, for example, a property container.
+	@return A WebDAV property XML element.
+	@exception DOMException if there is an error creating the element.
+	*/
+	protected Element addProp(final Element element) throws DOMException
+	{
+			//create a property element and append it to the given element
+		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_PROP));
+	}
+
+	/**Creates a status element with the status text as its content and adds it to the given element.
+	@param element An XML element representing, for example, a propstat.
+	@param status The text of the status report.
+	@return A WebDAV status XML element with the status text as its content.
+	@exception DOMException if there is an error creating the element.
+	*/
+	protected Element addStatus(final Element element, final String status) throws DOMException
+	{
+			//create a status element with the status text as its content and append it to the given element
+		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_STATUS), status);
 	}
 
 	/**Retrieves a list of properties parsed from the children of the given XML element.
@@ -521,9 +529,9 @@ Debug.trace("serving resource", resourceURI);
 	@see #ALL_PROPERTIES
 	@see #PROPERTY_NAMES
 	*/
-	protected List<QualifiedName> getProperties(final Element element)
+	protected IDMappedList<URI, QualifiedName> getProperties(final Element element)
 	{
-		final List<QualifiedName> propertyList=new ArrayList<QualifiedName>();	//create a list of qualified names
+		final IDMappedList<URI, QualifiedName> propertyList=new IDMappedList(new HashMap<URI, QualifiedName>(), new ArrayList<QualifiedName>());	//create a list of qualified names
 		final NodeList childList=element.getChildNodes();	//get a list of element children
 		for(int childIndex=0; childIndex<childList.getLength(); ++childIndex)	//look at each child node
 		{
@@ -531,7 +539,7 @@ Debug.trace("serving resource", resourceURI);
 			if(childNode.getNodeType()==Node.ELEMENT_NODE)	//if this is an element
 			{
 //G***del				final Element childElement=(Element)childNode;	//get a reference to this element
-				if(WEBDAV_NAMESPACE_URI.toString().equals(childNode.getNamespaceURI()))	//if this is a WebDAV element
+				if(WEBDAV_NAMESPACE.equals(childNode.getNamespaceURI()))	//if this is a WebDAV element
 				{
 					final String childLocalName=childNode.getLocalName();	//get the child element's local name
 					if(ELEMENT_PROP.equals(childLocalName))	//allprop
@@ -539,12 +547,12 @@ Debug.trace("serving resource", resourceURI);
 						final NodeList propertyChildList=childNode.getChildNodes();	//get a list of property element children
 						for(int propertyChildIndex=0; propertyChildIndex<propertyChildList.getLength(); ++propertyChildIndex)	//look at each property child node
 						{
-							final Node propertyChildNode=childList.item(propertyChildIndex);	//get this property child node
+							final Node propertyChildNode=propertyChildList.item(propertyChildIndex);	//get this property child node
 							if(propertyChildNode.getNodeType()==Node.ELEMENT_NODE)	//if this is an element
 							{
 //G***del								final Element propertyChildElement=(Element)propertyChildNode;	//get a reference to this element
 									//create a qualified name for this property
-								final QualifiedName qname=new QualifiedName(URI.create(propertyChildNode.getNamespaceURI()), propertyChildNode.getPrefix(), propertyChildNode.getLocalName());
+								final QualifiedName qname=new QualifiedName(propertyChildNode.getNamespaceURI(), propertyChildNode.getPrefix(), propertyChildNode.getLocalName());
 								propertyList.add(qname);	//add the property to the list
 							}
 						}
@@ -613,12 +621,33 @@ Debug.trace("serving resource", resourceURI);
   protected abstract boolean isCollection(final URI resourceURI);
 
 	/**Determines the requested resource.
-  @param resourceURI The URI of the requested resource.
+	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource, or <code>null</code>
   	if no such resource exists. 
   */
 	protected abstract R getResource(final URI resourceURI);
+
+	/**Retrieves a list of resources and child resources to the given depth.
+	@param resourceURI The URI of the requested resource.
+  @param depth The zero-based depth of child resources to retrieve, or
+  	<code>-1</code> if all progeny should be included.
+  @return A list of resources and optionally children as specified,
+  	or <code>null</code> if no such resource exists.  
+  */
+	protected abstract List<R> getResources(final URI resourceURI, final int depth);
+
+	/**Copies all the requested resource properties to the given property XML element.
+	@param resource The resource the properties of which should be found.
+	@param propertyElement The XML element which will receive a representation of the resource properties.
+	@param properties A list of all requested properties, or <code>ALL_PROPERTIES</code> or
+		<code>PROPERTY_NAMES</code> indicating all properties or all property names,
+		respectively.
+	@see #ALL_PROPERTIES
+	@see #PROPERTY_NAMES
+	@exception DOMException if there is an error updating the properties element.
+	*/
+	protected abstract void findProperties(final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException;
 
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.
