@@ -24,16 +24,16 @@ public class RequestParametersFacesContextDecorator extends FacesContextDecorato
 		protected ExternalContext getExternalContextDecorator() {return externalContextDecorator;}	
 	
 	/**The map of request parameters, both those from the external context and those added.*/
-	private final Map<String, String> allRequestParameterMap;
+	private final Map<String, Object> allRequestParameterMap;
 
 		/**@return The map of request parameters, both those from the external context and those added.*/
-		protected Map<String, String> getAllRequestParameterMap() {return allRequestParameterMap;}
+		protected Map<String, Object> getAllRequestParameterMap() {return allRequestParameterMap;}
 
 	/**Adds a request parameter to the context.
 	@param name The request parameter name.
 	@param value The request parameter value.
 	*/
-	public void putRequestParameter(final String name, final String value)
+	public void putRequestParameter(final String name, final Object value)
 	{
 		allRequestParameterMap.put(name, value);	//store this new parameter in our map
 	}
@@ -44,7 +44,7 @@ public class RequestParametersFacesContextDecorator extends FacesContextDecorato
 	public RequestParametersFacesContextDecorator(final FacesContext facesContext)
 	{
 		super(facesContext);	//construct the parent class
-		allRequestParameterMap=new HashMap<String, String>();	//create our own map of request parameters
+		allRequestParameterMap=new HashMap<String, Object>();	//create our own map of request parameters
 			//add all the existing parameters to our map
 		allRequestParameterMap.putAll(facesContext.getExternalContext().getRequestParameterMap());
 			//create our own external context decorator that knows how to return all the parameters

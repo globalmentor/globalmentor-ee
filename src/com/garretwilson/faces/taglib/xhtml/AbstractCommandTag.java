@@ -41,7 +41,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		public String getActionListener() {return actionListener;}
 
 		/**Sets the component action listener.
-		@param action The new component action listener.
+		@param actionListener The new component action listener.
 		*/
 		public void setActionListener(final String actionListener) {this.actionListener=actionListener;}
 
@@ -63,7 +63,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		public String getImmediate() {return immediate;}
 
 		/**Sets whether the command is immediate.
-		@param value Whether the command should be immediate.
+		@param immediate Whether the command should be immediate.
 		*/
 		public void setImmediate(final String immediate) {this.immediate=immediate;}
 

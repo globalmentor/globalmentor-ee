@@ -6,16 +6,25 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 import javax.faces.convert.*;
 import javax.faces.el.*;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
+
+import com.garretwilson.lang.ClassUtilities;
+import com.garretwilson.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
 import static com.garretwilson.io.FileUtilities.*;
+import static com.garretwilson.text.CharacterEncodingConstants.*;
+import static com.garretwilson.text.TextUtilities.*;
 
 /**Input component for uploading files.
 @author Garret Wilson
 */
-public class UIFileInput extends UIInput
+public class UIInputFile extends UIInput
 {
+
+	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIInputFile.class, "InputFile");
 
 	/**The directory value binding variable name.*/
 	public static String DIRECTORY_VAR="directory";
@@ -86,7 +95,7 @@ public class UIFileInput extends UIInput
 		}
 
 	/**Default constructor.*/
-	public UIFileInput()
+	public UIInputFile()
 	{
 		super();	//construct the parent class
 	}
@@ -106,16 +115,20 @@ public class UIFileInput extends UIInput
 	*/
 	protected Object getConvertedValue(final FacesContext context, final Object newSubmittedValue) throws ConverterException
 	{
+Debug.setDebug(true);	//G***del
+Debug.trace("getting converted value of input field");
 			//TODO make sure the original FileItem gets removed elsewhere in the application, in case there's an error, so it won't be sitting around taking up space
 		final Object convertedValue;	//we'll determined the converted value
 		final Object defaultConvertedValue=super.getConvertedValue(context, newSubmittedValue);	//do the default conversion
 		if(newSubmittedValue instanceof FileItem)	//if the submitted value is a file item
 		{
+Debug.trace("the submitted item is a fileitem");
 			final FileItem fileItem=(FileItem)newSubmittedValue;	//get the submitted value as a file item
 			assert !fileItem.isFormField() : "File item isn't expected to be a form field for file input.";
 			final File directory=getDirectory();	//get the directory in which to store files
 			if(directory!=null)	//if a directory is specified
 			{
+Debug.trace("we have a directory:", directory);
 				final String filename;	//we'll determine the filename to use
 				if(getFilename()!=null)	//if a filename is explicitly specified
 				{
@@ -127,6 +140,7 @@ public class UIFileInput extends UIInput
 				}
 				if(filename!=null)	//if we have a filename
 				{
+Debug.trace("we have a filename:", filename);
 						//if there is a file separator character in the filename, throw an exception
 						//---this could be a security breach from a rogue client!
 					if(filename.indexOf(File.separatorChar)>=0)		//if the filename isn't a simple one
@@ -135,8 +149,13 @@ public class UIFileInput extends UIInput
 					}
 					try
 					{
-						mkdirs(directory);	//make sure the directory exists
+Debug.trace("making sure directory exists");
+						if(!directory.isDirectory())	//if the directory doesn't exist as a directory
+						{
+							mkdirs(directory);	//try to create the the directory
+						}
 						final File file=new File(directory, filename);	//we now know which file to use
+Debug.trace("file to write is:", file);
 						fileItem.write(file);	//write the file item to a file
 					}
 					catch(final Exception exception)	//if there was a problem writing the file to a directory (we can't just check for an IOException, because FileItem.write() can throw a general exception)
@@ -144,6 +163,31 @@ public class UIFileInput extends UIInput
 						throw new ConverterException(exception);
 					}
 				}				
+			}
+			else	//if there is no directory specified
+			{
+Debug.trace("no directory");
+				try
+				{
+					final ContentType contentType=new ContentType(fileItem.getContentType());	//get the content type of the file
+Debug.trace("uploaded file content type", contentType);
+					if(isText(contentType))	//if this is a text file
+					{
+Debug.trace("is text type");
+						final byte[] bytes=fileItem.get();	//get the bytes of the file
+						final String encoding=UTF_8;	//TODO get the encoding from the file if we can
+						final String string=new String(bytes, encoding);	//convert the bytes to a string using the correct encoding
+						return string;	//return the string representation of the file contents
+					}
+				}
+				catch(final ParseException parseException)	//if there is a problem parsing the content type
+				{
+					throw new ConverterException(parseException);
+				}
+				catch(final UnsupportedEncodingException unsupportedEncodingException)	//if we don't recognize the file encoding
+				{
+					throw new ConverterException(unsupportedEncodingException);
+				}
 			}
 			convertedValue=null;	//if we process the file item, we'll always return nothing
 		}

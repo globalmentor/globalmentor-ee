@@ -1,5 +1,6 @@
 package com.garretwilson.faces.component;
 
+import java.io.File;
 import java.net.URI;
 import java.util.*;
 
@@ -362,18 +363,35 @@ public class ComponentUtilities
 	@param attributeValue The value of the attribute; either a value-binding
 		expression or a <code>URI</code>.
 	@throws IllegalArgumentException If the given string violates RFC&nbsp;2396
-	@exception NumberFormatException if the attribute value does not contain a
-		parsable integer.
 	@see URI
 	*/
-	public static void setURIValue(final UIComponent component, final String attributeName, final String attributeValue)
+	public static void setURIValue(final UIComponent component, final String attributeName, final String attributeValue) throws IllegalArgumentException
 	{
 		if(attributeValue!=null)	//if there is an attribute value
 		{
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
-      	component.getAttributes().put(attributeName, URI.create(attributeValue));	//store the integer value in the component's attributes
+      	component.getAttributes().put(attributeName, URI.create(attributeValue));	//store the URI value in the component's attributes
+		}
+	}
+
+	/**Sets a file value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or a <code>URI</code>.
+	@see File
+	*/
+	public static void setFileValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, new File(attributeValue));	//store the file value in the component's attributes
 		}
 	}
 

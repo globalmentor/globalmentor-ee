@@ -26,4 +26,16 @@ public class ComponentConstants
 	public final static String GRAPHIC_URL_ATTRIBUTE="url";
 	/**The UIGraphic.alt attribute.*/
 	public final static String GRAPHIC_ALT_ATTRIBUTE="alt";
+
+		//UIInput attributes
+	/**The UIInput.validator attribute.*/
+	public final static String INPUT_VALIDATOR_ATTRIBUTE="validator";
+	/**The UInput.converter attribute.*/
+	public final static String INPUT_CONVERTER_ATTRIBUTE="converter";
+	/**The UInput.immediate attribute.*/
+	public final static String INPUT_IMMEDIATE_ATTRIBUTE="immediate";
+	/**The UInput.required attribute.*/
+	public final static String INPUT_REQUIRED_ATTRIBUTE="required";
+	/**The UInput.valueChangeListener attribute.*/
+	public final static String INPUT_VALUE_CHANGE_LISTENER_ATTRIBUTE="valueChangeListener";
 }

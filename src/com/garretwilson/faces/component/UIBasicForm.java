@@ -102,6 +102,10 @@ Debug.trace("is multipart content");
 									//use this form field as a request item so that the default form renderer can process it
 								requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem.getString());
 							}
+							else	//if this is not a form field, store the file item itself
+							{
+								requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem);								
+							}
 						}
 						decodeContext=requestParametersFacesContextDecorator;	//use our JSF context decorator when doing the rest of the decoding
 					}
