@@ -70,9 +70,9 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 				Pattern.compile("^gnome-vfs.*"),	//Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
 //G***del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
 				Pattern.compile("Microsoft Data Access Internet Publishing Provider.*"),	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
-				Pattern.compile("Microsoft-WebDAV-MiniRedir/5.1.2600.*"),	//http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html
-				Pattern.compile("^DAVAccess/1.[01234].[1234].*"),	//iCal; see http://macintouch.com/panreader02.html
-				Pattern.compile("^Dreamweaver-WebDAV-SCM1.0[23].*"),	//Dreamweaver MX, 2003; see http://archive.webct.com/docs/mail/nov03/0018.html
+				Pattern.compile("Microsoft-WebDAV-MiniRedir/5\\.1\\.2600.*"),	//http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html
+				Pattern.compile("^DAVAccess/1\\.[01234]\\.[1234].*"),	//iCal; see http://macintouch.com/panreader02.html
+				Pattern.compile("^Dreamweaver-WebDAV-SCM1\\.0[23].*"),	//Dreamweaver MX, 2003; see http://archive.webct.com/docs/mail/nov03/0018.html
 				Pattern.compile("^neon.*"),	//neon; see http://archive.webct.com/docs/mail/nov03/0018.html ; http://www.mail-archive.com/tomcat-dev@jakarta.apache.org/msg53373.html
 				Pattern.compile("^WebDAVFS.*"),	//Macintosh OS X Jaquar; see http://www.askbjoernhansen.com/archives/2002/08/27/000115.html
 //G***del				"^WebDAVFS/1.[012]",	//Macintosh; see http://www.macosxhints.com/article.php?story=20021114063433862
@@ -125,6 +125,9 @@ Debug.trace("checking pattern", pattern);
 		}		
 		switch(webdavMethod)	//see which WebDAV method this is
 		{
+			case COPY:
+				doCopy(request, response);	//delegate to the copy method
+				break;
 			case MOVE:
 				doMove(request, response);	//delegate to the move method
 				break;
@@ -291,6 +294,61 @@ Debug.trace("trying to write");
 		}
   }
 
+	/**Services the COPY method.
+  @param request The HTTP request.
+  @param response The HTTP response.
+  @exception ServletException if there is a problem servicing the request.
+  @exception IOException if there is an error reading or writing data.
+  */
+	public void doCopy(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	{
+		if(!READ_ONLY)	//if this servlet is not read-only
+		{
+			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+Debug.trace("moving; checking to see if resource exists", resourceURI);			
+			if(exists(resourceURI))	//if this resource exists
+	    {
+Debug.trace("resource exists; getting resource");			
+				final R resource=getResource(resourceURI);	//get the resource information
+Debug.trace("getting destination");			
+				final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
+				if(requestedDestinationURI!=null)	//if a destination was given
+				{
+Debug.trace("requested destination", requestedDestinationURI);
+						//get the canonical destination URI
+					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resource);
+					final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+	Debug.trace("destination exists?", destinationExists);			
+					final int depth=getDepth(request);	//determine the requested depth
+Debug.trace("depth requested:", depth);
+					final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
+	Debug.trace("is overwrite?", overwrite);			
+					copyResource(resource, destinationURI, depth, overwrite);	//copy the resource to its new location
+					if(destinationExists)	//if the destination resource already existed
+					{
+						response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+					}
+					else	//if the destination resource did not exist already
+					{
+						response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					}
+				}
+				else	//if there is no destination header
+				{
+					throw new HTTPBadRequestException("Missing Destination header.");
+				}
+	    }
+			else	//if the resource doesn't exist
+			{
+				throw new HTTPNotFoundException();	//we can't move what's not there
+			}
+		}
+		else	//if this servlet is read-only
+		{
+			throw new HTTPForbiddenException();	//indicate that this method is forbidden
+		}
+  }
+
 	/**Services the MOVE method.
   @param request The HTTP request.
   @param response The HTTP response.
@@ -308,21 +366,29 @@ Debug.trace("moving; checking to see if resource exists", resourceURI);
 Debug.trace("resource exists; getting resource");			
 				final R resource=getResource(resourceURI);	//get the resource information
 Debug.trace("getting destination");			
-				final URI destinationURI=getDestination(request);	//get the destination URI for the operation
-Debug.trace("destination", destinationURI);			
-					//TODO check for existence
-				final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
-Debug.trace("destination exists?", destinationExists);			
-				boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
-Debug.trace("is overwrite?", overwrite);			
-				moveResource(resource, destinationURI, overwrite);	//move the resource to its new location
-				if(destinationExists)	//if the destination resource already existed
+				final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
+				if(requestedDestinationURI!=null)	//if a destination was given
 				{
-					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+Debug.trace("requested destination", requestedDestinationURI);
+						//get the canonical destination URI
+					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resource);
+					final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+	Debug.trace("destination exists?", destinationExists);			
+					final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
+	Debug.trace("is overwrite?", overwrite);			
+					moveResource(resource, destinationURI, overwrite);	//move the resource to its new location
+					if(destinationExists)	//if the destination resource already existed
+					{
+						response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+					}
+					else	//if the destination resource did not exist already
+					{
+						response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					}
 				}
-				else	//if the destination resource did not exist already
+				else	//if there is no destination header
 				{
-					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					throw new HTTPBadRequestException("Missing Destination header.");
 				}
 	    }
 			else	//if the resource doesn't exist
@@ -401,7 +467,7 @@ Debug.trace("depth requested:", depth);
 				}
 				catch(final DOMException domException)	//any XML problem here is the client's fault
 				{
-		      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
+		      throw new HTTPBadRequestException(domException);	//show that the XML wasn't correct				
 				}
 				try
 				{
@@ -525,38 +591,70 @@ Debug.trace("setting content length to:", contentLength);
   */
 	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
 	{
-		final URI requestURI=super.getResourceURI(request);	//get the default resource URI for this request
-Debug.trace("request URI", requestURI);
-//G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
-//G***del Debug.trace("exists?", exists(requestURI));
-		final String requestURIString=requestURI.toString();	//get the string version of the request URI
-		if(!endsWith(requestURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
+		final URI requestedResourceURI=super.getResourceURI(request);	//get the default resource URI for this request
+		final URI resourceURI=getResourceURI(requestedResourceURI, request.getMethod(), null);	//get the correct URI for the resource
+		if(!resourceURI.equals(requestedResourceURI))	//if the real resource URI is different from the one requested
 		{
-			final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
-			final boolean isCollectionMethod=MKCOL_METHOD.equals(request.getMethod());	//see if this is a method referring to a collection
-			final boolean redirect;	//determine if we need to redirect
-			if(isCollectionMethod)	//if this is a collection-specific method
+			if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
 			{
-				redirect=true;	//redirect to the real collection URI
-			}
-			else	//if this is not a collection-specific method
-			{
-				redirect=!exists(requestURI) && isCollection(redirectURI);	//redirect if there is no such file but redirecting would take the client to a collection
-			}
-			if(redirect)	//if we should redirect
-			{
-Debug.trace("sending redirect", redirectURI);
-				if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
-				{
-					throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
-				}
-				else	//if we can't redirect
-				{
-					return redirectURI;	//we'll just pretend they requested the correct URI					
-				}
+				throw new HTTPMovedPermanentlyException(resourceURI);	//report back that this resource has permanently moved to its correct location URI
 			}
 		}
-		return requestURI;	//return the requested URI
+		return resourceURI;	//return the resource URI
+	}
+
+	/**Determines the URI of a requested resource, using an optional resource
+	 	as an analogy.
+	This method determines if a non-collection resource (i.e. one not ending in '/')
+	should represent a collection if one of the following conditions apply:
+	<ul>
+		<li>The given method is a collection-specific method.</li>
+		<li>The requested non-collection URI does not exist, but there exists a collection
+			at the location of the URI with an appended '/'.</li>
+		<li>The analogous resource, if present, is a collection.</li>
+	</ul>
+  @param requestedResourceURI The requested absolute URI of the resource.
+  @param method The HTTP request method.
+  @param analogousResource A resource to use by analogy, or <code>null</code> if
+  	no analogous resource is known. This parameter is useful when used with the
+  	COPY or MOVE method.
+  @return The canonical URI of the requested resource, which may be different
+  	than the requested resource URI.
+  */
+	protected URI getResourceURI(final URI requestedResourceURI, final String method, final R analogousResource)
+	{
+		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
+Debug.trace("requested URI", requestedResourceURI);
+//G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
+//G***del Debug.trace("exists?", exists(requestURI));
+		final String requestResourceURIString=requestedResourceURI.toString();	//get the string version of the request URI
+		if(!endsWith(requestResourceURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
+		{
+			final URI collectionURI=URI.create(requestResourceURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
+				//if this is a method referring to a collection
+			if(MKCOL_METHOD.equals(method))
+			{
+				resourceURI=collectionURI;	//use the collection URI
+			}
+			else if(analogousResource!=null)	//if there is an analogous resource
+			{
+					//if the analogous resource ends with '/'
+				if(endsWith(analogousResource.getReferenceURI().toString(), PATH_SEPARATOR))
+				{
+					resourceURI=collectionURI;	//use the collection URI					
+				}
+			}
+			else	//if there is no analogous resource (don't do the liberal non-existence check if there is an analogous resource, because this could prevent MOVE or COPY from a non-collection to another non-collection when a similarly-named collection exists)
+			{
+				//if there is no such resource but there is a resource at the collection URI
+				if(!exists(requestedResourceURI) && isCollection(collectionURI))
+				{
+					resourceURI=collectionURI;	//use the collection URI				
+				}				
+			}
+		}
+Debug.trace("using URI", resourceURI);
+		return resourceURI;	//return the resource URI we decided on
 	}
 
 	/**Determines the URI of a requested resource from its requested URI.
@@ -977,8 +1075,21 @@ Debug.trace("content length", contentLength);
 	*/
 	protected abstract void deleteResource(final R resource) throws IOException;
 
+	/**Copies a resource.
+	@param resource The resource to copy.
+	@param destinationURI The destination URI to which the resource should be copied.
+	@param depth The zero-based depth of child resources which should
+		recursively be copied, or <code>-1</code> for an infinite depth.
+	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IOException Thrown if there is an error copying the resource.
+	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
+	*/
+	protected abstract void copyResource(final R resource, final URI destinationURI, final int depth, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
+
 	/**Moves a resource.
-	@param resource The resource to move
+	@param resource The resource to move.
 	@param destinationURI The destination URI to which the resource should be moved.
 	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.

@@ -36,7 +36,7 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*G***del
+/*G***fix
 Debug.setDebug(true);
 Debug.setVisible(true);
 */
