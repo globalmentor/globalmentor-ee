@@ -8,6 +8,7 @@ import javax.faces.el.*;
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.el.*;
 import com.garretwilson.lang.ClassUtilities;
+import com.garretwilson.util.Debug;
 
 /**Represents an assignment to a variable of a value.
 The value may be an object or, if a string, a value-binding expression.
@@ -79,6 +80,11 @@ public class UIAssignment extends UIComponentBase
 			if(expression!=null)	//if we have an expression
 			{
 				final Object value=expression.getValue(context);	//get the expression value
+/*G***del
+Debug.setDebug(true);
+Debug.setVisible(true);
+Debug.trace("value of ", expression.getExpressionString(), "is", value, "of type", value!=null ? value.getClass() : null);
+*/
 				final Application application=context.getApplication();	//get the JSF application
 				final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO refactor into an ExpressionUtilities method
 				varValueBinding.setValue(context, value);	//assign the expression value to the variable
@@ -95,7 +101,7 @@ public class UIAssignment extends UIComponentBase
 	*/
 	public Object saveState(final FacesContext context)
 	{
-		return new Object[]{super.saveState(context), var};	//TODO finish
+		return new Object[]{super.saveState(context), var, expression};	//TODO finish
 	}
 
 	/**Restores the state of the component.
@@ -107,7 +113,7 @@ public class UIAssignment extends UIComponentBase
 		final Object values[]=(Object[])state;
 		super.restoreState(context, values[0]);
 		var=(String)values[1];
-			//TODO finish
+		expression=(Expression<?>)values[2];
 	}
 
 }

@@ -53,7 +53,21 @@ public class MethodBindingExpression<T> implements Expression<T>
 				for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
 				{
 					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
-//G***del Debug.trace("*****does this fix the type bug?", parameterTypes[i]);	//get the type of this parameter
+/*G***fix
+Debug.trace("*****does this fix the type bug? parameter type for expression", parameterExpressions[i].getExpressionString(), "is", parameterTypes[i]);	//get the type of this parameter
+final Object object=parameterExpressions[i].getValue(context);
+Debug.trace("what if we get the value of the expression?", object, "of type", object.getClass());
+					parameterTypes[i]=object.getClass();	//get the type of this parameter
+
+Debug.trace("let's create a new value binding");
+final ValueBinding valueBinding=context.getApplication().createValueBinding("#{group}");
+Debug.trace("created a value binding", valueBinding.getExpressionString(), "of type", valueBinding.getType(context), "and value", valueBinding.getValue(context));
+
+Debug.trace("let's get the resolved value");
+final Object resolvedObject=context.getApplication().getVariableResolver().resolveVariable(context, "group");
+Debug.trace("here's the resolved value of type", resolvedObject.getClass(), "and value", resolvedObject);
+*/
+
 /*G***del when works
 Debug.trace("looking at parameter expression: ", parameterExpressions[i].getExpressionString());
 //TODO fix---why does this always return java.lang.Object					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
@@ -137,13 +151,13 @@ Debug.trace("parameter expression type: ", parameterExpressions[i].getType(conte
 		for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
 		{
 			parameterValues[i]=parameterExpressions[i].getValue(context);	//get this parameter value
-//G***del Debug.trace("just got value for parameter", i, parameterValues[i]);
+//G***fix Debug.trace("just got value for parameter", i, parameterValues[i], "of type", parameterExpressions[i].getType(context));
 		}
 		final MethodBinding methodBinding=getMethodBinding(context);
-//G***del Debug.trace("ready to invoke a method binding we got: ", methodBinding);
+//G***fix Debug.trace("ready to invoke a method binding we got: ", methodBinding);
 		final T test=(T)methodBinding.invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
-//G***del Debug.trace("value: ", test);
-//G***del Debug.trace("type: ", getType(context));
+//G***fix Debug.trace("value: ", test);
+//G***fix Debug.trace("type: ", getType(context));
 		return test;
 //G***bring back		return (T)getMethodBinding(context).invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
 	}
