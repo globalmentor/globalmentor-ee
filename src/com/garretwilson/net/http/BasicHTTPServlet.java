@@ -36,8 +36,10 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
+/*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
+*/
 Debug.trace("servicing method", request.getMethod());
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
@@ -301,7 +303,7 @@ Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against re
 				if(principal!=null)	//if a principal was given
 				{
 					final char[] password=getPassword(principal);	//get the password for the principal
-Debug.trace("got password for credentials", password);
+Debug.trace("got password for credentials", new String(password));
 					return password!=null && digestCredentials.isValid(method, password);	//see if the credentials are valid for this principal's password
 				}
 				else	//if no principal is given
