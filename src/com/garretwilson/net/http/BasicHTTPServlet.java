@@ -224,7 +224,7 @@ Debug.trace("path info:", request.getPathInfo());
 
 	/**Looks up a principal from the given credentials.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
-	@return The princiapl corresponding to the given ID, or <code>null</code> if no principal could be determined.
+	@return The principal corresponding to the given ID, or <code>null</code> if no principal could be determined.
 	@exception HTTPInternalServerErrorException if there is an error getting the principal.
 	@see #getPrincipal(String)
 	*/
@@ -236,12 +236,23 @@ Debug.trace("path info:", request.getPathInfo());
 	/**Looks up a principal from the given ID.
 	This version returns <code>null</code>. 
 	@param id The ID of the principal.
-	@return The princiapl corresponding to the given ID, or <code>null</code> if no principal could be determined.
+	@return The principal corresponding to the given ID, or <code>null</code> if no principal could be determined.
 	@exception HTTPInternalServerErrorException if there is an error getting the principal.
 	*/
 	protected Principal getPrincipal(final String id) throws HTTPInternalServerErrorException
 	{
 		return null;	//the basic HTTP servlet doesn't know any principals
+	}
+
+	/**Looks up the corresponding password for the given principal.
+	This version returns <code>null</code>. 
+	@param principal The principal for which a password should be returned.
+	@return The password associated with the given principal, or <code>null</code> if no password is associated with the given principal.
+	@exception HTTPInternalServerErrorException if there is an error getting the principal's password.
+	*/
+	protected char[] getPassword(final Principal principal) throws HTTPInternalServerErrorException
+	{
+		return null;	//the basic HTTP servlet doesn't know any passwords
 	}
 
 	/**Checks whether the given credentials provide authentication for the given URI and method.
@@ -251,7 +262,8 @@ Debug.trace("path info:", request.getPathInfo());
 		<li>The realm, if provided, is checked against the expected realm for the given resource.</li>
 		<li>For digest access identification, the resource URI is checked against those of the credentials.</li>	
 	</ul>
-	This version allows authentication for all valid credentials.
+	This version allows authentication for all <code>null</code> principals with no credentials,
+		and all non-<code>null</code> principals valid credentials.
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param requestURI The request URI as given in the HTTP request.
@@ -270,17 +282,37 @@ Debug.trace("got realm", realm);
 Debug.trace("realm doesn't match", getRealm(resourceURI));
 			return false;	//don't allow credentials marked for one realm to be used for another realm
 		}
-		if(credentials instanceof DigestAuthenticateCredentials)	//if these are digest credentials, make sure they are valid
+		if(credentials!=null)	//if there are credentials given
 		{
-			final DigestAuthenticateCredentials digestCredentials=(DigestAuthenticateCredentials)credentials;	//get the credentials as digest credentials
-Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
-			if(!requestURI.equals(digestCredentials.getURI().toString()))	//if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
+			if(credentials instanceof DigestAuthenticateCredentials)	//if these are digest credentials, make sure they are valid
 			{
-				return false;	//don't allow authentication for other resources
+				final DigestAuthenticateCredentials digestCredentials=(DigestAuthenticateCredentials)credentials;	//get the credentials as digest credentials
+Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
+				if(!requestURI.equals(digestCredentials.getURI().toString()))	//if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
+				{
+					return false;	//don't allow authentication for other resources
+				}
+				//TODO later find a way to recover the original nonce and make sure it isn't stale
+				if(principal!=null)	//if a principal was given
+				{
+					final char[] password=getPassword(principal);	//get the password for the principal
+Debug.trace("got password for credentials", password);
+					return password!=null && digestCredentials.isValid(method, password);	//see if the credentials are valid for this principal's password
+				}
+				else	//if no principal is given
+				{
+					return false;	//an anonymous principal cannot authenticate against given credentials
+				}			
 			}
-			//TODO later find a way to recover the original nonce and make sure it isn't stale
+			else	//if we don't recognize the credentials
+			{
+				return false;	//we can't authenticate credentials we don't recognize				
+			}
 		}
-		return true;
+		else	//if no credentials were given
+		{
+			return principal==null;	//only anonymous principals can authenticate against missing credentials
+		}
 	}
 
 	/**Checks whether the given principal is authorized to invoke the given method on the given resource.
