@@ -79,7 +79,7 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 				Pattern.compile("^neon.*"),	//neon; see http://archive.webct.com/docs/mail/nov03/0018.html ; http://www.mail-archive.com/tomcat-dev@jakarta.apache.org/msg53373.html
 				Pattern.compile("^WebDAVFS.*"),	//Macintosh OS X Jaquar; see http://www.askbjoernhansen.com/archives/2002/08/27/000115.html
 //G***del				"^WebDAVFS/1.[012]",	//Macintosh; see http://www.macosxhints.com/article.php?story=20021114063433862
-				Pattern.compile("^WebDrive.*"),	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
+				Pattern.compile("^WebDrive.*")	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 		  };
 
 
