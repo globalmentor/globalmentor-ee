@@ -5,7 +5,10 @@ package com.garretwilson.faces.component;
 */
 public class ComponentConstants
 {
-		//TODO are these XHTML attributes?
+	/**The rendered attribute.*/
+	public final static String RENDERED_ATTRIBUTE="rendered";
+
+			//TODO are these XHTML attributes?
 	/**The disabled attribute.*/
 	public final static String DISABLED_ATTRIBUTE="disabled";
 	/**The immediate attribute.*/

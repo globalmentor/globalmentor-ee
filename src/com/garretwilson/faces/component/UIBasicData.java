@@ -22,13 +22,12 @@ public class UIBasicData extends UIData
 {
 
 	/**The attribute for storing the variable name.*/
-//G***del	public final static String VAR_ATTRIBUTE="var";	//TODO delete this
+	public final static String VAR_ATTRIBUTE="var";
 
 	/**Default constructor.*/
 	public UIBasicData()
 	{
 		super();	//construct the parent class
-//G***del		setVar(VAR_ATTRIBUTE);	//show which attribute we use for storing the variable name
 	}
 
 	/**Fixes a bug in JSF RI that keeps a cached data data model in nested UIData.*/
