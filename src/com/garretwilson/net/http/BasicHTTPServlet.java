@@ -1,19 +1,23 @@
 package com.garretwilson.net.http;
 
 import java.io.*;
+import java.util.Date;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import static com.garretwilson.net.http.HTTPConstants.*;
+import com.garretwilson.security.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.util.Debug;
+import com.garretwilson.util.SyntaxException;
 
 /**An HTTP servlet with extended functionality. 
 @author Garret Wilson
 */
 public class BasicHTTPServlet extends HttpServlet
 {
+
 	
 	/**Services an HTTP request.
   This version provides support for special exceptions.
@@ -71,4 +75,68 @@ public class BasicHTTPServlet extends HttpServlet
 		super.service(request, response);	//do the default servicing of this method
   }
 
+
+	/**@return A private key used in generating and validating nonces.
+	This implementation returns the name of the servlet class.
+	*/
+	protected String getNoncePrivateKey()
+	{
+		return getClass().getName();	//return the name of the implementing servlet class
+	}
+	
+	/**@return A newly generated nonce.
+	@see #createNonce(String)
+	*/
+	protected Nonce createNonce()
+	{
+		return new DefaultNonce(getNoncePrivateKey());	//create a default nonce using our private key
+	}
+
+	/**Creates a nonce from an existing nonce string representation.
+	@param nonceString The unhashed string representing the nonce.
+	@return A nonce containing values represented by the nonce string.
+	@exception SyntaxException if the given string does not have the correct format for this type of nonce.
+	@see #createNonce()
+	*/
+	protected Nonce createNonce(final String nonceString) throws SyntaxException
+	{
+		return new DefaultNonce(getNoncePrivateKey());	//create a default nonce using our private key
+	}
+
+	/**The number of milliseconds after which a nonce will expire: 60 seconds.*/
+	protected final long NONCE_EXPIRATION_DURATION=60*1000;
+
+	/**Determines if the given nonce is valid.
+	This includes checking:
+	<ul>
+		<li>The nonce private key to ensure it matches this server's nonce private key.</li>
+		<li>The time to ensure that too much time has not lapsed.</li>
+	</ul>
+	@param nonce The nonce to check for validity.
+	@return <code>true</code> if the nonce is not valid.
+	@see #getNoncePrivateKey()
+	@see #isStale(Nonce)
+	*/
+	protected boolean isValid(final Nonce nonce)
+	{
+		return getNoncePrivateKey().equals(nonce.getPrivateKey()) && !isStale(nonce);	//check for an identical key and for staleness
+	}
+
+	/**Determines if the given nonce is stale.
+	@param nonce The nonce to check for staleness.
+	@return <code>true</code> if the nonce time has lapsed beyond the maximum allowed.
+	@see #NONCE_EXPIRATION_DURATION
+	*/
+	protected boolean isStale(final Nonce nonce)
+	{
+		return System.currentTimeMillis()-nonce.getTime().getTime()<NONCE_EXPIRATION_DURATION;	//see if the difference between now and then is longer than we allow
+	}
+
+	/**Checks whether the given method is authorized*/
+	/*TODO finish
+		public void checkAuthorization(final URI resourceURI, final String method) throws HTTPUnauthorizedException
+		{
+			
+		}
+		*/
 }

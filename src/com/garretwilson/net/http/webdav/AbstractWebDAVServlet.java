@@ -147,7 +147,11 @@ Debug.trace("doing options for URI", resourceURI);
   */
 	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*G***fix
+
+/*TODO finish		
+		getAuthorization(request);	//G***testing
+		
+		
 		if(true)
 		{
 					try
@@ -161,9 +165,11 @@ Debug.trace("doing options for URI", resourceURI);
 					}
 		}
 */
+
 		serveResource(request, response, true);	//serve the resource with its content
 		//TODO ignore any broken pipe error
 	}
+
 
 	/**Services the POST method.
 	This version delegates to <code>doGet()</code>.
