@@ -31,8 +31,9 @@ public class UIBasicData extends UIData
 	}
 
 	/**Fixes a bug in JSF RI that keeps a cached data data model in nested UIData.*/
-	public void broadcast(FacesEvent event) throws AbortProcessingException
+	public void broadcast(final FacesEvent event) throws AbortProcessingException
 	{
+//G***del Debug.trace("ready to broadcast an event: ", event, "component", event.getComponent());
 		if(ComponentUtilities.getParent(this, UIData.class)!=null)	//if we're nested within another UIData
 		{
 			if(getValueBinding("value")!=null)	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant

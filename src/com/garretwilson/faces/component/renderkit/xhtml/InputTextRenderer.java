@@ -5,7 +5,7 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>text</code>.
 @author Garret Wilson
 */
-public class InputTextRenderer extends AbstractXHTMLRenderer
+public class InputTextRenderer extends AbstractInputRenderer
 {
 
 	/**Default constructor.*/

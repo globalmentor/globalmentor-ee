@@ -31,6 +31,10 @@ public class RenderUtilities
 			final Object value=attributeMap.get(attribute);	//get this attribute
 			if(value!=null)	//if we have a value TODO check to see if we should render the value, according to the special wrapper type MIN_VALUEs
 			{
+				if(value instanceof Integer && ((Integer)value).intValue()==Integer.MIN_VALUE)
+				{
+					continue;	//G***testing; fix correctly
+				}
 				writer.writeAttribute(attribute, value, attribute);	//render the attribute
 			}
     }

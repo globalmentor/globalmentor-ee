@@ -303,7 +303,7 @@ Debug.trace("expecting value of client ID:", clientID);
 					return;	//don't generate an event for the reset button
 				}
 				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component
-//G***del Debug.trace("---queueing an action!");
+//G***del Debug.trace("---queueing an action:", actionEvent);
 				component.queueEvent(actionEvent);	//queue our new action
 			}
     }
