@@ -5,6 +5,8 @@ import com.garretwilson.faces.component.renderkit.xhtml.DefinitionListRenderer;
 
 /**A tag representing a definition list component.
 @author Garret Wilson
+@see com.garretwilson.faces.taglib.xhtml.DefinitionTag
+@see com.garretwilson.faces.taglib.xhtml.TermTag
 */
 public class DefinitionListTag extends ListTag
 {

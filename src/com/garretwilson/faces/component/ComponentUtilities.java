@@ -20,6 +20,7 @@ import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
+import com.garretwilson.lang.ObjectUtilities;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
@@ -173,6 +174,54 @@ public class ComponentUtilities
 		return panel;	//return the component
 	}
 
+	/**Creates a <code>UIParameter</code> component with only a value.
+	@param application The current JSF application
+	@param value The parameter value.
+	@return A new <code>UIParameter</code> component with the given value.
+	*/
+	public static UIParameter createParameter(final Application application, final String value)
+	{
+		return createParameter(application, null, value);	//create a parameter with no name
+	}
+
+	/**Creates a <code>UIParameter</code> component with the given name and value.
+	@param application The current JSF application
+	@param name The parameter name, or <code>null</code> for no name.
+	@param value The parameter value.
+	@return A new <code>UIParameter</code> component with the given name and value.
+	*/
+	public static UIParameter createParameter(final Application application, final String name, final String value)
+	{
+		final UIParameter parameter=(UIParameter)createComponent(application, UIParameter.COMPONENT_TYPE);	//create a parameter component
+		setStringValue(parameter, NAME_ATTRIBUTE, name);	//store the name, creating a value binding if necessary
+		setStringValue(parameter, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		return parameter;	//return the component
+	}
+	
+	/**Creates a <code>UIParameterFormat</code> component with only a value.
+	@param application The current JSF application
+	@param value The parameter value.
+	@return A new <code>UIParameterFormat</code> component with the given value.
+	*/
+	public static UIParameterFormat createParameterFormat(final Application application, final String value)
+	{
+		return createParameterFormat(application, null, value);	//create a parameter with no name
+	}
+
+	/**Creates a <code>UIParameterFormat</code> component with the given name and value.
+	@param application The current JSF application
+	@param name The parameter name, or <code>null</code> for no name.
+	@param value The parameter value.
+	@return A new <code>UIParameterFormat</code> component with the given name and value.
+	*/
+	public static UIParameterFormat createParameterFormat(final Application application, final String name, final String value)
+	{
+		final UIParameterFormat parameter=(UIParameterFormat)createComponent(application, UIParameterFormat.COMPONENT_TYPE);	//create a parameter component
+		setStringValue(parameter, NAME_ATTRIBUTE, name);	//store the name, creating a value binding if necessary
+		setStringValue(parameter, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		return parameter;	//return the component
+	}
+	
 	/**Creates a <code>UIComponent</code> with a unique ID.
 	@param application The current JSF application
 	@param componentType The type of component to create.
@@ -255,11 +304,12 @@ public class ComponentUtilities
 		return component;	//return the component we found, or null
 	}
 
-	/**Retrieves the values of the first direct <code>UIParameter</code>
+	/**Retrieves the value of the first direct <code>UIParameter</code>
 	 	children of the given component with the given name.
 	@param component The component for which parameters should be retrieved.
 	@param context The JSF context.
-	@param name The name of the parameter to retrieve.
+	@param name The name of the parameter to retrieve, or <code>null</code> if
+		only a parameter with no name should be returned.
 	@return The parameter value, or <code>null</code> if no parameter with the
 		given name exists.
 	*/
@@ -270,7 +320,7 @@ public class ComponentUtilities
 			if(child instanceof UIParameter)	//if this child is a parameter
 			{
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
-				if(name.equals(parameter.getName()))	//if this parameter has the correct name
+				if(ObjectUtilities.equals(name, parameter.getName()))	//if this parameter has the correct name
 				{
 					return parameter.getValue();	//return the parameter value
 				}
@@ -325,6 +375,48 @@ public class ComponentUtilities
 		}
 		return parameterMap;	//return the map of parameters
 	}
+
+	/**The constant string indicating all names should be retrieved.*/
+	public final static String ALL_NAMES=new String();
+
+	/**Retrieves the values of all direct <code>UIParameter</code>
+		children.
+	@param component The component for which parameters should be retrieved.
+	@param context The JSF context.
+	@return A non-<code>null</code> array of parameter values.
+	*/
+	public static Object[] getParameterValues(final UIComponent component, final FacesContext context)
+	{
+		return getParameterValues(component, context, ALL_NAMES);	//get all parameter values, regardless of the name
+	}
+
+	/**Retrieves the values of all direct <code>UIParameter</code>
+ 		children of the given component with the given name.
+	@param component The component for which parameters should be retrieved.
+	@param context The JSF context.
+	@param name The name of the parameter to retrieve; <code>null</code> for
+		only parameters with no name specified, or the <code>ALL_NAMES</code>
+		object for all parameters to be included.
+	@return A non-<code>null</code> array of parameter values.
+	@see #ALL_NAMES
+	*/
+	public static Object[] getParameterValues(final UIComponent component, final FacesContext context, final String name)
+	{
+		final List<Object> valueList=new ArrayList<Object>(component.getChildCount());	//create a list of values long enough to store all direct children, if needed
+		for(Object child:component.getChildren())	//look at all children
+		{
+			if(child instanceof UIParameter)	//if this child is a parameter
+			{
+				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
+				final String parameterName=parameter.getName();	//get the parameter name
+				if(ALL_NAMES==name || ObjectUtilities.equals(name, parameterName))	//if all names should be included, or if the name matches
+				{
+					valueList.add(parameter.getValue());	//add the value to our list
+				}
+			}
+		}
+		return valueList.toArray(new Object[valueList.size()]);	//send back an array of values
+}
 
 	/**Determines if a component is mutable; that is, not disabled and not
 		read-only.

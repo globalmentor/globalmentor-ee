@@ -1,17 +1,12 @@
 package com.garretwilson.faces.taglib;
 
-import java.io.Serializable;
-import java.util.*;
-
 import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.webapp.UIComponentTag;
 import com.garretwilson.faces.component.UIAssignment;
-import com.garretwilson.faces.el.*;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.text.CharacterConstants.*;
 
 /**The tag for creating a <code>UIAssignment</code> component.
 @author Garret Wilson
@@ -61,7 +56,7 @@ public class AssignmentTag extends UIComponentTag
 		{
 			assignment.setVar(var);	//tell the assignment which variable to use
 		}
-		setStringValue(component, UIAssignment.VALUE_VAR, getValue());	//set the value
+		setStringValue(component, UIAssignment.VALUE_PROPERTY, getValue());	//set the value
 	}
 
 	/**Releases resources used by the tag.*/

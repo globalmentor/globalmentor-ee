@@ -26,7 +26,7 @@ public class UIAssignment extends UIComponentBase
 	public static final String COMPONENT_FAMILY=COMPONENT_TYPE;
 
 	/**The name of the value binding variable.*/
-	public static final String VALUE_VAR="value";
+	public static final String VALUE_PROPERTY="value";
 
 	/**@return The component family.*/
 	public String getFamily()
@@ -58,7 +58,7 @@ public class UIAssignment extends UIComponentBase
 		/**@return The value of the assignment.*/
 		protected Object getValue()
 		{
-			return ComponentUtilities.getValue(this, getFacesContext(), value, VALUE_VAR);	//get the local value or value binding
+			return ComponentUtilities.getValue(this, getFacesContext(), value, VALUE_PROPERTY);	//get the local value or value binding
 		}		
 
 		/**Sets the value.

@@ -169,6 +169,11 @@ if (vb != null) {
 //TODO make sure decode knows to check if a custom value was passed
 				final StringBuilder onclickJavaScript=new StringBuilder();	//we'll construct JavaScript code to be executed when the button is clicked
 
+				final Object[] confirms=getParameterValues(component, context, UIBasicCommand.CONFIRM_PARAMETER);	//see if there are any confirmation parameters
+				for(final Object confirm:confirms)	//for each confirmation parameter
+				{
+					onclickJavaScript.append("if(!confirm('"+confirm+"')) return;");	//TODO fix with utilities
+				}
 				
 //G***fix the window name				public static String createName(final String string)
 				

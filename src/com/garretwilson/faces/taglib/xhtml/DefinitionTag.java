@@ -1,19 +1,19 @@
 package com.garretwilson.faces.taglib.xhtml;
 
-import javax.faces.webapp.UIComponentTag;
-
 import com.garretwilson.faces.component.UIDefinition;
-import com.garretwilson.faces.component.UIDefinitionList;
 
-//TODO comment
-public class DefinitionTag extends AbstractXHTMLTag {
+/**A tag representing a definition in a list.
+@author Garret Wilson
+@see com.garretwilson.faces.taglib.xhtml.DefinitionListTag
+@see com.garretwilson.faces.taglib.xhtml.TermTag
+*/
+public class DefinitionTag extends AbstractXHTMLTag
+{
 
-    public String getRendererType() {
-        return null;
-    }
+	/**@return <code>null</code> indicating no default renderer.*/
+	public String getRendererType() {return null;}
 
 	/**@return The type of the component to use for this tag.*/
 	public String getComponentType() {return UIDefinition.COMPONENT_TYPE;}
 
 }
-

@@ -24,7 +24,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	public String getComponentType() {return UICommand.COMPONENT_TYPE;}
 
 	/**The component action.*/
-	private String action;
+	private String action=null;
 
 		/**@return The component action.*/
 		public String getAction() {return action;}
@@ -35,7 +35,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		public void setAction(final String action) {this.action=action;}
 
 	/**The component action listener.*/
-	private String actionListener;
+	private String actionListener=null;
 
 		/**@return The component action listener.*/
 		public String getActionListener() {return actionListener;}
@@ -46,7 +46,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		public void setActionListener(final String actionListener) {this.actionListener=actionListener;}
 
 	/**The value of the component.*/
-	private String value;
+	private String value=null;
 
 		/**@return The value of the component.*/
 		public String getValue() {return value;}
@@ -57,7 +57,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		public void setValue(final String value) {this.value=value;}
 
 	/**Whether the command is immediate.*/
-	private String immediate;
+	private String immediate=null;
 
 		/**@return Whether the command is immediate.*/
 		public String getImmediate() {return immediate;}
@@ -97,7 +97,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		setMethodBindingAttribute(component, COMMAND_ACTION_LISTENER_ATTRIBUTE, getActionListener(), ActionEvent.class);	//set the action listener attribute
 		if(command instanceof UIBasicCommand)	//if this is one of our special commands with extended functionality
 		{
-			setURIValue(component, UIBasicCommand.POPUP_URI_VAR, getPopupURI());	//tell the component the popup URI 			
+			setURIValue(component, UIBasicCommand.POPUP_URI_PROPERTY, getPopupURI());	//tell the component the popup URI 			
 		}
    }
 

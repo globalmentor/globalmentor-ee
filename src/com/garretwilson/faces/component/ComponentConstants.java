@@ -17,6 +17,8 @@ public class ComponentConstants
 	public final static String IMMEDIATE_ATTRIBUTE="immediate";
 	/**The read-only attribute.*/
 	public final static String READONLY_ATTRIBUTE="readonly";
+	/**The name attribute.*/
+	public final static String NAME_ATTRIBUTE="name";
 	/**The value attribute.*/
 	public final static String VALUE_ATTRIBUTE="value";
 

@@ -3,19 +3,23 @@ package com.garretwilson.faces.component;
 import java.net.URI;
 
 import javax.faces.component.UICommand;
-import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
-
-import com.garretwilson.util.Debug;
 
 /**Basic command component with enhanced functionality.
+The command recognizes special parameters that control features
+of the command itself, rather than being passed back to the server.
 @author Garret Wilson
 */
 public class UIBasicCommand extends UICommand
 {
 
+	/**The confirmation message to display before processing the command.*/
+	public final static String CONFIRM_PARAMETER="commandConfirm";
+	
+	/**The alert message to display after confirmation but before processing the command.*/
+	public final static String ALERT_PARAMETER="commandAlert";
+	
 	/**The popup URI value binding variable name.*/
-	public static String POPUP_URI_VAR="popupURI";
+	public static String POPUP_URI_PROPERTY="popupURI";
 
 	/**The popup URI, which overrides any value binding.*/
 	private URI popupURI=null;
@@ -23,7 +27,7 @@ public class UIBasicCommand extends UICommand
 		/**@return The popup URI.*/
 		public URI getPopupURI()
 		{
-			return ComponentUtilities.getValue(this, getFacesContext(), popupURI, POPUP_URI_VAR);	//get the local value or value binding
+			return ComponentUtilities.getValue(this, getFacesContext(), popupURI, POPUP_URI_PROPERTY);	//get the local value or value binding
 		}		
 
 		/**Sets the popup URI.
@@ -33,25 +37,5 @@ public class UIBasicCommand extends UICommand
 		{
 			popupURI=uri;	//set the popup URI
 		}
-
-/*G***del
-    public boolean isRendered() {
-Debug.setDebug(true);
-Debug.setVisible(true);
-Debug.trace("checking to see if button is rendered:", getClientId(FacesContext.getCurrentInstance()));
-    	ValueBinding vb = getValueBinding("rendered");
-if(vb!=null)//
-{
-	Debug.trace("value binding with expression:", vb.getExpressionString(), "value", vb.getValue(FacesContext.getCurrentInstance()), "type", vb.getType(FacesContext.getCurrentInstance()));
-}
-return super.isRendered();
-        }
-*/
-		
-	/**Default constructor.*/
-	public UIBasicCommand()
-	{
-		super();	//construct the parent class
-	}
 
 }
