@@ -45,4 +45,12 @@ public class ComponentConstants
 	public final static String INPUT_REQUIRED_ATTRIBUTE="required";
 	/**The UInput.valueChangeListener attribute.*/
 	public final static String INPUT_VALUE_CHANGE_LISTENER_ATTRIBUTE="valueChangeListener";
+
+	//UISelectItem attributes
+	/**The UISelectItem.itemValue attribute.*/
+	public final static String SELECT_ITEM_ITEM_VALUE_ATTRIBUTE="itemValue";
+	/**The UISelectItem.itemLabel attribute.*/
+	public final static String SELECT_ITEM_ITEM_LABEL_ATTRIBUTE="itemLabel";
+	/**The UISelectItem.itemDescription attribute.*/
+	public final static String SELECT_ITEM_ITEM_DESCRIPTION_ATTRIBUTE="itemDescription";
 }

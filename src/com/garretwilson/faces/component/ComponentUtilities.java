@@ -28,248 +28,6 @@ import static com.garretwilson.faces.el.ExpressionUtilities.*;
 public class ComponentUtilities
 {
 
-	/**Creates a <code>UIColumn</code> component.
-	@param application The current JSF application
-	@return A new <code>UIColumn</code> component.
-	*/
-	public static UIColumn createColumn(final Application application)
-	{
-		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE);	//create a column component
-		return column;	//return the component
-	}
-
-	/**Creates a <code>UICommand</code> component rendered as a link with the given action.
-	@param application The current JSF application
-	@param action The command action.
-	@return A new <code>UICommand</code> component with the given values.
-	*/
-	public static UICommand createCommandLink(final Application application, final String action)
-	{
-		final UICommand command=createCommand(application, action);	//create a command component
-		command.setRendererType(LINK_RENDER_TYPE);	//render the command as a link
-		return command;	//return the component
-	}
-
-	/**Creates a default <code>UICommand</code> component.
-	@param application The current JSF application
-	@return A new <code>UICommand</code> component.
-	*/
-	public static UICommand createCommand(final Application application)
-	{
-		return createCommand(application, null);	//create a command with no action
-	}
-
-	/**Creates a <code>UICommand</code> component with the given action.
-	@param application The current JSF application
-	@param action The command action.
-	@return A new <code>UICommand</code> component with the given values.
-	*/
-	public static UICommand createCommand(final Application application, final String action)
-	{
-		final UICommand command=(UICommand)createComponent(application, UICommand.COMPONENT_TYPE);	//create a command component
-		if(action!=null)	//if we have an action
-		{
-				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
-			command.setAction(new ExpressionMethodBinding(createExpression(application, action)));
-		}
-		return command;	//return the component
-	}
-
-	/**Creates a <code>UIData</code> component with the given value and var.
-	@param application The current JSF application
-	@param value The value of the data.
-	@param var The name of the variable to use for iteration, with no
-		value-binding allowed.
-	@return A new <code>UIData</code> component with the given values.
-	*/
-	public static UIData createData(final Application application, final String value, final String var)
-	{
-		final UIData data=(UIData)createComponent(application, UIData.COMPONENT_TYPE);	//create a data component
-		setStringValue(data, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		data.setVar(var);	//set the variable name
-		return data;	//return the component
-	}
-
-	/**Creates a <code>UIGraphic</code> component with the given URL and alternate text.
-	@param application The current JSF application
-	@param url The context-relative URL of the graphic.
-	@param alt The alternate text of the graphic.
-	@return A new <code>UIGraphic</code> component with the given values.
-	*/
-	public static UIGraphic createGraphic(final Application application, final String url, final String alt)
-	{
-		final UIGraphic graphic=(UIGraphic)createComponent(application, UIGraphic.COMPONENT_TYPE);	//create a graphic component
-		setStringValue(graphic, GRAPHIC_URL_ATTRIBUTE, url);	//store the URL, creating a value binding if necessary
-		setStringValue(graphic, GRAPHIC_ALT_ATTRIBUTE, alt);	//store the alternate text, creating a value binding if necessary
-		return graphic;	//return the component
-	}
-
-	/**Creates a <code>UIInputFile</code> file upload component with the given id.
-	@param application The current JSF application
-	@param id The new ID.
-	@return A new <code>UIInputFile</code> component with the given values.
-	*/
-	public static UIInputFile createInputFile(final Application application, final String id)
-	{
-		final UIInputFile inputFile=(UIInputFile)createComponent(application, UIInputFile.COMPONENT_TYPE, id);	//create an input file component with the given ID
-		return inputFile;	//return the component
-	}
-
-	/**Creates a <code>UIInput</code> component rendered as hidden with the given id and value.
-	@param application The current JSF application
-	@param id The new ID.
-	@param value The new value.
-	@return A new <code>UIInput</code> component with the given values.
-	*/
-	public static UIInput createInputHidden(final Application application, final String id, final String value)
-	{
-		final UIInput input=createInput(application, id, value);	//create an input component with the given ID and value
-		input.setRendererType(HIDDEN_RENDER_TYPE);	//render the input hidden
-		return input;	//return the component
-	}
-
-	/**Creates a <code>UIInput</code> component with the given id and value.
-	@param application The current JSF application
-	@param id The new ID.
-	@param value The new value.
-	@return A new <code>UIInput</code> component with the given values.
-	*/
-	public static UIInput createInput(final Application application, final String id, final String value)
-	{
-		final UIInput input=(UIInput)createComponent(application, UIInput.COMPONENT_TYPE, id);	//create an input component with the given ID
-		setStringValue(input, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		return input;	//return the component
-	}
-
-	/**Creates a <code>UIOutput</code> component with the given value.
-	@param application The current JSF application
-	@param value The value of the output to create.
-	@return A new <code>UIOutput</code> component with the given values.
-	*/
-	public static UIOutput createOutput(final Application application, final String value)
-	{
-		final UIOutput output=(UIOutput)createComponent(application, UIOutput.COMPONENT_TYPE);	//create an output component
-		setStringValue(output, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		return output;	//return the component
-	}
-
-	/**Creates a <code>UIPanel</code> component rendered as a group.
-	@param application The current JSF application
-	@return A new <code>UIPanel</code> component.
-	*/
-	public static UIPanel createPanelGroup(final Application application)
-	{
-		final UIPanel panel=createPanel(application);	//create a panel component
-		panel.setRendererType(GROUP_RENDER_TYPE);	//render the panel as a group
-		return panel;	//return the component
-	}
-
-	/**Creates a <code>UIPanel</code> component.
-	@param application The current JSF application
-	@return A new <code>UIPanel</code> component.
-	*/
-	public static UIPanel createPanel(final Application application)
-	{
-		final UIPanel panel=(UIPanel)createComponent(application, UIPanel.COMPONENT_TYPE);	//create a panel component
-		return panel;	//return the component
-	}
-
-	/**Creates a <code>UIParameter</code> component with only a value.
-	@param application The current JSF application
-	@param value The parameter value.
-	@return A new <code>UIParameter</code> component with the given value.
-	*/
-	public static UIParameter createParameter(final Application application, final String value)
-	{
-		return createParameter(application, null, value);	//create a parameter with no name
-	}
-
-	/**Creates a <code>UIParameter</code> component with the given name and value.
-	@param application The current JSF application
-	@param name The parameter name, or <code>null</code> for no name.
-	@param value The parameter value.
-	@return A new <code>UIParameter</code> component with the given name and value.
-	*/
-	public static UIParameter createParameter(final Application application, final String name, final String value)
-	{
-		final UIParameter parameter=(UIParameter)createComponent(application, UIParameter.COMPONENT_TYPE);	//create a parameter component
-		setStringValue(parameter, NAME_ATTRIBUTE, name);	//store the name, creating a value binding if necessary
-		setStringValue(parameter, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		return parameter;	//return the component
-	}
-	
-	/**Creates a <code>UIParameterFormat</code> component with only a value.
-	@param application The current JSF application
-	@param value The parameter value.
-	@return A new <code>UIParameterFormat</code> component with the given value.
-	*/
-	public static UIParameterFormat createParameterFormat(final Application application, final String value)
-	{
-		return createParameterFormat(application, null, value);	//create a parameter with no name
-	}
-
-	/**Creates a <code>UIParameterFormat</code> component with the given name and value.
-	@param application The current JSF application
-	@param name The parameter name, or <code>null</code> for no name.
-	@param value The parameter value.
-	@return A new <code>UIParameterFormat</code> component with the given name and value.
-	*/
-	public static UIParameterFormat createParameterFormat(final Application application, final String name, final String value)
-	{
-		final UIParameterFormat parameter=(UIParameterFormat)createComponent(application, UIParameterFormat.COMPONENT_TYPE);	//create a parameter component
-		setStringValue(parameter, NAME_ATTRIBUTE, name);	//store the name, creating a value binding if necessary
-		setStringValue(parameter, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		return parameter;	//return the component
-	}
-
-	/**Creates a <code>UISelectBoolean</code> component rendered as a checkbox with the given id and value.
-	@param application The current JSF application
-	@param id The new ID.
-	@param value The new value.
-	@return A new <code>UISelectBoolean</code> component with the given values.
-	*/
-	public static UISelectBoolean createSelectBooleanCheckbox(final Application application, final String id, final String value)
-	{
-		final UISelectBoolean selectBoolean=createSelectBoolean(application, id, value);	//create a select boolean component with the given ID and value
-		selectBoolean.setRendererType(CHECKBOX_RENDER_TYPE);	//render the select boolean as a checkbox
-		return selectBoolean;	//return the component		
-	}
-	
-	/**Creates a <code>UISelectBoolean</code> component with the given id and value.
-	@param application The current JSF application
-	@param id The new ID.
-	@param value The new value.
-	@return A new <code>UISelectBoolean</code> component with the given values.
-	*/
-	public static UISelectBoolean createSelectBoolean(final Application application, final String id, final String value)
-	{
-		final UISelectBoolean selectBoolean=(UISelectBoolean)createComponent(application, UISelectBoolean.COMPONENT_TYPE, id);	//create a select boolean component with the given ID
-		setBooleanValue(selectBoolean, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
-		return selectBoolean;	//return the component
-	}
-
-	/**Creates a <code>UIComponent</code> with a unique ID.
-	@param application The current JSF application
-	@param componentType The type of component to create.
-	@return A new component.
-	*/
-	public static UIComponent createComponent(final Application application, final String componentType)
-	{
-		return createComponent(application, componentType, FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
-	}
-
-	/**Creates a <code>UIComponent</code> with the given ID.
-	@param application The current JSF application
-	@param componentType The type of component to create.
-	@return A new component with the given ID.
-	*/
-	public static UIComponent createComponent(final Application application, final String componentType, final String id)
-	{
-		final UIComponent component=application.createComponent(componentType);	//create The component
-		component.setId(id);	//set the component ID
-		return component;	//return the component we created
-	}
-
 	//message methods
 	
 	/**Adds a message based upon a throwable error.
@@ -489,6 +247,46 @@ public class ComponentUtilities
 	public static boolean isReadonly(final UIComponent component)
 	{
 		return isTrueObject(component.getAttributes().get(READONLY_ATTRIBUTE));	//see if the component is read-only
+	}
+
+	/**Sets an object value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or an <code>Object</code>.
+	@see Object
+	*/
+	public static void setObjectValue(final UIComponent component, final String attributeName, final Object attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(attributeValue instanceof String && isReferenceExpression((String)attributeValue))	//if the value is a string value reference
+				setValueBinding(component, attributeName, (String)attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, attributeValue);	//store the value in the component's attributes
+		}
+	}
+
+	/**Sets a value binding value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value-binding value of the attribute.
+	@throws IllegalArgumentException if the attribute value is not a
+		reference expression.
+	*/
+	public static void setValueBindingValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      {
+      	throw new IllegalArgumentException("The string \""+attributeValue+"\" is not a value binding expression.");
+      }
+		}
 	}
 
 	/**Sets a string value of a component.

@@ -143,4 +143,15 @@ public class ExpressionUtilities
 		return false;	//this isn't even a reference
 	}
 
+	/**Creates a JSF EL expression string.
+	@param expression The expression to convert to a value binding
+		reference.
+	@return A value binding expression string in the format
+		"#{<var>expression</var>}".
+	*/
+	public static String createValueBindingExpressionString(final String expression)
+	{
+		return new StringBuilder().append(REFERENCE_CHAR).append(REFERENCE_EXPRESSION_BEGIN_CHAR)
+				.append(expression).append(REFERENCE_EXPRESSION_END_CHAR).toString();
+	}
 }
