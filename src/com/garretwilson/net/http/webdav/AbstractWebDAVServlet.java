@@ -30,6 +30,8 @@ import static com.garretwilson.net.http.webdav.WebDAVMethod.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
+
+import com.garretwilson.text.CharacterEncoding;
 import com.garretwilson.text.xml.QualifiedName;
 import com.garretwilson.text.xml.XMLDOMImplementation;
 import com.garretwilson.text.xml.XMLProcessor;
@@ -782,7 +784,7 @@ Debug.trace("content length", contentLength);
 	protected void setXML(final HttpServletResponse response, final Document document) throws IOException
 	{
 		final ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();	//create a byte array output stream to hold our outgoing data
-		new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8);	//serialize the document to the byte array
+		new XMLSerializer(true).serialize(document, byteArrayOutputStream, new CharacterEncoding(UTF_8, null, NO_BOM));	//serialize the document to the byte array with no byte order mark
 		final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
 		response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
