@@ -69,7 +69,7 @@ viewer.setRows(Integer.parseInt(rows));
 */
 		setStringValue(component, UIBasicData.VAR_ATTRIBUTE, getVar());	//store the variable name
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
-   }
+	}
 
 	/**Release our resources.*/
 	public void release()

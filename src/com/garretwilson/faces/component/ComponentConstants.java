@@ -14,4 +14,14 @@ public class ComponentConstants
 	public final static String READONLY_ATTRIBUTE="readonly";
 	/**The value attribute.*/
 	public final static String VALUE_ATTRIBUTE="value";
+
+		//UICommand attributes
+	/**The UICommand.action attribute.*/
+	public final static String COMMAND_ACTION_ATTRIBUTE="action";
+
+		//UIGraphic attributes
+	/**The UIGraphic.url attribute.*/
+	public final static String GRAPHIC_URL_ATTRIBUTE="url";
+	/**The UIGraphic.alt attribute.*/
+	public final static String GRAPHIC_ALT_ATTRIBUTE="alt";
 }

@@ -62,12 +62,15 @@ public class LiteralExpression<T> implements Expression<T>
 	*/
 	public String getExpressionString()
 	{
+		return value.toString();	//return the string value of the literal expression
+/*TODO fix if needed
 		final StringBuilder expressionStringBuilder=new StringBuilder();	//we'll build the expression
 		expressionStringBuilder.append(REFERENCE_CHAR);	//#
 		expressionStringBuilder.append(REFERENCE_EXPRESSION_BEGIN_CHAR);	//{
 		expressionStringBuilder.append(value.toString());	//value TODO should we put quotes around this if it's a string?
 		expressionStringBuilder.append(REFERENCE_EXPRESSION_END_CHAR);	//}
 		return expressionStringBuilder.toString();	//return the expression string we built
+*/
 	}
 
 }

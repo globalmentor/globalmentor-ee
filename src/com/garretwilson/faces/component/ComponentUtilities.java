@@ -10,9 +10,10 @@ import javax.faces.el.ValueBinding;
 import javax.faces.webapp.UIComponentTag;
 
 import com.garretwilson.faces.*;
-import com.garretwilson.faces.el.ExpressionValueBinding;
+import com.garretwilson.faces.el.*;
 import com.garretwilson.util.NameValuePair;
 
+import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
@@ -22,6 +23,59 @@ import static com.garretwilson.faces.el.ExpressionUtilities.*;
 */
 public class ComponentUtilities
 {
+
+	/**Creates a <code>UICommand</code> component rendered as a link with the given action.
+	@param action The command action.
+	@return A new <code>UICommand</code> component with the given values.
+	*/
+	public static UICommand createCommandLink(final Application application, final String action)
+	{
+		final UICommand command=createCommand(application, action);	//create a command component
+		command.setRendererType(LINK_RENDER_TYPE);	//render the command as a link
+		return command;	//return the component
+	}
+
+	/**Creates a <code>UICommand</code> component with the given action.
+	@param action The command action.
+	@return A new <code>UICommand</code> component with the given values.
+	*/
+	public static UICommand createCommand(final Application application, final String action)
+	{
+		final UICommand command=(UICommand)application.createComponent(UICommand.COMPONENT_TYPE);	//create a command component
+		command.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		if(action!=null)	//if we have an action
+		{
+				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
+			command.setAction(new ExpressionMethodBinding(createExpression(application, action)));
+		}
+		return command;	//return the component
+	}
+
+	/**Creates a <code>UIGraphic</code> component with the given URL and alternate text.
+	@param url The context-relative URL of the graphic.
+	@param alt The alternate text of the graphic.
+	@return A new <code>UIGraphic</code> component with the given values.
+	*/
+	public static UIGraphic createGraphic(final Application application, final String url, final String alt)
+	{
+		final UIGraphic graphic=(UIGraphic)application.createComponent(UIGraphic.COMPONENT_TYPE);	//create a graphic component
+		graphic.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		setStringValue(graphic, GRAPHIC_URL_ATTRIBUTE, url);	//store the URL, creating a value binding if necessary
+		setStringValue(graphic, GRAPHIC_ALT_ATTRIBUTE, alt);	//store the alternate text, creating a value binding if necessary
+		return graphic;	//return the component
+	}
+
+	/**Creates a <code>UIOutput</code> component with the given value.
+	@param value The value of the output to create.
+	@return A new <code>UIOutput</code> component with the given values.
+	*/
+	public static UIOutput createOutput(final Application application, final String value)
+	{
+		final UIOutput output=(UIOutput)application.createComponent(UIOutput.COMPONENT_TYPE);	//create an output component
+		output.setId(FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix
+		setStringValue(output, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		return output;	//return the component
+	}
 
 	/**Searches up the component hierarchy and returns the first found instance
 	 	of a parent component of the given class.

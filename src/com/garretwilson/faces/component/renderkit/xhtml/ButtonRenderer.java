@@ -31,6 +31,10 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
+/*G***del
+Debug.setDebug(true);
+Debug.setVisible(true);
+*/
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
@@ -43,6 +47,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			String type=(String)attributeMap.get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type attribute
+//G***del Debug.trace("encoding command", command, "client id", component.getClientId(context));
 			writer.writeAttribute(ATTRIBUTE_NAME, component.getClientId(context), CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			if(type==null)	//if there is no type
 			{
@@ -70,6 +75,12 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	public void decode(FacesContext context, UIComponent component)
 	{
+/*G***del
+Debug.setDebug(true);
+Debug.setVisible(true);
+Debug.trace("decoding command", component, "client id", component.getClientId(context));
+Debug.trace("ready to decode button!");
+*/
 		if(isMutable(component))	//if the component is mutable
 		{
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters

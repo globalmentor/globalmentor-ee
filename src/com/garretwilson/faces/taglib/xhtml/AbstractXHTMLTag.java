@@ -9,8 +9,8 @@ import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.component.renderkit.xhtml.ListRenderer;
 import com.garretwilson.faces.el.*;
 
+import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
-import com.garretwilson.faces.component.ComponentUtilities;
 
 /**The abstract base class for XHTML tags.
 @author Garret Wilson
@@ -35,7 +35,7 @@ public abstract class AbstractXHTMLTag extends UIComponentTag
 	protected void setProperties(final UIComponent component)
 	{
 		super.setProperties(component);	//set the default properties
-		ComponentUtilities.setStringValue(component, STYLE_CLASS_ATTRIBUTE, getStyleClass());	//store the style class
+		setStringValue(component, STYLE_CLASS_ATTRIBUTE, getStyleClass());	//store the style class
    }
 
 	/**Release our resources.*/
