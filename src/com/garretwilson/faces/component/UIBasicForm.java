@@ -38,15 +38,15 @@ public class UIBasicForm extends UIForm
 	*/
 	public void processDecodes(final FacesContext context)
 	{
-Debug.setDebug(true);
-Debug.trace("processing decodes in UIBasicForm");
+//G***del Debug.setDebug(true);
+//G***del Debug.trace("processing decodes in UIBasicForm");
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
 		if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
 		{
 			final HttpServletRequest request=(HttpServletRequest)context.getExternalContext().getRequest();	//get the HTTP request
 			if(FileUpload.isMultipartContent(request))	//if this is multipart content
 			{			
-Debug.trace("is multipart content");
+//G***del Debug.trace("is multipart content");
 /*G***fix or delete
 				final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
 					//create a factory to populate a map with form fields
@@ -78,14 +78,16 @@ Debug.trace("is multipart content");
 					for(final Object object:fileItems)	//look at each file item
 					{
 						final FileItem fileItem=(FileItem)object;	//cast the object to a file item
+/*G***del
 	Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
 	if(fileItem.isFormField())	//G***del
 	{
 		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 	}
+*/
 						if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
 						{
-	Debug.trace("found our client ID!");
+//G***del	Debug.trace("found our client ID!");
 							foundClientID=true;	//show that we found the client ID
 							break;	//stop searching for the client ID
 						}
@@ -163,7 +165,7 @@ Debug.trace("is multipart content");
 		*/
 		public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName)
 		{
-	Debug.trace("ready to create a file item");
+//G***del 	Debug.trace("ready to create a file item");
 			final FileItem fileItem;	//we'll store a file item here to return
 			if(isFormField)	//if this is a form field
 			{

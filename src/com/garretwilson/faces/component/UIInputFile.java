@@ -115,20 +115,20 @@ public class UIInputFile extends UIInput
 	*/
 	protected Object getConvertedValue(final FacesContext context, final Object newSubmittedValue) throws ConverterException
 	{
-Debug.setDebug(true);	//G***del
-Debug.trace("getting converted value of input field");
+//G***del Debug.setDebug(true);	//G***del
+//G***del Debug.trace("getting converted value of input field");
 			//TODO make sure the original FileItem gets removed elsewhere in the application, in case there's an error, so it won't be sitting around taking up space
 		final Object convertedValue;	//we'll determined the converted value
 		final Object defaultConvertedValue=super.getConvertedValue(context, newSubmittedValue);	//do the default conversion
 		if(newSubmittedValue instanceof FileItem)	//if the submitted value is a file item
 		{
-Debug.trace("the submitted item is a fileitem");
+//G***del Debug.trace("the submitted item is a fileitem");
 			final FileItem fileItem=(FileItem)newSubmittedValue;	//get the submitted value as a file item
 			assert !fileItem.isFormField() : "File item isn't expected to be a form field for file input.";
 			final File directory=getDirectory();	//get the directory in which to store files
 			if(directory!=null)	//if a directory is specified
 			{
-Debug.trace("we have a directory:", directory);
+//G***del Debug.trace("we have a directory:", directory);
 				final String filename;	//we'll determine the filename to use
 				if(getFilename()!=null)	//if a filename is explicitly specified
 				{
@@ -140,7 +140,7 @@ Debug.trace("we have a directory:", directory);
 				}
 				if(filename!=null)	//if we have a filename
 				{
-Debug.trace("we have a filename:", filename);
+//G***del Debug.trace("we have a filename:", filename);
 						//if there is a file separator character in the filename, throw an exception
 						//---this could be a security breach from a rogue client!
 					if(filename.indexOf(File.separatorChar)>=0)		//if the filename isn't a simple one
@@ -149,7 +149,7 @@ Debug.trace("we have a filename:", filename);
 					}
 					try
 					{
-Debug.trace("making sure directory exists");
+//G***del Debug.trace("making sure directory exists");
 						if(!directory.isDirectory())	//if the directory doesn't exist as a directory
 						{
 							mkdirs(directory);	//try to create the the directory
@@ -166,18 +166,22 @@ Debug.trace("file to write is:", file);
 			}
 			else	//if there is no directory specified
 			{
-Debug.trace("no directory");
+//G***del Debug.trace("no directory");
 				try
 				{
+					final byte[] bytes=fileItem.get();	//get the bytes of the file
 					final ContentType contentType=new ContentType(fileItem.getContentType());	//get the content type of the file
-Debug.trace("uploaded file content type", contentType);
+//G***del Debug.trace("uploaded file content type", contentType);
 					if(isText(contentType))	//if this is a text file
 					{
-Debug.trace("is text type");
-						final byte[] bytes=fileItem.get();	//get the bytes of the file
-						final String encoding=UTF_8;	//TODO get the encoding from the file if we can
+//G***del Debug.trace("is text type");
+						final String encoding=UTF_8;	//TODO get the encoding from the file if we can; look at the content type, test a text file, and look into an XML file
 						final String string=new String(bytes, encoding);	//convert the bytes to a string using the correct encoding
 						return string;	//return the string representation of the file contents
+					}
+					else	//if this is not a text file
+					{
+						return bytes;	//return the binary contents of the file
 					}
 				}
 				catch(final ParseException parseException)	//if there is a problem parsing the content type
@@ -197,5 +201,4 @@ Debug.trace("is text type");
 		}
 		return convertedValue;	//return our converted value
 	}
-
 }

@@ -31,37 +31,13 @@ public class InputFileRenderer extends InputTextRenderer
 		super(INPUT_TYPE_FILE);	//create an input file element
 	}
 
-	/**Attempts to convert previously stored state information into an
-		object of the type required for this component (optionally using the
-		registered {@link javax.faces.convert.Converter} for this component,
-		if there is one). If conversion is successful, the new value
-		should be returned from this method;  if not, a
-		{@link ConverterException} should be thrown.
-	This version expects an Apache Jakarta Commons FileUpload
-		<code>FileItem</code>, which if there is no directory specified, will
-		be converted to its physical bytes or, if the file is text-based, a string.		
-	@param context JSF context for the request being processed.
-	@param component The component to be decoded.
-	@param submittedValue A value stored on the component during
-		<code>decode</code>.
-	@exception ConverterException if the submitted value
-		cannot be converted successfully.
-	@exception NullPointerException if <code>context</code>
-		or <code>component</code> is <code>null</code>
+	/**Determines the current value to be rendered.
+	This implementation always returns <code>null</code>, because the sumitted
+		and/or current value should never be rendered.
+	@return <code>null</code> indicating the current value should not be displayed.
 	*/
-/*G***del; moved to UIInputFile
-	public Object getConvertedValue(final FacesContext context, final UIComponent component, final Object submittedValue) throws ConverterException
+	protected Object getRenderValue(final UIInput input)
 	{
-		if(submittedValue instanceof FileItem)	//if the value is a file item
-		{
-			
-		}
-		else	//if the value is not a file item
-		{
-			
-		}
-		return submittedValue;	//TODO finish
+		return null;
 	}
-*/
-
 }

@@ -35,7 +35,7 @@ public class ExpressionValueBinding extends ValueBinding
 	@param context The JSF context for the current request.
 	@exception EvaluationException if an exception is thrown while getting
 		the value (the thrown exception must be included as the
-		<code>cause</code> property of this exception)
+		<code>cause</code> property of this exception).
 	@exception NullPointerException if <code>context</code>
 		is <code>null</code>.
 	@exception PropertyNotFoundException if a specified property name
@@ -52,7 +52,7 @@ public class ExpressionValueBinding extends ValueBinding
 	@param value The new value to be set.
 	@exception EvaluationException if an exception is thrown while setting
 		the value (the thrown exception must be included as the
-		<code>cause</code> property of this exception)
+		<code>cause</code> property of this exception).
 	@exception NullPointerException if <code>context</code>
 		is <code>null</code>.
 	@exception PropertyNotFoundException if a specified property name
@@ -60,14 +60,14 @@ public class ExpressionValueBinding extends ValueBinding
 	*/
 	public void setValue(final FacesContext context, final Object value) throws EvaluationException, PropertyNotFoundException
 	{
-		throw new EvaluationException(new UnsupportedOperationException());	//we don't support setting an expression value TODO implement value-setting this in Expression<T>
+		((Expression<Object>)getExpression()).setValue(context, value);	//set the expression's value TODO check cast
 	}
 
-	/**Determines if specified property is immutable.
+	/**Determines if the specified property is immutable.
 	@param context The JSF context for the current request.
 	@exception EvaluationException if an exception is thrown while getting
 		the description of the property (the thrown exception must be
-		included as the <code>cause</code> property of this exception)
+		included as the <code>cause</code> property of this exception).
 	@exception NullPointerException if <code>context</code>
 		is <code>null</code>.
 	@exception PropertyNotFoundException if a specified property name
@@ -75,15 +75,14 @@ public class ExpressionValueBinding extends ValueBinding
 	*/
 	public boolean isReadOnly(final FacesContext context) throws EvaluationException, PropertyNotFoundException
 	{
-		return true;	//we currently don't support setting an expression TODO add expression value setting
+		return getExpression().isReadOnly(context);	//return whether the underlying expression is read-only
 	}
-
 
 	/**Return the type of the property represented by this value binding.
 	@param context The JSF context for the current request.
 	@exception EvaluationException if an exception is thrown while getting
 		the description of the property (the thrown exception must be
-		included as the <code>cause</code> property of this exception)
+		included as the <code>cause</code> property of this exception).
 	@exception NullPointerException if <code>context</code>
 		is <code>null</code>.
 	@exception PropertyNotFoundException if a specified property name

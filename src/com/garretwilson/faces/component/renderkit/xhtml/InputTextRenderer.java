@@ -67,10 +67,10 @@ Debug.setVisible(true);
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			writer.writeAttribute(ATTRIBUTE_NAME, component.getClientId(context), CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, getType(), null);	//write the input type
-			final Object currentValue=getCurrentValue(input);	//get the current value
-			if(currentValue!=null)	//if there is a current value
+			final Object renderValue=getRenderValue(input);	//get the current value to be rendered
+			if(renderValue!=null)	//if there is a current value
 			{
-				writer.writeAttribute(ATTRIBUTE_VALUE, currentValue, ATTRIBUTE_VALUE);	//write the current value
+				writer.writeAttribute(ATTRIBUTE_VALUE, renderValue, ATTRIBUTE_VALUE);	//write the current value
 			}
 		}
 	}
@@ -78,8 +78,9 @@ Debug.setVisible(true);
 	/**Determines the current value to be rendered.
 	This value is either the submitted value or the currently set value, in that
 		order.
+	@return The value to be rendered as the component's current value.
 	*/
-	protected Object getCurrentValue(final UIInput input)
+	protected Object getRenderValue(final UIInput input)
 	{
 		final Object submittedValue=input.getSubmittedValue();	//get the current submitted value
 		if(submittedValue!=null)	//if there is a submitted value
