@@ -35,6 +35,16 @@ public class BasicHTTPServlet extends HttpServlet
 		{
 			doMethod(request.getMethod(), request, response);	//allow the subclass to do special processing if needed
 		}
+		catch(final IllegalArgumentException illegalArgumentException)	//if some method ran into an illegal argument, we assume the client is responsible
+		{
+			Debug.warn(illegalArgumentException);	//log the problem
+			response.sendError(SC_BAD_REQUEST, illegalArgumentException.getMessage());	//send back a 400 Bad Request error
+		}
+		catch(final UnsupportedOperationException unsupportedOperationException)	//if some operation is not supported bythe server
+		{
+			Debug.warn(unsupportedOperationException);	//log the problem
+			response.sendError(SC_NOT_IMPLEMENTED, unsupportedOperationException.getMessage());	//send back a 401 Not Implemented error
+		}
 		catch(final HTTPRedirectException redirectException)	//if a redirect was requested (3xx)
 		{
 			switch(redirectException.getStatusCode())	//check the status code
@@ -58,7 +68,7 @@ public class BasicHTTPServlet extends HttpServlet
 		}
 		catch(final HTTPException exception)	//if an unknown HTTP error was encountered
 		{
-			response.sendError(exception.getStatusCode());	//send back the status code as an error
+			response.sendError(exception.getStatusCode(), exception.getMessage());	//send back the status code as an error
 		}
   }
 

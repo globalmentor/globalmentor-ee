@@ -147,9 +147,12 @@ Debug.trace("doing options for URI", resourceURI);
   */
 	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-
-/*TODO finish		
-		getAuthorization(request);	//G***testing
+/*TODO fix
+		final DigestAuthenticateCredentials credentials=(DigestAuthenticateCredentials)getAuthorization(request);	//G***testing
+		if(credentials!=null)
+		{
+Debug.trace("valid credentials?", credentials.isValid(request.getMethod(), "def"));
+		}
 		
 		
 		if(true)
@@ -165,7 +168,6 @@ Debug.trace("doing options for URI", resourceURI);
 					}
 		}
 */
-
 		serveResource(request, response, true);	//serve the resource with its content
 		//TODO ignore any broken pipe error
 	}
