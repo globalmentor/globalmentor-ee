@@ -6,7 +6,7 @@ import java.util.Iterator;
 import javax.faces.component.*;
 import javax.faces.context.*;
 
-import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
+import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Renders a sequence of objects contained in a <code>UIData</code> component.
@@ -135,7 +135,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 			{
 				writer.startElement(itemElementName, column);	//start the element for the item
 			}
-			encodeTree(context, column);	//encode this column and all its descendants 
+			encodeTree(column, context);	//encode this column and all its descendants 
 			if(itemElementName!=null)	//if there is an element name for an item in this column
 			{
 				writer.endElement(itemElementName);	//end the element for the item

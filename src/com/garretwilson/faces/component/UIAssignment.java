@@ -6,15 +6,15 @@ import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
-import com.garretwilson.faces.*;
-import com.garretwilson.faces.el.*;
 import com.garretwilson.lang.ClassUtilities;
 import com.garretwilson.util.Debug;
 
+import static com.garretwilson.faces.component.ComponentUtilities.*;
+
 /**Represents an assignment to a variable of a value.
-The value may be an object or, if a string, a value-binding expression.
-A method may also be used to retrieve a value; if so, any
-	<code>UIParameter</code> children are used as parameters to the method.
+The value may be an object or, if a string, a value-binding extended JSF EL expression.
+Components depending on this assignment should be included as children of this component.
+TODO add true variable scope by checking assignment status beforehand and restoring it afterwards
 */
 public class UIAssignment extends UIComponentBase
 {
@@ -69,15 +69,17 @@ public class UIAssignment extends UIComponentBase
 			this.value=value;	//set the value
 		}
 
-		public boolean isRendered()	//TODO fix; this is a hack for the default UIData renderer, which first collects children based upon their rendered status, preventing subsequent components from being properly collected if their rendered attribute is based upon a previous assignment
-		{
-			final boolean rendered=super.isRendered();	//see if this component is rendered
-			if(rendered)	//if this component is rendered
-			{
-				performAssignment(FacesContext.getCurrentInstance());	//perform the assignment
-			}
-			return rendered;
-		}
+	/**Indicates that the assignment component renders its own children.
+  This prevents other components from including or excluding the assignment
+  	children based upon their rendered status, which in turn may depend on
+  	the variable assignment in this component.
+  @return <code>true</code> indicating that this component should determine
+  	child rendering.
+  */
+	public boolean getRendersChildren()
+  {
+		return true;	//control child rendering
+  }
 
 	/**Assigns the value or the method invocation result to the variable.
 	@param context The JSF context.
@@ -92,6 +94,19 @@ public class UIAssignment extends UIComponentBase
 		}
 	}
 
+  /**Encodes the children of this component.
+	@param context The JSF context.
+	@exception IOException Thrown if there is an error writing to the output.
+	*/ 
+  public void encodeChildren(FacesContext context) throws IOException
+	{
+		super.encodeBegin(context);	//do the default child encoding
+		if(isRendered())	//if this component is rendered
+		{
+			encodeDescendants(this, context);	//encode our descendants
+		}
+  }
+	
 	/**Performs the component tree processing required by the
 		<em>Apply Request Values</em> phase of the request processing
 		lifecycle for all facets of this component, all children of this
@@ -119,7 +134,6 @@ public class UIAssignment extends UIComponentBase
 		final Object value=getValue();	//get our value
 		if(value!=null)	//if we have a value
 		{
-
 /*G***del
 			ValueBinding vb = getValueBinding("value");
     	if(vb!=null)

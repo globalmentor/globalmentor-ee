@@ -1,6 +1,7 @@
 package com.garretwilson.faces.component;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
@@ -192,6 +193,45 @@ public class ComponentUtilities
 		final UIComponent component=application.createComponent(componentType);	//create The component
 		component.setId(id);	//set the component ID
 		return component;	//return the component we created
+	}
+
+	/**Encodes a component and its children, either by delegating to the component
+ 		if that component can render its children, or by recursively rendering that
+ 		component's children manually.
+	<p>If the component is not rendered, no action is taken.</p>
+	@param component The component the children of which to register.
+	@param context The Faces context.
+	*/
+	public static void encodeTree(final UIComponent component, final FacesContext context) throws IOException
+	{
+		if(component.isRendered())	//if the component is rendered
+		{
+			component.encodeBegin(context);	//begin the component
+			if(component.getRendersChildren())	//if the component renders its children
+			{
+				component.encodeChildren(context);	//ask the component to render its children
+			}
+			else	//if the component can't render its own children, we'll have to do it instead
+			{
+				encodeDescendants(component, context);	//encode the component's children ourselves
+			}
+			component.encodeEnd(context);	//end the component
+	  }
+	}
+	
+	/**Manually encode a component's children. Each child will be encoded either
+	 	by delegating to the child component if that component can render its
+	 	children, or by recursively rendering that component's children manually.
+	<p>If the component is not rendered, no action is taken.</p>
+	@param component The component the children of which to register.
+	@param context The Faces context.
+	*/
+	public static void encodeDescendants(final UIComponent component, final FacesContext context) throws IOException
+	{
+		for(Object child:component.getChildren())	//look at each of the component's children
+		{
+			encodeTree((UIComponent)child, context);	//recursively encode this child and its descendants
+	  }
 	}
 
 	/**Searches up the component hierarchy and returns the first found instance
