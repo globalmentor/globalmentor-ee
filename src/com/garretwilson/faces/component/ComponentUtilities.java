@@ -16,11 +16,12 @@ import com.garretwilson.lang.ObjectUtilities;
 import com.garretwilson.util.Debug;
 import com.garretwilson.util.NameValuePair;
 
-import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.application.FacesMessageUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
+import static com.garretwilson.lang.JavaConstants.*;
+import static com.garretwilson.lang.JavaUtilities.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
@@ -215,7 +216,27 @@ public class ComponentUtilities
 			}
 		}
 		return valueList.toArray(new Object[valueList.size()]);	//send back an array of values
-}
+	}
+	
+	/**Determines the variable name for a support variable to be stored in the request parameter map.
+	@param supportClass The class of the support object.
+	@return The variable name to use for the support object.
+	*/
+	public static String getSupportVariableName(final Class<?> supportClass)
+	{
+		return createVariableName(supportClass.getName());	//create a variable name from the class name of the support object		
+	}
+
+	/**Gets an expression in the form <code>#{<var>supportVar</var>.<var>predicate</var>}</code> for a support variable
+	 	in the parameter map.
+	@param supportClass The class of the support variable in the parameter map.
+	@param predicate The predicate of the expression to create.
+	@return An expression in the form <code>#{<var>supportVar</var>.<var>predicate</var>}</code>.
+	 */
+	public static String createSupportExpression(final Class<?> supportClass, final String predicate)
+	{
+		return createValueBindingExpressionString(getSupportVariableName(supportClass)+OBJECT_PREDICATE_SEPARATOR+predicate);
+	}
 
 	/**Determines if a component is mutable; that is, not disabled and not
 		read-only.

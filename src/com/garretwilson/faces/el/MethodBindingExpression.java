@@ -114,13 +114,25 @@ Debug.trace("parameter expression type: ", parameterExpressions[i].getType(conte
 		final List<Expression<?>> parameterExpressionList=new ArrayList<Expression<?>>();	//create a new list for the parameter expressions
 		final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
 			//tokenize the parameters by commas, grouping by reference groups
-		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR), String.valueOf(REFERENCE_EXPRESSION_END_CHAR));
+//TODO del when works		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR), String.valueOf(REFERENCE_EXPRESSION_END_CHAR));
+		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+"\"'", String.valueOf(REFERENCE_EXPRESSION_END_CHAR)+"\"'");	//TODO use constants
 		while(tokenizer.hasNext())	//if there are more tokens
 		{
 			final String param=tokenizer.next();	//get the next parameter
 //G***del Debug.setDebug(true);
-//G***del Debug.trace("found method param: ", param);
-			final Expression<?> parameterExpression=createReferenceExpression(application, param);	//create an expression for the parameter
+Debug.trace("found method param: ", param);
+			final Expression<?> parameterExpression;
+			if(param.length()>0 && (param.charAt(0)=='"' || param.charAt(0)=='\'') && param.charAt(0)==param.charAt(param.length()-1))	//G***testing; use constants
+			{
+				final String string=param.substring(1, param.length()-1);	//TODO comment
+Debug.trace("creating literal expression", string);
+				parameterExpression=new LiteralExpression<String>(string);	//TODO comment
+
+			}
+			else	//TODO comment
+			{
+				parameterExpression=createReferenceExpression(application, param);	//create an expression for the parameter
+			}
 //G***fix Debug.trace("created parameter expression of type: ", parameterExpression.getType(context));
 			parameterExpressionList.add(parameterExpression);	//add the parameter expression to our list
 		}
