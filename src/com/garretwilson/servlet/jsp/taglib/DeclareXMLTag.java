@@ -23,12 +23,12 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 <p>This tag also generates an XML declaration and document type.</p>
 <dl>
 	<dt>publicID</dt>
-	<dd>The doctype public ID. Required if a document type declaration is desired.</dd>
+	<dd>The optional doctype public ID.</dd>
 
 	<dt>systemID</dt>
 	<dd>The doctype system ID. If not present, defaults to the default system
 		ID for the given public ID. Required if the public ID is not recognized by
-		this implementation.</dd>
+		this implementation and a document type declaration is desired.</dd>
 
 	<dt>contentType</dt>
 	<dd>The document content type. Defaults to the appropriate
@@ -183,13 +183,40 @@ public class DeclareXMLTag extends TagSupport
 			writer.write(DOUBLE_QUOTE_CHAR);	//"
 			writer.write(XML_VERSION);	//1.0
 			writer.write(DOUBLE_QUOTE_CHAR);	//"
-			writer.write(SPACE_CHAR);	//TODO make the last space conditional
-	//TODO implement the encoding decoration			ENCODINGDECL_NAME+EQUAL_CHAR+DOUBLE_QUOTE_CHAR+encoding+DOUBLE_QUOTE_CHAR+
+//TODO implement the encoding declaration			writer.write(SPACE_CHAR);	//TODO make the last space conditional
+//TODO implement the encoding declaration			ENCODINGDECL_NAME+EQUAL_CHAR+DOUBLE_QUOTE_CHAR+encoding+DOUBLE_QUOTE_CHAR+
 				//G***fix standalone writing here
 			writer.write(XML_DECL_END);	//?>
-			writer.write('\n');
+			writer.newLine();
 				//write the document type declaration
-			//TODO write the doctype declaration
+			final String systemID=getSystemID();	//get the doctype system ID
+			if(systemID!=null)	//we can only have a doctype declaration if there is a system ID
+			{
+				writer.write(DOCTYPE_DECL_START);	//<!DOCTYPE
+				writer.write(SPACE_CHAR);
+				writer.write(getRootElement());	//root element
+				writer.write(SPACE_CHAR);
+				final String publicID=getPublicID();	//get the putlic ID, if there is one
+				if(publicID!=null)	//if there is a public ID
+				{
+					writer.write(PUBLIC_ID_NAME);	//PUBLIC
+					writer.write(SPACE_CHAR);
+					writer.write(DOUBLE_QUOTE_CHAR);	//"
+					writer.write(publicID);						//public ID
+					writer.write(DOUBLE_QUOTE_CHAR);	//"
+					writer.write(SPACE_CHAR);
+				}
+				else	//if there is no public ID
+				{
+					writer.write(SYSTEM_ID_NAME);	//SYSTEM
+					writer.write(SPACE_CHAR);
+				}
+				writer.write(DOUBLE_QUOTE_CHAR);	//"
+				writer.write(systemID);	//always  write the system literal
+				writer.write(DOUBLE_QUOTE_CHAR);	//"
+				writer.write(DOCTYPE_DECL_END);	//>
+				writer.newLine();
+			}
 		}
 		catch(IOException ioException)	//if there is an error
 		{
@@ -208,4 +235,3 @@ public class DeclareXMLTag extends TagSupport
 		systemID=null;
 	}
 }
-
