@@ -23,6 +23,7 @@ import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
+import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
 import com.garretwilson.text.xml.QualifiedName;
@@ -71,6 +72,7 @@ Debug.setDebug(true);
 Debug.setVisible(true);
 */
 Debug.trace("servicing method", method);
+Debug.trace("user agent:", getUserAgent(request));
 /*G***del
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
@@ -184,42 +186,43 @@ Debug.trace("doing options for URI", resourceURI);
 		    }
 				else	//if the resource doesn't exist
 				{
-					resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
-				}
-				if(resource!=null)	//if we were able to create a resource
-				{
 					try
 					{
-						final InputStream inputStream=request.getInputStream();	//get an input stream from the request
-						final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
-						try
-						{
-							OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
-						}
-						finally
-						{
-							outputStream.close();	//always close the output stream
-						}
+						resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 					}
-					catch(final IOException ioException)	//if we have any problems saving the resource contents
+					catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 					{
-						if(!exists)	//if the resource didn't exist before
-						{
-							deleteResource(resource);	//delete the resource, as we weren't able to save its contents
-						}
-					}
-					if(exists)	//if the resource already existed
-					{
-						response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
-					}
-					else	//if the resource did not exist already
-					{
-						response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+						response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that access to this resource is forbidden TODO throw a general exception and catch it in the main service method
+						return;	//TODO throw an exception
 					}
 				}
-				else	//if we couldn't create a resource
+				try
 				{
-	        response.sendError(HttpServletResponse.SC_CONFLICT);	//indicate there's a conflict creating the resource				
+					final InputStream inputStream=request.getInputStream();	//get an input stream from the request
+					final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
+					try
+					{
+						OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
+					}
+					finally
+					{
+						outputStream.close();	//always close the output stream
+					}
+				}
+				catch(final IOException ioException)	//if we have any problems saving the resource contents
+				{
+					if(!exists)	//if the resource didn't exist before
+					{
+						deleteResource(resource);	//delete the resource, as we weren't able to save its contents
+					}
+				}
+				if(exists)	//if the resource already existed
+				{
+					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+				}
+				else	//if the resource did not exist already
+				{
+					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
 				}
 			}
 			else	//if this servlet is read-only
@@ -240,32 +243,33 @@ Debug.trace("doing options for URI", resourceURI);
 		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
 		if(resourceURI!=null)	//if we have an appropriate resource URI
 		{
+			//TODO don't we need to check for existence somewhere?
 Debug.trace("doing propfind for URI", resourceURI);
 			if(LIST_DIRECTORIES)	//if we allow directory listing
 			{
-				final int depth=getDepth(request);	//determine the requested depth
-Debug.trace("depth requested:", depth);
-				IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
-				try
+				if(exists(resourceURI))	//if the resource exists
 				{
-					final Document document=getXML(request);	//get the XML from the request body
-					if(document!=null)	//if there was an XML document in the request
+					final int depth=getDepth(request);	//determine the requested depth
+	Debug.trace("depth requested:", depth);
+					IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+					try
 					{
-	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
-						final Element documentElement=document.getDocumentElement();	//get the document element
-							//TODO check to make sure the document element is correct
-						propertyList=getProperties(documentElement);	//get the property list from the XML document
+						final Document document=getXML(request);	//get the XML from the request body
+						if(document!=null)	//if there was an XML document in the request
+						{
+		Debug.trace("Found XML request content:", XMLUtilities.toString(document));
+							final Element documentElement=document.getDocumentElement();	//get the document element
+								//TODO check to make sure the document element is correct
+							propertyList=getProperties(documentElement);	//get the property list from the XML document
+						}
 					}
-				}
-				catch(final DOMException domException)	//any XML problem here is the client's fault
-				{
-		      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
-				}
-				try
-				{
-					final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
-					if(resourceList!=null)	//if we found the resource
+					catch(final DOMException domException)	//any XML problem here is the client's fault
 					{
+			      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
+					}
+					try
+					{
+						final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
 						final Document multistatusDocument=createMultistatusDocument();	//create a multistatus document
 						for(final R resource:resourceList)	//for each resource
 						{
@@ -281,16 +285,16 @@ Debug.trace("depth requested:", depth);
 Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument));
 						setXML(response, multistatusDocument);	//put the XML in our response and send it back
 					}
-					else	//if we couldn't get the list of resource
+					catch(final DOMException domException)	//any XML problem here is the server's fault
 					{
-	    			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+						Debug.error(domException);	//report the error
+			      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
 					}
-				}
-				catch(final DOMException domException)	//any XML problem here is the server's fault
-				{
-					Debug.error(domException);	//report the error
-		      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
-				}
+		    }
+		    else	//if the resource does not exist
+		    {
+    			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+		    }					
 			}
 			else	//if directory listing is not allowed
 			{
@@ -401,7 +405,7 @@ Debug.trace("request URI", requestURI);
 			if(isCollection(redirectURI))	//if the URI with a trailing slash added is a collection
 			{
 Debug.trace("sending redirect", redirectURI);
-				response.sendRedirect(redirectURI.toString());	//redirect to the collection
+				response.sendRedirect(redirectURI.toString());	//redirect to the collection TODO do we want to do a permanent redirect?
 				return null;	//don't send back a URI
 			}
 		}
@@ -687,19 +691,19 @@ Debug.trace("content length", contentLength);
 	/**Determines the requested resource.
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
-  	but not necessarily the contents of the resource, or <code>null</code>
-  	if no such resource exists. 
+  	but not necessarily the contents of the resource. 
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
   */
-	protected abstract R getResource(final URI resourceURI);
+	protected abstract R getResource(final URI resourceURI) throws IllegalArgumentException;
 
 	/**Retrieves a list of resources and child resources to the given depth.
 	@param resourceURI The URI of the requested resource.
   @param depth The zero-based depth of child resources to retrieve, or
   	<code>-1</code> if all progeny should be included.
-  @return A list of resources and optionally children as specified,
-  	or <code>null</code> if no such resource exists.  
+  @return A list of resources and optionally children as specified..  
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
   */
-	protected abstract List<R> getResources(final URI resourceURI, final int depth);
+	protected abstract List<R> getResources(final URI resourceURI, final int depth) throws IllegalArgumentException;
 
 	/**Copies all the requested resource properties to the given property XML element.
 	@param resource The resource the properties of which should be found.
@@ -753,8 +757,9 @@ Debug.trace("content length", contentLength);
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
 	@exception IOException Thrown if there is an error creating the resource.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	*/
-	protected abstract R createResource(final URI resourceURI) throws IOException;
+	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException;
 
 	/**Deletes a resource.
 	@param resource The resource to delete.
