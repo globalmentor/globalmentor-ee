@@ -645,13 +645,20 @@ Debug.trace("requested URI", requestedResourceURI);
 			}
 			else	//if there is no analogous resource (don't do the liberal non-existence check if there is an analogous resource, because this could prevent MOVE or COPY from a non-collection to another non-collection when a similarly-named collection exists)
 			{
-Debug.trace("requested resource exists:", exists(requestedResourceURI));
-Debug.trace("other resource is collection:", isCollection(collectionURI));
-				//if there is no such resource but there is a resource at the collection URI
-				if(!exists(requestedResourceURI) && isCollection(collectionURI))
+				try
 				{
-					resourceURI=collectionURI;	//use the collection URI				
-				}				
+	Debug.trace("requested resource exists:", exists(requestedResourceURI));
+	Debug.trace("other resource is collection:", isCollection(collectionURI));
+					//if there is no such resource but there is a resource at the collection URI
+					if(!exists(requestedResourceURI) && isCollection(collectionURI))
+					{
+						resourceURI=collectionURI;	//use the collection URI				
+					}
+				}
+				catch(final IOException ioException)	//if there is an error checking existence or whether the resource is a collection
+				{
+					Debug.warn(ioException);	//don't do anything major, now---the request will fail, later, and there's no forwarding to be done for error-prone resources
+				}
 			}
 		}
 Debug.trace("using URI", resourceURI);
@@ -744,8 +751,8 @@ Debug.trace("sending redirect", redirectURI);
 Debug.trace("getting XML");
 		final int contentLength=request.getContentLength();	//get the length of the request
 Debug.trace("content length", contentLength);
-		assert contentLength>=0 : "Missing content length";
-		if(contentLength>0)	//if content is present
+//TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
+		if(contentLength>0)	//if content is present	//TODO fix chunked coding
 		{
 			final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
 			final byte[] content=InputStreamUtilities.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
@@ -765,10 +772,12 @@ Debug.trace("content length", contentLength);
 				return xmlProcessor.parseDocument(xmlInputStream, null);	//parse the document				
 			}
 		}
+/*TODO del; we accept no content as no XML
 		else if(contentLength<0)	//if no content length was given
 		{
 			throw new HTTPLengthRequiredException();	//indicate that we require a content length
 		}
+*/
 		return null;	//show that there is no content to return
 	}
 
@@ -780,28 +789,36 @@ Debug.trace("content length", contentLength);
 	protected void setXML(final HttpServletResponse response, final Document document) throws IOException
 	{
 		final ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();	//create a byte array output stream to hold our outgoing data
-		new XMLSerializer(true).serialize(document, byteArrayOutputStream, new CharacterEncoding(UTF_8, null, NO_BOM));	//serialize the document to the byte array with no byte order mark
-		final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
-			//set the content type to text/xml; charset=UTF-8
-		response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
-		response.setContentLength(bytes.length);	//tell the response how many bytes to expect
-		final OutputStream outputStream=response.getOutputStream();	//get an output stream to the response
-		final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 		try
 		{
-			OutputStreamUtilities.write(inputStream, outputStream);	//write the bytes to the response
+			new XMLSerializer(true).serialize(document, byteArrayOutputStream, new CharacterEncoding(UTF_8, null, NO_BOM));	//serialize the document to the byte array with no byte order mark
+			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
+				//set the content type to text/xml; charset=UTF-8
+			response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
+			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
+			final OutputStream outputStream=response.getOutputStream();	//get an output stream to the response
+			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
+			try
+			{
+				OutputStreamUtilities.write(inputStream, outputStream);	//write the bytes to the response
+			}
+			finally
+			{
+				inputStream.close();	//always close our input stream as good practice
+			}
 		}
-		catch(final IOException ioException)	//if anything goes wrong
+		finally
 		{
-			inputStream.close();	//always close our input stream
-		}
+			byteArrayOutputStream.close();	//always close the stream as good practice			
+		}		
 	}
 
   /**Determines the WebDAV methods allowed for the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
+	@exception IOException if there is an error accessing the resource.
   */
-	protected EnumSet<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using enums---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
+	protected EnumSet<WebDAVMethod> getAllowedMethods(final URI resourceURI) throws IOException	//TODO we probably can't keep using enums---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
 	{
 		final EnumSet<WebDAVMethod> methodSet=EnumSet.of(OPTIONS);	//we always allow options 
 		if(exists(resourceURI))	//if the resource exists
@@ -870,22 +887,25 @@ Debug.trace("checking authorization for requested destination", requestedDestina
   /**Determines if the resource at a given URI exists.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
+	@exception IOException if there is an error accessing the resource.
   */
-  protected abstract boolean exists(final URI resourceURI);
+  protected abstract boolean exists(final URI resourceURI) throws IOException;
 
   /**Determines if the resource at a given URI is a collection.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
+	@exception IOException if there is an error accessing the resource.
   */
-  protected abstract boolean isCollection(final URI resourceURI);
+  protected abstract boolean isCollection(final URI resourceURI) throws IOException;
 
 	/**Determines the requested resource.
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@exception IOException if there is an error accessing the resource.
   */
-	protected abstract R getResource(final URI resourceURI) throws IllegalArgumentException;
+	protected abstract R getResource(final URI resourceURI) throws IllegalArgumentException, IOException;
 
 	/**Retrieves a list of resources and child resources to the given depth.
 	@param resourceURI The URI of the requested resource.
@@ -893,8 +913,9 @@ Debug.trace("checking authorization for requested destination", requestedDestina
   	<code>-1</code> if all progeny should be included.
   @return A list of resources and optionally children as specified..  
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@exception IOException if there is an error accessing the resources.
   */
-	protected abstract List<R> getResources(final URI resourceURI, final int depth) throws IllegalArgumentException;
+	protected abstract List<R> getResources(final URI resourceURI, final int depth) throws IllegalArgumentException, IOException;
 
 	/**Copies all the requested resource properties to the given property XML element.
 	@param resource The resource the properties of which should be found.
@@ -905,8 +926,9 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@see #ALL_PROPERTIES
 	@see #PROPERTY_NAMES
 	@exception DOMException if there is an error updating the properties element.
+	@exception IOException if there is an error accessing the resource.
 	*/
-	protected abstract void findProperties(final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException;
+	protected abstract void findProperties(final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException, IOException;
 
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.
