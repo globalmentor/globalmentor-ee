@@ -2,13 +2,12 @@ package com.garretwilson.faces.taglib.xhtml;
 
 import static com.garretwilson.faces.FacesConstants.*;
 
-/**A tag representing a output rendered as text.
+/**A tag representing a hypertext link.
 @author Garret Wilson
 */
-public class OutputTextTag extends AbstractOutputTag
+public class OutputLinkTag extends AbstractOutputTag
 {
-
 	/**@return The renderer for this component.*/
-	public String getRendererType() {return TEXT_RENDER_TYPE;}
+	public String getRendererType() {return LINK_RENDER_TYPE;}
 
 }
