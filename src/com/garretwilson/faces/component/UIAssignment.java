@@ -5,6 +5,7 @@ import javax.faces.application.Application;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
+
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.el.*;
 import com.garretwilson.lang.ClassUtilities;
@@ -68,6 +69,16 @@ public class UIAssignment extends UIComponentBase
 			this.value=value;	//set the value
 		}
 
+		public boolean isRendered()	//TODO fix; this is a hack for the default UIData renderer, which first collects children based upon their rendered status, preventing subsequent components from being properly collected if their rendered attribute is based upon a previous assignment
+		{
+			final boolean rendered=super.isRendered();	//see if this component is rendered
+			if(rendered)	//if this component is rendered
+			{
+				performAssignment(FacesContext.getCurrentInstance());	//perform the assignment
+			}
+			return rendered;
+		}
+
 	/**Assigns the value or the method invocation result to the variable.
 	@param context The JSF context.
 	@exception IOException Thrown if there is an error writing to the output.
@@ -108,6 +119,18 @@ public class UIAssignment extends UIComponentBase
 		final Object value=getValue();	//get our value
 		if(value!=null)	//if we have a value
 		{
+
+/*G***del
+			ValueBinding vb = getValueBinding("value");
+    	if(vb!=null)
+    	{
+    		Debug.trace("performing assignment", getClientId(context), "with expression:", vb.getExpressionString(), "value", value);
+    	}
+    	else
+    	{
+    		Debug.trace("performing assignment", getClientId(context), "with value", value);
+    	}
+*/
 /*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);

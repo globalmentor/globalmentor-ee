@@ -6,6 +6,7 @@ import java.util.*;
 
 import javax.faces.component.*;
 import javax.faces.context.*;
+import javax.faces.el.ValueBinding;
 import javax.faces.event.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
@@ -70,12 +71,22 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
+//G***del Debug.setDebug(true);
+//G***del Debug.setVisible(true);
+/*G***fix
+	if (renderedSet) {
+    return (rendered);
+}
+ValueBinding vb = getValueBinding("rendered");
+if (vb != null) {
+    return (!Boolean.FALSE.equals(vb.getValue(getFacesContext())));
+} else {
+    return (this.rendered);
+}
 */
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 		final String clientID=component.getClientId(context);	//get the component's client ID
+//G***del Debug.trace("ready to try to encode button:", clientID);
 
 /*TODO fix without relying on UIBasicForm
 		if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser

@@ -3,6 +3,10 @@ package com.garretwilson.faces.component;
 import java.net.URI;
 
 import javax.faces.component.UICommand;
+import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
+
+import com.garretwilson.util.Debug;
 
 /**Basic command component with enhanced functionality.
 @author Garret Wilson
@@ -30,6 +34,20 @@ public class UIBasicCommand extends UICommand
 			popupURI=uri;	//set the popup URI
 		}
 
+/*G***del
+    public boolean isRendered() {
+Debug.setDebug(true);
+Debug.setVisible(true);
+Debug.trace("checking to see if button is rendered:", getClientId(FacesContext.getCurrentInstance()));
+    	ValueBinding vb = getValueBinding("rendered");
+if(vb!=null)//
+{
+	Debug.trace("value binding with expression:", vb.getExpressionString(), "value", vb.getValue(FacesContext.getCurrentInstance()), "type", vb.getType(FacesContext.getCurrentInstance()));
+}
+return super.isRendered();
+        }
+*/
+		
 	/**Default constructor.*/
 	public UIBasicCommand()
 	{
