@@ -1,5 +1,7 @@
 package com.garretwilson.faces.component;
 
+import javax.faces.component.UIData;
+
 import com.garretwilson.faces.component.renderkit.xhtml.ListRenderer;
 import com.garretwilson.lang.ClassUtilities;
 
