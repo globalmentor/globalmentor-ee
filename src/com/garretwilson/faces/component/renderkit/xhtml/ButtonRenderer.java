@@ -172,7 +172,8 @@ if (vb != null) {
 				final Object[] confirms=getParameterValues(component, context, UIBasicCommand.CONFIRM_PARAMETER);	//see if there are any confirmation parameters
 				for(final Object confirm:confirms)	//for each confirmation parameter
 				{
-					onclickJavaScript.append("if(!confirm('"+confirm+"')) return;");	//TODO fix with utilities
+					onclickJavaScript.append(createIf(createNot(confirmLiteral(confirm.toString())), returnValue(Boolean.FALSE)));	//if(!confirm(confirmString){return false;}
+//G***del when works					onclickJavaScript.append("if(!confirm('"+confirm+"')) return false;");	//TODO fix with utilities
 				}
 				
 //G***fix the window name				public static String createName(final String string)
@@ -246,7 +247,7 @@ if (vb != null) {
 
 //G***del				onclickJavaScript.append(createStatement("alert('aftersubmit hidden field value: '+"+hiddenFieldValue+")"));	//G***testing
 
-				onclickJavaScript.append("return false;");	//TODO use constants
+				onclickJavaScript.append(returnValue(Boolean.FALSE));	//return false
 				writer.writeAttribute(ATTRIBUTE_ONCLICK, onclickJavaScript, null);	//write the JavaScript
 			}
 		}
