@@ -7,6 +7,8 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 import javax.faces.event.*;
 
+import com.garretwilson.util.Debug;
+
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
@@ -33,6 +35,11 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 		if(component.isRendered())	//if the component should be rendered
 		{
 			final UICommand command=(UICommand)component;	//get the component as a command component
+
+//G***del Debug.setDebug(true);
+//G***del Debug.trace("**********encoding, action type is: ", command.getAction().getType(context));
+//G***del Debug.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
+			
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			String type=(String)attributeMap.get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type attribute

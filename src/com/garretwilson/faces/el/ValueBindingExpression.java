@@ -2,6 +2,7 @@ package com.garretwilson.faces.el;
 
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
+import com.garretwilson.util.Debug;
 
 /**The representation of a value bound to a property.
 @author Garret Wilson
@@ -20,6 +21,7 @@ public class ValueBindingExpression<T> implements Expression<T>
 	*/
 	public ValueBindingExpression(final ValueBinding valueBinding)
 	{
+//G***del Debug.setDebug(true);
 		this.valueBinding=valueBinding;	//save the value binding
 	}
 
@@ -37,6 +39,12 @@ public class ValueBindingExpression<T> implements Expression<T>
 	*/
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
+/*G***del
+Debug.trace("getting value of a value-binding expression: ", getExpressionString());
+Debug.trace("value: ", getValueBinding().getValue(context));
+Debug.trace("type: ", getValueBinding().getType(context));
+Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
+*/
 		return (T)getValueBinding().getValue(context);	//return the value cast to the correct type
 	}
 
@@ -54,6 +62,12 @@ public class ValueBindingExpression<T> implements Expression<T>
 	*/
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
+/*G***del
+Debug.trace("getting type of a value-binding expression: ", getExpressionString());
+Debug.trace("value: ", getValueBinding().getValue(context));
+Debug.trace("type: ", getValueBinding().getType(context));
+Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
+*/
 		return getValueBinding().getType(context);	//return the type of the value binding
 	}
 

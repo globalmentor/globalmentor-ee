@@ -69,7 +69,7 @@ viewer.setRows(Integer.parseInt(rows));
 		if(getValue()!=null)	//if we have a value
 		{
 				//create an expression from the value
-			data.setValueExpression(ExpressionUtilities.createExpression(getFacesContext(), getValue()));
+			data.setValueExpression(ExpressionUtilities.createExpression(getFacesContext().getApplication(), getValue()));
 		}
    }
 

@@ -50,11 +50,12 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	{
 		super.setProperties(component);	//set the default properties
 		final FacesContext context=getFacesContext();	//get the JSF context
+		final Application application=context.getApplication();	//get the JSF application
 		final UICommand command=(UICommand)component;	//get the component as a command
 		if(getAction()!=null)	//if we have an action
 		{
 				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
-			command.setAction(new ExpressionMethodBinding(createExpression(context, getAction())));
+			command.setAction(new ExpressionMethodBinding(createExpression(application, getAction())));
 		}
 		if(component instanceof UIBasicCommand)	//if the component is a basic command with its extended functionality
 		{
@@ -63,7 +64,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 			if(getValue()!=null)	//if we have a value
 			{
 					//create an expression from the value
-				basicCommand.setValueExpression(ExpressionUtilities.createExpression(getFacesContext(), getValue()));
+				basicCommand.setValueExpression(ExpressionUtilities.createExpression(application, getValue()));
 			}
 		}
    }

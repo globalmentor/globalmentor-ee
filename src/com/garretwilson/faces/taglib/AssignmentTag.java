@@ -63,7 +63,7 @@ public class AssignmentTag extends UIComponentTag
 		final String expressionString=getExpression();	//see if there is an expression
 		if(expressionString!=null)	//if there is an expression
 		{
-			final Expression<?> expression=ExpressionUtilities.createReferenceExpression(context, expressionString);	//create an expression reference
+			final Expression<?> expression=ExpressionUtilities.createReferenceExpression(application, expressionString);	//create an expression reference
 			assignment.setExpression(expression);	//tell the assignment which expression to use
 		}
 	}
