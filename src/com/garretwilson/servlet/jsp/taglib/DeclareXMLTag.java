@@ -3,18 +3,23 @@ package com.garretwilson.servlet.jsp.taglib;
 import java.io.IOException;
 
 import javax.mail.internet.ContentType;
+import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
 import com.garretwilson.io.ContentTypeUtilities;
 import com.garretwilson.text.xml.XMLUtilities;
 
+import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.xml.XMLUtilities.*;
+import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**A tag for declaring a JSP to be XML.
 <p>For XHTML media types, this tag sets the content type to
 	"application/xhtml+xml" if the user agent supports it; otherwise, the
-	content type "text/html" is used.</p>
+	content type "text/html" is used. This is to allow XHTML content to be sent
+	to Microsoft Internet Explorer, which doesn't work with XHTML served as
+	"application/xhtml+xml".</p>
 <p>This tag also generates an XML declaration and document type.</p>
 <dl>
 	<dt>publicID</dt>
@@ -54,7 +59,7 @@ public class DeclareXMLTag extends TagSupport
 
 		/**@return The document content type object.
 		Defaults to the appropriate content type if a recognized document type is
-			requested; otherwise "text/xml".
+			requested; otherwise "text/xml".		
 		@exception IllegalArgumentException Thrown if the string is not a
 			syntactically correct content type.
 		*/
@@ -151,32 +156,25 @@ public class DeclareXMLTag extends TagSupport
 	*/
 	public int doStartTag() throws JspException
 	{
+		final HttpServletRequest request=(HttpServletRequest)pageContext.getRequest();	//get the request
+		final HttpServletResponse response=(HttpServletResponse)pageContext.getResponse();	//get the response
 		final JspWriter writer=pageContext.getOut();	//get the writer
 		try
 		{
 				//set the content type
-			final ContentType mediaType=getMediaType();	//get the media type
-/*G***fix
-			if(mediaType.get)
-			
-<jsp:directive.page import="java.util.Enumeration"/>
-<jsp:scriptlet>
-  String contentType="text/html";
-  final Enumeration httpAcceptEnumeration=request.getHeaders("accept");
-  while(httpAcceptEnumeration.hasMoreElements())
-  {
-
-if(((String)httpAcceptEnumeration.nextElement()).indexOf("application/xhtml+xml")>=0)
-    {
-      contentType="application/xhtml+xml";
-      break;
-
-    }
-  }
- 
-  response.setContentType(contentType);    //set the content type to whatever we decided upon 			
-*/
-			//TODO set the content type
+			ContentType contentType=getMediaType();	//get the preferred content type
+			if(contentType!=null)	//if a content type is specified
+			{
+				if(contentType.match(XHTML_CONTENT_TYPE))	//if the preferred content type is "application/xhtml+xml"
+				{
+						//if the client doesn't accept "application/xhtml+xml" exactly
+					if(!isAcceptedContentType(request, XHTML_CONTENT_TYPE, false))
+					{
+						contentType=HTML_CONTENT_TYPE;	//step down to "text/html"
+					}
+				}
+				response.setContentType(contentType.toString());	//set the content type of the response
+			}
 				//write the XML declaration
 			writer.write(XML_DECL_START);	//<?xml
 			writer.write(SPACE_CHAR);
