@@ -20,7 +20,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 {
 
 	/**@return The name of the XML element for the component.*/
-	protected String getComponentElementName() {return ELEMENT_SPAN;}
+//G***del	protected String getComponentElementName() {return ELEMENT_SPAN;}
 
 	/**Determines the name of the XML element for an item in a column.
 	This version defaults to not providing an element for item, writing the
@@ -43,7 +43,16 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	/**Default constructor.*/
 	public DataRenderer()
 	{
-		getPassthroughAttributeSet().remove("rows");	//don't pass through the rows attribute
+		this(ELEMENT_SPAN);	//create a span element by default
+	}
+
+	/**XML element name constructor.
+	@param componentElementName The name of the XML element to render.
+	*/
+	public DataRenderer(final String componentElementName)
+	{
+		super(componentElementName);	//construct the parent class
+		getPassthroughAttributeSet().remove("rows");	//don't pass through the rows attribute TODO use a constant
 	}
 
 	/**Begins encoding the list.

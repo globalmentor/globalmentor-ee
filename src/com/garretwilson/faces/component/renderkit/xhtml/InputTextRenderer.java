@@ -13,19 +13,32 @@ import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
-/**Renders a <code>UICommand</code> as a button.
+/**Renders a <code>UIInput</code> as an XHTML input element of type <code>text</code>.
 @author Garret Wilson
 */
-public class ButtonRenderer extends AbstractXHTMLRenderer
+public class InputTextRenderer extends AbstractXHTMLRenderer
 {
 
-	/**@return The name of the XML element for the component.*/
-//G***del	protected String getComponentElementName() {return ELEMENT_BUTTON;}
+	/**The type of XHTML input element to generate; output in the <code>type</code> attribute.*/
+	private final String type;
+
+		/**@return The type of XHTML input element to generate; output in the <code>type</code> attribute.*/
+		protected String getType() {return type;}
 
 	/**Default constructor.*/
-	public ButtonRenderer()
+	public InputTextRenderer()
 	{
-		super(ELEMENT_BUTTON);	//create a button element
+		this(INPUT_TYPE_TEXT);	//create an input text element
+	}
+
+	/**Input type constructor.
+	@param type The type of XHTML input element to generate; output in the
+		<code>type</code> attribute.
+	*/
+	public InputTextRenderer(final String type)
+	{
+		super(ELEMENT_INPUT);	//default to the <input> element for the element
+		this.type=type;	//save the type
 	}
 
 	/**Begins encoding the component.
@@ -44,7 +57,7 @@ Debug.setVisible(true);
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
-			final UICommand command=(UICommand)component;	//get the component as a command component
+			final UIInput input=(UIInput)component;	//get the component as an input component
 
 //G***del Debug.setDebug(true);
 //G***del Debug.trace("**********encoding, action type is: ", command.getAction().getType(context));
@@ -52,23 +65,30 @@ Debug.setVisible(true);
 			
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
-			String type=(String)attributeMap.get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type attribute
-//G***del Debug.trace("encoding command", command, "client id", component.getClientId(context));
 			writer.writeAttribute(ATTRIBUTE_NAME, component.getClientId(context), CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
-			if(type==null)	//if there is no type
+			writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, getType(), null);	//write the input type
+			final Object currentValue=getCurrentValue(input);	//get the current value
+			if(currentValue!=null)	//if there is a current value
 			{
-				type=BUTTON_TYPE_SUBMIT;	//default to a submit button
-				attributeMap.put(ELEMENT_BUTTON_ATTRIBUTE_TYPE, type);	//update the button type with the default				
+				writer.writeAttribute(ATTRIBUTE_VALUE, currentValue, ATTRIBUTE_VALUE);	//write the current value
 			}
-			final Object value=command.getValue();	//get the button's value
-			if(value!=null)	//if a value is given
-			{
-				writer.writeAttribute(ATTRIBUTE_VALUE, value, ATTRIBUTE_VALUE);	//write the value
-			}
-			if(value!=null)	//if a value is given, write it as button content G***testing
-			{
-				writer.writeText(value, null);	//G***testing
-			}
+		}
+	}
+
+	/**Determines the current value to be rendered.
+	This value is either the submitted value or the currently set value, in that
+		order.
+	*/
+	protected Object getCurrentValue(final UIInput input)
+	{
+		final Object submittedValue=input.getSubmittedValue();	//get the current submitted value
+		if(submittedValue!=null)	//if there is a submitted value
+		{
+			return submittedValue;	//return the submitted value
+		}
+		else	//if there is not a submitted value
+		{
+			return input.getValue();	//return the currently set value TODO maybe eventually do formatting and conversion; see Sun HtmlBasicInputRenderer.java
 		}
 	}
 
@@ -86,22 +106,18 @@ Debug.setDebug(true);
 Debug.setVisible(true);
 Debug.trace("decoding command", component, "client id", component.getClientId(context));
 */
+			//TODO this code should go in a generic AbstractInputRenderer---or maybe even something more general than that
 		if(isMutable(component))	//if the component is mutable
 		{
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
 			final String clientID=component.getClientId(context);	//get the component's client ID
-			final String value=(String)requestParameterMap.get(clientID);	//see if there is a value for our component
+			final Object value=requestParameterMap.get(clientID);	//see if there is a value for our component
 //G***del Debug.trace("found value:", value);
-				//if our button was the one pressed (check for an image map click for this button, too)
-			if(value!=null || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+				//if there is a value for our component
+			if(value!=null)
 			{
-				final String type=(String)component.getAttributes().get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type
-				if(BUTTON_TYPE_RESET.equalsIgnoreCase(type))	//if this was the reset button
-				{
-					return;	//don't generate an event for the reset button
-				}
-				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component
-				component.queueEvent(actionEvent);	//queue our new action
+				final UIInput input=(UIInput)component;	//get the component as an input component
+				input.setSubmittedValue(value);	//set the input's submitted value
 			}
     }
 	}

@@ -78,7 +78,7 @@ Debug.trace("is multipart content");
 					for(final Object object:fileItems)	//look at each file item
 					{
 						final FileItem fileItem=(FileItem)object;	//cast the object to a file item
-	Debug.trace("looking at a file item, searching for our client ID");
+	Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
 	if(fileItem.isFormField())	//G***del
 	{
 		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());

@@ -19,10 +19,10 @@ public class ListRenderer extends DataRenderer
 	public static final String RENDERER_TYPE=UIList.COMPONENT_TYPE;
 
 	/**The name of the XML element for the component.*/
-	private final String componentElementName;
+//G***del	private final String componentElementName;
 
 		/**@return The name of the XML element for the component.*/
-		protected String getComponentElementName() {return componentElementName;}
+//G***del		protected String getComponentElementName() {return componentElementName;}
 
 	/**The name of the XML element for an item in a column.*/
 	private final String itemElementName;
@@ -50,7 +50,8 @@ public class ListRenderer extends DataRenderer
 	*/
 	public ListRenderer(final String listElementName, final String itemElementName)
 	{
-		this.componentElementName=listElementName;
+		super(listElementName);	//construct the parent with the name of the XML list element
+//G***del		this.componentElementName=listElementName;
 		this.itemElementName=itemElementName;
 	}
 

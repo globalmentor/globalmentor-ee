@@ -100,11 +100,20 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 //G***del	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
 
 	/**@return The name of the XML element for the component.*/
-	protected abstract String getComponentElementName();
+//G***del	protected abstract String getComponentElementName();
 
-	/**Default constructor.*/
-	public AbstractXHTMLRenderer()
+	/**The name of the XML element for the component.*/
+	private final String componentElementName;
+
+		/**@return The name of the XML element for the component.*/
+		protected String getComponentElementName() {return componentElementName;}
+
+	/**XML element name constructor.
+	@param componentElementName The name of the XML element to render.
+	*/
+	public AbstractXHTMLRenderer(final String componentElementName)
 	{
+		this.componentElementName=componentElementName;	//save the element name
 		passthroughAttributeSet=new HashSet<String>(DEFAULT_PASSTHROUGH_ATTRIBUTES.length);	//create the set of passthrough attributes
 		addAll(passthroughAttributeSet, DEFAULT_PASSTHROUGH_ATTRIBUTES);	//initialize our set of passthrough attributes to the default
 	}
