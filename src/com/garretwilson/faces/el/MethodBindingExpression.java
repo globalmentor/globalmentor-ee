@@ -73,4 +73,13 @@ public class MethodBindingExpression<T> implements Expression<T>
 	{
 		return getMethodBinding().getType(context);	//return the type of the method binding
 	}
+
+	/**@return the (possibly <code>null</code>) expression string,
+		with leading and trailing delimiters, from which this
+		expression was built.
+	*/
+	public String getExpressionString()
+	{
+		return getMethodBinding().getExpressionString();	//return the method binding's expression string
+	}
 }

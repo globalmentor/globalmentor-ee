@@ -9,6 +9,7 @@ import com.garretwilson.faces.*;
 import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.component.renderkit.xhtml.ListRenderer;
 import com.garretwilson.faces.el.*;
+import com.garretwilson.faces.component.ComponentUtilities;
 
 /**A tag representing a list component.
 @author Garret Wilson

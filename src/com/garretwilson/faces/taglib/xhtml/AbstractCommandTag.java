@@ -10,6 +10,8 @@ import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.component.renderkit.xhtml.ButtonRenderer;
 import com.garretwilson.faces.el.*;
 
+import static com.garretwilson.faces.el.ExpressionUtilities.*;
+
 /**An abstract base class for command component and renderer tags.
 @author Garret Wilson
 */
@@ -19,14 +21,14 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	/**@return The type of the component to use for this tag.*/
 	public String getComponentType() {return UICommand.COMPONENT_TYPE;}
 
-	/**The command action.*/
+	/**The component action.*/
 	private String action;
 
-		/**@return The command action.*/
+		/**@return The component action.*/
 		public String getAction() {return action;}
 
-		/**Sets the command action.
-		@param action The new command action.
+		/**Sets the component acdtion.
+		@param action The new component action.
 		*/
 		public void setAction(final String action) {this.action=action;}
 
@@ -47,13 +49,21 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	protected void setProperties(final UIComponent component)
 	{
 		super.setProperties(component);	//set the default properties
+		final FacesContext context=getFacesContext();	//get the JSF context
+		final UICommand command=(UICommand)component;	//get the component as a command
+		if(getAction()!=null)	//if we have an action
+		{
+				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
+			command.setAction(new ExpressionMethodBinding(createExpression(context, getAction())));
+		}
 		if(component instanceof UIBasicCommand)	//if the component is a basic command with its extended functionality
 		{
-			final UIBasicCommand command=(UIBasicCommand)component;	//cast the component to a command component TODO maybe refactor this out
+				//TODO now that we have ExpressionValueBinding, take away all the special UIBasicCommand and UIBasicData value encodings
+			final UIBasicCommand basicCommand=(UIBasicCommand)command;	//cast the component to a command component TODO maybe refactor this out
 			if(getValue()!=null)	//if we have a value
 			{
 					//create an expression from the value
-				command.setValueExpression(ExpressionUtilities.createExpression(getFacesContext(), getValue()));
+				basicCommand.setValueExpression(ExpressionUtilities.createExpression(getFacesContext(), getValue()));
 			}
 		}
    }
@@ -62,6 +72,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	public void release()
 	{
 		super.release();	//release the default resources
+		action=null;
 		value=null;
 	}
 }

@@ -3,6 +3,8 @@ package com.garretwilson.faces.el;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
+import static com.garretwilson.faces.el.ExpressionConstants.*;
+
 /**The representation of a literal value.
 @author Garret Wilson
 */
@@ -49,9 +51,23 @@ public class LiteralExpression<T> implements Expression<T>
 	@exception MethodNotFoundException if the value specifies a method that
 		cannot be found.
 	*/
-	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
+	public Class getType(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
 		return value.getClass();	//return the type of the literal value
+	}
+
+	/**@return the (possibly <code>null</code>) expression string,
+		with leading and trailing delimiters, from which this
+		expression was built.
+	*/
+	public String getExpressionString()
+	{
+		final StringBuilder expressionStringBuilder=new StringBuilder();	//we'll build the expression
+		expressionStringBuilder.append(REFERENCE_CHAR);	//#
+		expressionStringBuilder.append(REFERENCE_EXPRESSION_BEGIN_CHAR);	//{
+		expressionStringBuilder.append(value.toString());	//value TODO should we put quotes around this if it's a string?
+		expressionStringBuilder.append(REFERENCE_EXPRESSION_END_CHAR);	//}
+		return expressionStringBuilder.toString();	//return the expression string we built
 	}
 
 }

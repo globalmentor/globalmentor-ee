@@ -60,7 +60,7 @@ public class ExpressionUtilities
 		}
 	}
 	
-	/**Creates an expression in from a given string in extended-EL.
+	/**Creates an expression from a given string in extended-EL.
 	@param context The JSF context.
 	@param The string representing the expression.
 	@return An expression for the appropriate type.
@@ -72,41 +72,61 @@ public class ExpressionUtilities
 	{
 		if(isReferenceExpression(string))	//if this is a reference expression
 		{
-			final Application application=context.getApplication();	//get the JSF application
-			final int expressionBeginIndex=string.indexOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+1;	//find out where this expression begins
-			final int expressionEndIndex=string.lastIndexOf(REFERENCE_EXPRESSION_END_CHAR);	//find out where this expression ends
 			if(isMethodReference(string))	//if this is a method reference
 			{
-				final int groupBeginIndex=string.indexOf(GROUP_BEGIN_CHAR, expressionBeginIndex)+1;	//find out where the parameters begin
-				final int groupEndIndex=string.lastIndexOf(GROUP_END_CHAR, expressionEndIndex-1);	//find out where the parameters end
-				final String params=string.substring(groupBeginIndex, groupEndIndex);	//get a string representing the parameters
-				final List<Expression<?>> parameterExpressionList=new ArrayList<Expression<?>>();	//create a new list for the parameter expressions
-				final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
-					//tokenize the parameters by commas, grouping by reference groups
-				final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR), String.valueOf(REFERENCE_EXPRESSION_END_CHAR));
-				while(tokenizer.hasNext())	//if there are more tokens
-				{
-					final String param=tokenizer.next();	//get the next parameter
-					final Expression<?> parameterExpression=createReferenceExpression(context, param);	//create an expression for the parameter
-					parameterExpressionList.add(parameterExpression);	//add the parameter expression to our list
-				}
-					//store the parameter value bindings in an array
-				final Expression<?>[] parameterExpressions=parameterExpressionList.toArray(new Expression[parameterExpressionList.size()]);	//create an array of expressions for the parameter expressions
-				final Class[] parameterTypes=new Class[parameterExpressions.length];	//create an array of classes, indicating parameter types
-				for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
-				{
-					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
-				}
-				final String methodName=string.substring(expressionBeginIndex, groupBeginIndex-1);	//extract the name of the method
-				final String methodReference=String.valueOf(REFERENCE_CHAR)+REFERENCE_EXPRESSION_BEGIN_CHAR+methodName+REFERENCE_EXPRESSION_END_CHAR;	//construct the method reference that standard JSF EL expects
-				final MethodBinding methodBinding=application.createMethodBinding(methodReference, parameterTypes);	//create a method binding
-				return new MethodBindingExpression(methodBinding, parameterExpressions);	//create and return a method binding expression from the method binding we created
+				return createMethodBindingExpression(context, string);	//create a method binding expression
 			}
 			else	//if this is not a method reference, it must be a value reference
 			{
-				final ValueBinding valueBinding=application.createValueBinding(string);	//create a value binding for the string
+				final ValueBinding valueBinding=context.getApplication().createValueBinding(string);	//create a value binding for the string
 				return new ValueBindingExpression(valueBinding);	//create and return a value binding expression from the value binding we created
 			}
+		}
+		else	//if this is not a reference expression
+		{
+			throw new IllegalArgumentException(string);
+		}
+	}
+
+	/**Creates a method binding expression from a given string in extended-EL.
+	@param context The JSF context.
+	@param The string representing the expression.
+	@return An expression for the appropriate type.
+	@exception IllegalArgumentException if <var>string</var> does not contain a
+		valid extended JSF expression language method reference.
+	@see #isReferenceExpression()
+	*/
+	public static <T> Expression<T> createMethodBindingExpression(final FacesContext context, final String string)
+	{
+		if(isMethodReference(string))	//if this is a method reference
+		{
+			final Application application=context.getApplication();	//get the JSF application
+			final int expressionBeginIndex=string.indexOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+1;	//find out where this expression begins
+			final int expressionEndIndex=string.lastIndexOf(REFERENCE_EXPRESSION_END_CHAR);	//find out where this expression ends
+			final int groupBeginIndex=string.indexOf(GROUP_BEGIN_CHAR, expressionBeginIndex)+1;	//find out where the parameters begin
+			final int groupEndIndex=string.lastIndexOf(GROUP_END_CHAR, expressionEndIndex-1);	//find out where the parameters end
+			final String params=string.substring(groupBeginIndex, groupEndIndex);	//get a string representing the parameters
+			final List<Expression<?>> parameterExpressionList=new ArrayList<Expression<?>>();	//create a new list for the parameter expressions
+			final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
+				//tokenize the parameters by commas, grouping by reference groups
+			final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR), String.valueOf(REFERENCE_EXPRESSION_END_CHAR));
+			while(tokenizer.hasNext())	//if there are more tokens
+			{
+				final String param=tokenizer.next();	//get the next parameter
+				final Expression<?> parameterExpression=createReferenceExpression(context, param);	//create an expression for the parameter
+				parameterExpressionList.add(parameterExpression);	//add the parameter expression to our list
+			}
+				//store the parameter value bindings in an array
+			final Expression<?>[] parameterExpressions=parameterExpressionList.toArray(new Expression[parameterExpressionList.size()]);	//create an array of expressions for the parameter expressions
+			final Class[] parameterTypes=new Class[parameterExpressions.length];	//create an array of classes, indicating parameter types
+			for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
+			{
+				parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
+			}
+			final String methodName=string.substring(expressionBeginIndex, groupBeginIndex-1);	//extract the name of the method
+			final String methodReference=String.valueOf(REFERENCE_CHAR)+REFERENCE_EXPRESSION_BEGIN_CHAR+methodName+REFERENCE_EXPRESSION_END_CHAR;	//construct the method reference that standard JSF EL expects
+			final MethodBinding methodBinding=application.createMethodBinding(methodReference, parameterTypes);	//create a method binding
+			return new MethodBindingExpression(methodBinding, parameterExpressions);	//create and return a method binding expression from the method binding we created
 		}
 		else	//if this is not a reference expression
 		{

@@ -37,4 +37,10 @@ public interface Expression<T>
 	*/
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException;
 
+	/**@return the (possibly <code>null</code>) expression string,
+		with leading and trailing delimiters, from which this
+		expression was built.
+	*/
+	public String getExpressionString();
+
 }

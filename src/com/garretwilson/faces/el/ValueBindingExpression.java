@@ -57,4 +57,13 @@ public class ValueBindingExpression<T> implements Expression<T>
 		return getValueBinding().getType(context);	//return the type of the value binding
 	}
 
+	/**@return the (possibly <code>null</code>) expression string,
+		with leading and trailing delimiters, from which this
+		expression was built.
+	*/
+	public String getExpressionString()
+	{
+		return getValueBinding().getExpressionString();	//return the value binding's expression string
+	}
+
 }

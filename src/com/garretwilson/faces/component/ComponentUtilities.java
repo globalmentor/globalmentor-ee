@@ -1,4 +1,4 @@
-package com.garretwilson.faces;
+package com.garretwilson.faces.component;
 
 import java.net.URI;
 import java.util.*;
@@ -9,7 +9,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.ValueBinding;
 import javax.faces.webapp.UIComponentTag;
 
+import com.garretwilson.faces.*;
 import com.garretwilson.util.NameValuePair;
+
+import static com.garretwilson.faces.ValueUtilities.*;
+import static com.garretwilson.faces.component.ComponentConstants.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
@@ -109,7 +113,38 @@ public class ComponentUtilities
 		return parameterMap;	//return the map of parameters
 	}
 
+	/**Determines if a component is mutable; that is, not disabled and not
+		read-only.
+	@param component The component to check.
+	@return <code>true</code> if the component is not disabled and not read-only.
+	@see #isDisabled()
+	@see #isReadonly()
+	*/
+	public static boolean isMutable(final UIComponent component)
+	{
+		return !isDisabled(component) && !isReadonly(component);	//the component is mutable if it isn't disabled and it isn't read-only
+	}
 	
+	/**Determines if a component is disabled.
+	@param component The component to check.
+	@return <code>true</code> if the component is disabled.
+	@see ComponentConstants#DISABLED_ATTRIBUTE
+	*/
+	public static boolean isDisabled(final UIComponent component)
+	{
+		return isTrueObject(component.getAttributes().get(DISABLED_ATTRIBUTE));	//see if the component is disabled
+	}
+	
+	/**Determines if a component is read-only.
+	@param component The component to check.
+	@return <code>true</code> if the component is read-only.
+	@see ComponentConstants#READONLY_ATTRIBUTE
+	*/
+	public static boolean isReadonly(final UIComponent component)
+	{
+		return isTrueObject(component.getAttributes().get(READONLY_ATTRIBUTE));	//see if the component is read-only
+	}
+
 	/**Sets a string value of a component.
 	@param component The component on which the value should be set.
 	@param attributeName The name of the attribute.

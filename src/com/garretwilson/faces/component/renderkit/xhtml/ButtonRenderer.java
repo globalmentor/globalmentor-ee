@@ -5,7 +5,9 @@ import java.util.*;
 
 import javax.faces.component.*;
 import javax.faces.context.*;
+import javax.faces.event.*;
 
+import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
@@ -18,7 +20,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	/**@return The name of the XML element for the component.*/
 	protected String getComponentElementName() {return ELEMENT_BUTTON;}
 
-	/**Begins encoding the list.
+	/**Begins encoding the component.
 	@param context The JSF context.
 	@param component The component being rendered.
 	@exception IOException Thrown if there is an error writing the output.
@@ -50,6 +52,34 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 				writer.writeText(value, null);	//G***testing
 			}
 		}
+	}
+
+	/**Decodes the component information.
+	@param context The JSF context.
+	@param component The component being decoded.
+	@exception IOException Thrown if there is an error writing the output.
+	@exception NullPointerException Thrown if <var>context</var> or
+		<var>component</var> is <code>null</code>.
+	*/
+	public void decode(FacesContext context, UIComponent component)
+	{
+		if(isMutable(component))	//if the component is mutable
+		{
+			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
+			final String clientID=component.getClientId(context);	//get the component's client ID
+			final String value=(String)requestParameterMap.get(clientID);	//see if there is a value for our component
+				//if our button was the one pressed (check for an image map click for this button, too)
+			if(value!=null || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+			{
+				final String type=(String)component.getAttributes().get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type
+				if(BUTTON_TYPE_RESET.equalsIgnoreCase(type))	//if this was the reset button
+				{
+					return;	//don't generate an event for the reset button
+				}
+				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component
+				component.queueEvent(actionEvent);	//queue our new action
+			}
+    }
 	}
 
 }
