@@ -27,6 +27,7 @@ import com.garretwilson.net.http.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVMethod.*;
+import static com.garretwilson.net.http.webdav.WebDAVUtilities.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
@@ -38,6 +39,7 @@ import com.garretwilson.text.xml.XMLProcessor;
 import com.garretwilson.text.xml.XMLSerializer;
 import com.garretwilson.text.xml.XMLUtilities;
 import static com.garretwilson.text.xml.XMLUtilities.*;
+
 import com.garretwilson.util.*;
 
 /**The base servlet class for implementing a WebDAV server as defined by
@@ -50,12 +52,6 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 	private final static boolean LIST_DIRECTORIES=true;	//TODO fix
 
 	private final static boolean READ_ONLY=false;	//TODO fix
-
-	/**The constant property list indicating all properties.*/
-	protected final static IDMappedList<URI, QualifiedName> ALL_PROPERTIES=new IDMappedList<URI, QualifiedName>((Map<URI, QualifiedName>)emptyMap(), (List<QualifiedName>)emptyList());
-
-	/**The constant property list indicating all property names.*/
-	protected final static IDMappedList<URI, QualifiedName> PROPERTY_NAMES=new IDMappedList<URI, QualifiedName>((Map<URI, QualifiedName>)emptyMap(), (List<QualifiedName>)emptyList());
 
 	/**The DOM implementation used as a document factory.*/
 	private final DOMImplementation domImplementation=new XMLDOMImplementation();	//TODO get this in a general way
@@ -323,11 +319,11 @@ Debug.trace("requested destination", requestedDestinationURI);
 					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
 					final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
 	Debug.trace("destination exists?", destinationExists);			
-					final int depth=getDepth(request);	//determine the requested depth
+					final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
 					final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
 	Debug.trace("is overwrite?", overwrite);			
-					copyResource(resource, destinationURI, depth, overwrite);	//copy the resource to its new location
+					copyResource(resource, destinationURI, depth==Depth.INFINITY ? -1 : depth.ordinal(), overwrite);	//copy the resource to its new location
 					if(destinationExists)	//if the destination resource already existed
 					{
 						response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
@@ -455,7 +451,7 @@ Debug.trace("doing propfind for URI", resourceURI);
 		{
 			if(exists(resourceURI))	//if the resource exists
 			{
-				final int depth=getDepth(request);	//determine the requested depth
+				final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
 				IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
 				try
@@ -466,7 +462,7 @@ Debug.trace("depth requested:", depth);
 	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
-						propertyList=getProperties(documentElement);	//get the property list from the XML document
+						propertyList=getPropfindProperties(documentElement);	//get the property list from the XML document
 					}
 				}
 				catch(final DOMException domException)	//any XML problem here is the client's fault
@@ -475,8 +471,8 @@ Debug.trace("depth requested:", depth);
 				}
 				try
 				{
-					final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
-					final Document multistatusDocument=createMultistatusDocument();	//create a multistatus document
+					final List<R> resourceList=getResources(resourceURI, depth==Depth.INFINITY ? -1 : depth.ordinal());	//get a list of resources
+					final Document multistatusDocument=createMultistatusDocument(getDOMImplementation());	//create a multistatus document
 					for(final R resource:resourceList)	//for each resource
 					{
 						final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
@@ -710,30 +706,30 @@ Debug.trace("sending redirect", redirectURI);
 
 	/**Determines the requested depth.
   @param request The HTTP request.
-  @return <code>0</code>, <code>1</code>, or <code>-1</code> if an infinite depth is indicated.
+  @return The depth or <code>Depth.INFINITY</code> if an infinite, undefined, or or unrecognized depth is indicated.
   */
-	protected int getDepth(final HttpServletRequest request)
+	protected Depth getDepth(final HttpServletRequest request)
 	{
 		final String depthString=request.getHeader(DEPTH_HEADER);	//get the depth header
 		if(depthString==null)	//no depth specified
 		{
-			return -1;	//default to infinity
+			return Depth.INFINITY;	//default to infinity
 		}
 		else if(DEPTH_0.equals(depthString))	//0
 		{
-			return 0;
+			return Depth.ZERO;
 		}
 		else if(DEPTH_1.equals(depthString))	//1
 		{
-			return 1;
+			return Depth.ONE;
 		}
 		else if(DEPTH_INFINITY.equals(depthString))	//infinity
 		{
-			return -1;
+			return Depth.INFINITY;
 		}
 		else	//unrecognized depth (technically an error)
 		{
-			return -1;	//default to infinity
+			return Depth.INFINITY;	//default to infinity
 		}
 	}
 	
@@ -801,148 +797,11 @@ Debug.trace("content length", contentLength);
 		}
 	}
 
-	/**@return A new XML document representing multistatus.
-	@exception DOMException if there is an error creating the document.
-	*/
-	protected Document createMultistatusDocument() throws DOMException
-	{
-		return getDOMImplementation().createDocument(WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_MULTISTATUS), null);	//create a multistatus document
-	}
-
-	/**Creates a response and appends it to the given element.
-	@param element An XML element representing a multistatus.
-	@return A WebDAV response XML element.
-	@exception DOMException if there is an error creating the element.
-	*/
-	protected Element addResponse(final Element element) throws DOMException
-	{
-		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_RESPONSE));	//create a response element
-	}
-
-	/**Creates an href element with the URI as its content and adds it to the given element.
-	@param element An XML element representing, for example, a response.
-	@param uri The URI to use as the href.
-	@return A WebDAV href XML element with the URI as its content.
-	@exception DOMException if there is an error creating the element.
-	*/
-	protected Element addHref(final Element element, final URI uri) throws DOMException
-	{
-			//create an href element with the URI as its content and append it to the given element
-		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_HREF), uri.toString());
-	}
-
-	/**Creates a property container element.
-	@param element An XML element representing, for example, a response.
-	@return A WebDAV propstat XML element.
-	@exception DOMException if there is an error creating the element.
-	*/
-	protected Element addPropstat(final Element element) throws DOMException
-	{
-			//create a propstat element and append it to the given element
-		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_PROPSTAT));
-	}
-
-	/**Creates a property element.
-	@param element An XML element representing, for example, a property container.
-	@return A WebDAV property XML element.
-	@exception DOMException if there is an error creating the element.
-	*/
-	protected Element addProp(final Element element) throws DOMException
-	{
-			//create a property element and append it to the given element
-		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_PROP));
-	}
-
-	/**Creates a status element with the status text as its content and adds it to the given element.
-	@param element An XML element representing, for example, a propstat.
-	@param status The text of the status report.
-	@return A WebDAV status XML element with the status text as its content.
-	@exception DOMException if there is an error creating the element.
-	*/
-	protected Element addStatus(final Element element, final String status) throws DOMException
-	{
-			//create a status element with the status text as its content and append it to the given element
-		return appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, ELEMENT_STATUS), status);
-	}
-
-	/**Creates and adds a resource type element with a resource type child element.
-	Properties in the WebDAV namespace will have the correct prefix determined.
-	@param element An XML element representing, for example, a property.
-	@param typeNamespaceURI The namespace URI of the property,
-		or <code>null</code> to indicate no type. 
-	@param typeLocalName The local name of the property,
-		or <code>null</code> to indicate no type. 
-	@return A WebDAV resource type XML element with the optional type indicated by a child element.
-	@exception DOMException if there is an error creating the elements.
-	*/
-	protected Element addResourceType(final Element element, final String typeNamespaceURI, final String typeLocalName) throws DOMException
-	{
-			//create and append a resource type element
-		final Element resourceTypeElement=appendElement(element, WEBDAV_NAMESPACE, createQualifiedName(WEBDAV_NAMESPACE_PREFIX, RESOURCE_TYPE_PROPERTY_NAME));
-		if(typeNamespaceURI!=null && typeLocalName!=null)	//if a type was given
-		{
-			final String prefix=WEBDAV_NAMESPACE.equals(typeNamespaceURI) ? WEBDAV_NAMESPACE_PREFIX : null;	//see if we should use the WebDAV previx TODO look up other names from the XMLSerializer namespace prefix map
-			appendElement(resourceTypeElement, typeNamespaceURI, createQualifiedName(prefix, typeLocalName));
-		}
-		return resourceTypeElement;	//return the element we created
-	}
-
-	/**Retrieves a list of properties parsed from the children of the given XML element.
-	The <code>allprop</code> and <code>propname</code> conditions are supported.
-	@param element The XML element parent of the property list.
-	@return A list of all requested properties, or <code>ALL_PROPERTIES</code> or
-		<code>PROPERTY_NAMES</code> indicating all properties or all property names,
-		respectively.
-	@see #ALL_PROPERTIES
-	@see #PROPERTY_NAMES
-	*/
-	protected IDMappedList<URI, QualifiedName> getProperties(final Element element)
-	{
-		final IDMappedList<URI, QualifiedName> propertyList=new IDMappedList(new HashMap<URI, QualifiedName>(), new ArrayList<QualifiedName>());	//create a list of qualified names
-		final NodeList childList=element.getChildNodes();	//get a list of element children
-		for(int childIndex=0; childIndex<childList.getLength(); ++childIndex)	//look at each child node
-		{
-			final Node childNode=childList.item(childIndex);	//get this child node
-			if(childNode.getNodeType()==Node.ELEMENT_NODE)	//if this is an element
-			{
-//G***del				final Element childElement=(Element)childNode;	//get a reference to this element
-				if(WEBDAV_NAMESPACE.equals(childNode.getNamespaceURI()))	//if this is a WebDAV element
-				{
-					final String childLocalName=childNode.getLocalName();	//get the child element's local name
-					if(ELEMENT_PROP.equals(childLocalName))	//allprop
-					{
-						final NodeList propertyChildList=childNode.getChildNodes();	//get a list of property element children
-						for(int propertyChildIndex=0; propertyChildIndex<propertyChildList.getLength(); ++propertyChildIndex)	//look at each property child node
-						{
-							final Node propertyChildNode=propertyChildList.item(propertyChildIndex);	//get this property child node
-							if(propertyChildNode.getNodeType()==Node.ELEMENT_NODE)	//if this is an element
-							{
-//G***del								final Element propertyChildElement=(Element)propertyChildNode;	//get a reference to this element
-									//create a qualified name for this property
-								final QualifiedName qname=new QualifiedName(propertyChildNode.getNamespaceURI(), propertyChildNode.getPrefix(), propertyChildNode.getLocalName());
-								propertyList.add(qname);	//add the property to the list
-							}
-						}
-					}
-					else if(ELEMENT_ALLPROP.equals(childLocalName))	//allprop
-					{
-						return ALL_PROPERTIES;	//show that all properties were requested
-					}
-					else if(PROPERTY_NAMES.equals(childLocalName))	//propname
-					{
-						return PROPERTY_NAMES;	//show that properties names were requested
-					}
-				}
-			}
-		}
-		return propertyList;	//return our list of properties
-	}
-
   /**Determines the WebDAV methods allowed for the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
   */
-	protected EnumSet<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using generics---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
+	protected EnumSet<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using enums---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
 	{
 		final EnumSet<WebDAVMethod> methodSet=EnumSet.of(OPTIONS);	//we always allow options 
 		if(exists(resourceURI))	//if the resource exists
