@@ -4,10 +4,10 @@ import java.io.*;
 import java.util.*;
 
 import javax.faces.component.NamingContainer;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.*;
@@ -16,6 +16,7 @@ import com.garretwilson.util.*;
 
 import org.apache.commons.fileupload.*;
 
+import static com.garretwilson.io.ContentTypeConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Basic form component with enhanced functionality to process multipart form
@@ -25,10 +26,14 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 	<li>Automatic conversion of multipart form submissions.</li>
 	<li>A map of render-scope variables.</li>
 </ul>
+<p>This component currently does not support two forms on a page with <code>enctype="multipart/form-data".</code></p>
 @author Garret Wilson
 */
 public class UIBasicForm extends UIForm
 {
+
+	/**The "multipart/form-data" encoding type.*/
+	protected final static ContentType MULTIPART_FORM_DATA_MEDIA_TYPE=new ContentType(MULTIPART, FORM_DATA_SUBTYPE, null);
 
 	/**The ID of the hidden field used to hold the button value.*/
 	protected final static String HIDDEN_FIELD_ID="button";
@@ -106,86 +111,92 @@ public class UIBasicForm extends UIForm
 	{
 /*G***del
 Debug.setDebug(true);
-Debug.trace("processing decodes in UIBasicForm");
+Debug.setVisible(true);
+Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(context));
 */
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
-		if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
+		final String enctype=(String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE);	//get the enctype
+		if(enctype!=null && MULTIPART_FORM_DATA_MEDIA_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
 		{
-			final HttpServletRequest request=(HttpServletRequest)context.getExternalContext().getRequest();	//get the HTTP request
-			if(FileUpload.isMultipartContent(request))	//if this is multipart content
-			{			
-//G***del Debug.trace("is multipart content");
-/*G***fix or delete
-				final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
-					//create a factory to populate a map with form fields
-				final MultipartFormFieldFactory formFieldFactory=new MultipartFormFieldFactory(diskFileUpload.getFileItemFactory());
-				diskFileUpload.setFileItemFactory(formFieldFactory);	//use our special factory for creating file items
-//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
-				diskFileUpload.setSizeMax(-1);	//don't reject anything
-				try	//try to parse the file items submitted in the request
-				{
-					diskFileUpload.parseRequest(request);	//parse the request, ignoring the returned list of file items
-					final Map<String, String> formFieldMap=formFieldFactory.getFormFieldMap();	//get the populated map of form fields and values
-					final String clientID=component.getClientId(context);	//get the ID of the form
-					if(formFieldMap.containsKey(clientID))	//if this request was posted from our form
+			if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
+			{
+				final HttpServletRequest request=(HttpServletRequest)context.getExternalContext().getRequest();	//get the HTTP request
+				if(FileUpload.isMultipartContent(request))	//if this is multipart content
+				{			
+	Debug.trace("is multipart content");
+	/*G***fix or delete
+					final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
+						//create a factory to populate a map with form fields
+					final MultipartFormFieldFactory formFieldFactory=new MultipartFormFieldFactory(diskFileUpload.getFileItemFactory());
+					diskFileUpload.setFileItemFactory(formFieldFactory);	//use our special factory for creating file items
+	//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
+					diskFileUpload.setSizeMax(-1);	//don't reject anything
+					try	//try to parse the file items submitted in the request
 					{
-						final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameter map
-						requestParameterMap.putAll(formFieldMap);	//put all the form fields into our request parameter map						
-					}
-					boolean foundClientID=false;	//start by assuming this is not a submission for our form
-*/
-				final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
-//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
-				diskFileUpload.setSizeMax(-1);	//don't reject anything
-				try	//try to parse the file items submitted in the request
-				{
-					final String clientID=getClientId(context);	//get the form ID
-					boolean foundClientID=false;	//start by assuming this is not a submission for our form
-					final List fileItems=diskFileUpload.parseRequest(request);	//parse the request
-						//see if this was a multipart form request for our form
-					for(final Object object:fileItems)	//look at each file item
-					{
-						final FileItem fileItem=(FileItem)object;	//cast the object to a file item
-/*G***del
-	Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
-	if(fileItem.isFormField())	//G***del
-	{
-		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
-	}
-*/
-						if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
+						diskFileUpload.parseRequest(request);	//parse the request, ignoring the returned list of file items
+						final Map<String, String> formFieldMap=formFieldFactory.getFormFieldMap();	//get the populated map of form fields and values
+						final String clientID=component.getClientId(context);	//get the ID of the form
+						if(formFieldMap.containsKey(clientID))	//if this request was posted from our form
 						{
-//G***del Debug.trace("found our client ID!");
-							foundClientID=true;	//show that we found the client ID
-							break;	//stop searching for the client ID
+							final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameter map
+							requestParameterMap.putAll(formFieldMap);	//put all the form fields into our request parameter map						
 						}
-					}
-					if(foundClientID)	//if this form submission was for us, setup the request parameters
+						boolean foundClientID=false;	//start by assuming this is not a submission for our form
+	*/
+					final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
+	//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
+					diskFileUpload.setSizeMax(-1);	//don't reject anything
+					try	//try to parse the file items submitted in the request
 					{
-							//create a decorator that allows us to add request parameters
-						final RequestParametersFacesContextDecorator requestParametersFacesContextDecorator=new RequestParametersFacesContextDecorator(context);
+						final String clientID=getClientId(context);	//get the form ID
+						boolean foundClientID=false;	//start by assuming this is not a submission for our form
+						final List fileItems=diskFileUpload.parseRequest(request);	//parse the request
+							//see if this was a multipart form request for our form
 						for(final Object object:fileItems)	//look at each file item
 						{
 							final FileItem fileItem=(FileItem)object;	//cast the object to a file item
-							if(fileItem.isFormField())	//if this is a form field
+/*G***del
+		Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
+		if(fileItem.isFormField())	//G***del
+		{
+			Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+		}
+*/
+							if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
 							{
-									//use this form field as a request item so that the default form renderer can process it
-								requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem.getString());
-							}
-							else	//if this is not a form field, store the file item itself
-							{
-								requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem);								
+//G***del	Debug.trace("found our client ID!", clientID);
+								foundClientID=true;	//show that we found the client ID
+								break;	//stop searching for the client ID
 							}
 						}
-						decodeContext=requestParametersFacesContextDecorator;	//use our JSF context decorator when doing the rest of the decoding
+						if(foundClientID)	//if this form submission was for us, setup the request parameters
+						{
+								//create a decorator that allows us to add request parameters
+							final RequestParametersFacesContextDecorator requestParametersFacesContextDecorator=new RequestParametersFacesContextDecorator(context);
+							for(final Object object:fileItems)	//look at each file item
+							{
+								final FileItem fileItem=(FileItem)object;	//cast the object to a file item
+								if(fileItem.isFormField())	//if this is a form field
+								{
+										//use this form field as a request item so that the default form renderer can process it
+									requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem.getString());
+								}
+								else	//if this is not a form field, store the file item itself
+								{
+									requestParametersFacesContextDecorator.putRequestParameter(fileItem.getFieldName(), fileItem);								
+								}
+							}
+							decodeContext=requestParametersFacesContextDecorator;	//use our JSF context decorator when doing the rest of the decoding
+						}
 					}
-				}
-				catch(final FileUploadException fileUploadException)	//if there was an error parsing the files
-				{
-					Debug.warn(fileUploadException);	//just warn about the problem
-				}
-			}			
+					catch(final FileUploadException fileUploadException)	//if there was an error parsing the files
+					{
+						Debug.warn(fileUploadException);	//just warn about the problem
+					}
+				}			
+			}
 		}
+//G***del Debug.trace("ready to process default form decodes");
 			//if this form submision was meant for us, we'll have set up the request parameters with the submitted values
 		super.processDecodes(decodeContext);	//do the default decode processing with either the context we received, or the one we wrapped to return our extra parameters
 	}
