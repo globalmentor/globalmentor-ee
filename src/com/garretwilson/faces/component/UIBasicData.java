@@ -29,17 +29,6 @@ public class UIBasicData extends UIData
 	/**The attribute for storing the variable name.*/
 	public final static String VAR_ATTRIBUTE="var";
 
-	/**Optional support routines for access from child components.*/
-	private Object support=null; 
-
-		/**@return Optional support routines for access from child components.*/
-		protected Object getSupport() {return support;}
-
-		/**Sets support routines for access from child components.
-		@param support Support routines for access from expresions.
-		*/
-		protected void setSupport(final Object support) {this.support=support;} 
-
 	/**Default constructor.*/
 	public UIBasicData()
 	{
@@ -88,13 +77,6 @@ Debug.trace("variable is now:", requestMap.get(getVar()));
 	*/
 	public void encodeBegin(final FacesContext context) throws IOException
 	{
-Debug.trace("ready to begin data encoding");
-		if(getSupport()!=null)	//if we have a support variable
-		{
-Debug.trace("Found support, storing it under variable", getSupportVariableName(getSupport().getClass()));
-			//add a new support variable to the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().put(getSupportVariableName(getSupport().getClass()), getSupport());
-		}
 		updateValue(context);	//update our value before further processing
 		super.encodeBegin(context);	//do the default encoding
 	}
@@ -106,13 +88,6 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 	public void encodeEnd(final FacesContext context) throws IOException
 	{
 		super.encodeEnd(context);	//do the default end encoding
-/*G***fix
-		if(getSupport()!=null)	//if we have a support variable
-		{
-			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().remove(getSupportVariableName(getSupport().getClass()));
-		}
-*/
 	}
 
   /**Processes the decoding for this component and children.
@@ -120,20 +95,8 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 	*/	 
 	public void processDecodes(final FacesContext context)
 	{
-		if(getSupport()!=null)	//if we have a support variable
-		{
-			//add a new support variable to the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().put(getSupportVariableName(getSupport().getClass()), getSupport());
-		}
 		updateValue(context);	//update our value before further processing
 		super.processDecodes(context);
-/*G***fix
-		if(getSupport()!=null)	//if we have a support variable
-		{
-			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
-			context.getExternalContext().getRequestMap().remove(getSupportVariableName(getSupport().getClass()));
-		}
-*/
 	}
 
 	/**Broadcasts an event to interested components.

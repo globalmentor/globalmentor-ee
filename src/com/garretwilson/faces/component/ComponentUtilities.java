@@ -217,7 +217,7 @@ public class ComponentUtilities
 		}
 		return valueList.toArray(new Object[valueList.size()]);	//send back an array of values
 	}
-	
+
 	/**Determines the variable name for a support variable to be stored in the request parameter map.
 	@param supportClass The class of the support object.
 	@return The variable name to use for the support object.
@@ -236,6 +236,16 @@ public class ComponentUtilities
 	public static String createSupportExpression(final Class<?> supportClass, final String predicate)
 	{
 		return createValueBindingExpressionString(getSupportVariableName(supportClass)+OBJECT_PREDICATE_SEPARATOR+predicate);
+	}
+
+	/**Publishes a support object in the current request.
+	@param component The component for which support is being published.
+	@param context The JSF context.
+	@param support The support object to make available.
+	*/
+	public static void giveSupport(final UIComponent component, final FacesContext context, final Object support)	//TODO do something to make sure the component ID is taken into account
+	{	
+		context.getExternalContext().getRequestMap().put(getSupportVariableName(support.getClass()), support);	//put the support in the request map keyed to our special support variable
 	}
 
 	/**Determines if a component is mutable; that is, not disabled and not
