@@ -48,6 +48,15 @@ public class ComponentUtilities
 		return command;	//return the component
 	}
 
+	/**Creates a default <code>UICommand</code> component.
+	@param application The current JSF application
+	@return A new <code>UICommand</code> component.
+	*/
+	public static UICommand createCommand(final Application application)
+	{
+		return createCommand(application, null);	//create a command with no action
+	}
+
 	/**Creates a <code>UICommand</code> component with the given action.
 	@param application The current JSF application
 	@param action The command action.
@@ -91,6 +100,17 @@ public class ComponentUtilities
 		setStringValue(graphic, GRAPHIC_URL_ATTRIBUTE, url);	//store the URL, creating a value binding if necessary
 		setStringValue(graphic, GRAPHIC_ALT_ATTRIBUTE, alt);	//store the alternate text, creating a value binding if necessary
 		return graphic;	//return the component
+	}
+
+	/**Creates a <code>UIInputFile</code> file upload component with the given id.
+	@param application The current JSF application
+	@param id The new ID.
+	@return A new <code>UIInputFile</code> component with the given values.
+	*/
+	public static UIInputFile createInputFile(final Application application, final String id)
+	{
+		final UIInputFile inputFile=(UIInputFile)createComponent(application, UIInputFile.COMPONENT_TYPE, id);	//create an input file component with the given ID
+		return inputFile;	//return the component
 	}
 
 	/**Creates a <code>UIInput</code> component rendered as hidden with the given id and value.

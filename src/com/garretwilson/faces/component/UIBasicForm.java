@@ -38,8 +38,10 @@ public class UIBasicForm extends UIForm
 	*/
 	public void processDecodes(final FacesContext context)
 	{
-//G***del Debug.setDebug(true);
-//G***del Debug.trace("processing decodes in UIBasicForm");
+/*G***del
+Debug.setDebug(true);
+Debug.trace("processing decodes in UIBasicForm");
+*/
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
 		if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
 		{
@@ -87,7 +89,7 @@ public class UIBasicForm extends UIForm
 */
 						if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
 						{
-//G***del	Debug.trace("found our client ID!");
+//G***del Debug.trace("found our client ID!");
 							foundClientID=true;	//show that we found the client ID
 							break;	//stop searching for the client ID
 						}
@@ -171,7 +173,7 @@ public class UIBasicForm extends UIForm
 			{
 					//delegate to the default factory
 				fileItem=getDefaultFileItemFactory().createItem(fieldName, contentType, isFormField, fileName);
-		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+//G***del		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 				getFormFieldMap().put(fileItem.getFieldName(), fileItem.getString());	//store this field in this map
 			}
 			else	//if this is not a form field

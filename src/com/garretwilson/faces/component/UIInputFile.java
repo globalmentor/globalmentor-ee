@@ -9,6 +9,7 @@ import javax.faces.el.*;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
+import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.garretwilson.lang.ClassUtilities;
 import com.garretwilson.util.Debug;
 
@@ -98,6 +99,7 @@ public class UIInputFile extends UIInput
 	public UIInputFile()
 	{
 		super();	//construct the parent class
+		setRendererType(InputFileRenderer.RENDERER_TYPE);	//default to a file renderer
 	}
 
 	/**Convert the submitted value into a "local value" of the
@@ -122,13 +124,13 @@ public class UIInputFile extends UIInput
 		final Object defaultConvertedValue=super.getConvertedValue(context, newSubmittedValue);	//do the default conversion
 		if(newSubmittedValue instanceof FileItem)	//if the submitted value is a file item
 		{
-//G***del Debug.trace("the submitted item is a fileitem");
+Debug.trace("the submitted item is a fileitem");
 			final FileItem fileItem=(FileItem)newSubmittedValue;	//get the submitted value as a file item
 			assert !fileItem.isFormField() : "File item isn't expected to be a form field for file input.";
 			final File directory=getDirectory();	//get the directory in which to store files
 			if(directory!=null)	//if a directory is specified
 			{
-//G***del Debug.trace("we have a directory:", directory);
+Debug.trace("we have a directory:", directory);
 				final String filename;	//we'll determine the filename to use
 				if(getFilename()!=null)	//if a filename is explicitly specified
 				{
@@ -138,9 +140,9 @@ public class UIInputFile extends UIInput
 				{
 					filename=fileItem.getName();	//get the filename suggested to us by the client
 				}
-				if(filename!=null)	//if we have a filename
+				if(filename!=null && filename.length()>0)	//if we have a filename
 				{
-//G***del Debug.trace("we have a filename:", filename);
+Debug.trace("we have a filename:", filename);
 						//if there is a file separator character in the filename, throw an exception
 						//---this could be a security breach from a rogue client!
 					if(filename.indexOf(File.separatorChar)>=0)		//if the filename isn't a simple one
@@ -149,7 +151,7 @@ public class UIInputFile extends UIInput
 					}
 					try
 					{
-//G***del Debug.trace("making sure directory exists");
+Debug.trace("making sure directory exists");
 						if(!directory.isDirectory())	//if the directory doesn't exist as a directory
 						{
 							mkdirs(directory);	//try to create the the directory
@@ -160,6 +162,7 @@ Debug.trace("file to write is:", file);
 					}
 					catch(final Exception exception)	//if there was a problem writing the file to a directory (we can't just check for an IOException, because FileItem.write() can throw a general exception)
 					{
+Debug.error(exception);
 						throw new ConverterException(exception);
 					}
 				}				
@@ -193,7 +196,7 @@ Debug.trace("file to write is:", file);
 					throw new ConverterException(unsupportedEncodingException);
 				}
 			}
-			convertedValue=null;	//if we process the file item, we'll always return nothing
+			convertedValue=null;	//if we process the file item, we'll always return nothing by default unless we decided to return the contents of the file
 		}
 		else	//if the value is not a file item
 		{
