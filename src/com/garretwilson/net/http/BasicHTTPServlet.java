@@ -95,12 +95,14 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
 		{
+			Debug.warn(methodNotAllowedException);	//log the problem
 			setAllow(response, methodNotAllowedException.getAllowedMethods());	//report the allowed methods
 			response.sendError(methodNotAllowedException.getStatusCode());	//send back the status code as an error
 		}
-		catch(final HTTPException exception)	//if any other HTTP error was encountered
+		catch(final HTTPException httpException)	//if any other HTTP error was encountered
 		{
-			response.sendError(exception.getStatusCode(), exception.getMessage());	//send back the status code as an error
+			Debug.warn(httpException);	//log the problem
+			response.sendError(httpException.getStatusCode(), httpException.getMessage());	//send back the status code as an error
 		}
   }
 
@@ -209,7 +211,7 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			final URI resourceURI=getResourceURI(request);	//get the requested URI
 			final AuthenticateCredentials credentials=getAuthorization(request);	//get the credentials from this request, if any
-			checkAuthorization(resourceURI, request.getMethod(), request.getRequestURI(), credentials);	//check authorization for these credentials
+			checkAuthorization(request, resourceURI, request.getMethod(), request.getRequestURI(), credentials);	//check authorization for these credentials
 		}
 		catch(final SyntaxException syntaxException)	//if the credentials weren't syntactically correct
 		{
@@ -218,6 +220,7 @@ Debug.trace("path info:", request.getPathInfo());
 	}
 
 	/**Checks whether the given credentials provide authorization for the given method.
+  @param request The HTTP request.
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param requestURI The request URI as given in the HTTP request.
@@ -230,27 +233,35 @@ Debug.trace("path info:", request.getPathInfo());
 	@see #isAuthorized(URI, String, Principal)
 	@see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials)
 	*/
-	protected void checkAuthorization(final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
+	protected void checkAuthorization(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
 	{
 		final Principal principal=getPrincipal(credentials);	//get the principal providing credentials
-		if(isAuthenticated(resourceURI, method, requestURI, principal, credentials))	//if this principal is authenticated
+		final String realm=getRealm(resourceURI);	//get the realm for this resource
+		boolean isAuthorized=false;	//every principal by default is unauthorized
+		if(isAuthenticated(request, resourceURI, method, requestURI, principal, credentials))	//if this principal is authenticated
 		{
 				//determine the realm (which has already been confirmed, if present); it is more effecient to get the realm from the credentials, if we can
-			final String realm=credentials!=null && credentials.getRealm()!=null ? credentials.getRealm() : getRealm(resourceURI);
-			if(isAuthorized(resourceURI, method, requestURI, principal, realm))	//if this principal is authorized
+//G***del			final String realm=credentials!=null && credentials.getRealm()!=null ? credentials.getRealm() : getRealm(resourceURI);
+			if(isAuthorized(request, resourceURI, method, principal, realm))	//if this principal is authorized
 			{
-				return;	//return normally; the request is both authenticated and authorized
+				isAuthorized=true;	//the request is both authenticated and authorized
 			}
 		}
-		final String realm=getRealm(resourceURI);	//get the realm for this resource
-		if(realm!=null)	//if we have a realm to authenticate
+		if(credentials!=null)	//if credentials were provided
 		{
-			final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials);	//create an authenticate challenge
-			throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
+			Debug.log("authorized", isAuthorized, resourceURI, method, principal, realm);	//log the authorization result
 		}
-		else	//if the requested resource is not within a realm
+		if(!isAuthorized)	//if authentication and authorization didn't succeed, throw an exception
 		{
-			throw new HTTPForbiddenException(resourceURI.toString());	//the request is forbidden for this resource
+			if(realm!=null)	//if we have a realm to authenticate
+			{
+				final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials);	//create an authenticate challenge
+				throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
+			}
+			else	//if the requested resource is not within a realm
+			{
+				throw new HTTPForbiddenException(resourceURI.toString());	//the request is forbidden for this resource
+			}
 		}
 	}
 
@@ -315,6 +326,7 @@ Debug.trace("using real ID", principalID.substring(separatorIndex+1));
 	</ul>
 	This version allows authentication for all <code>null</code> principals with no credentials,
 		and all non-<code>null</code> principals valid credentials.
+  @param request The HTTP request.
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param requestURI The request URI as given in the HTTP request.
@@ -323,7 +335,7 @@ Debug.trace("using real ID", principalID.substring(separatorIndex+1));
 	@return <code>true</code> if the given credentials provide authentication for the given principal.
 	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authenticated.
 	*/
-	protected boolean isAuthenticated(final URI resourceURI, final String method, final String requestURI, final Principal principal, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
+	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
 	{
 Debug.trace("authenticating");
 		final String realm=credentials!=null ? credentials.getRealm() : null;	//see if the credentials reports the realm, if we have credentials
@@ -368,15 +380,15 @@ Debug.trace("got password for credentials", new String(password));
 
 	/**Checks whether the given principal is authorized to invoke the given method on the given resource.
 	This version authorized any principal invoking any method on any resource in any realm.
+  @param request The HTTP request.
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
-	@param requestURI The request URI as given in the HTTP request.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
 	@param realm The realm with which the resource is associated, or <code>null</code> if the realm is not known.
 	@return <code>true</code> if the given principal is authorized to perform the given method on the resource represented by the given URI.
 	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
 	*/
-	protected boolean isAuthorized(final URI resourceURI, final String method, final String requestURI, final Principal principal, final String realm) throws HTTPInternalServerErrorException
+	protected boolean isAuthorized(final HttpServletRequest request, final URI resourceURI, final String method, final Principal principal, final String realm) throws HTTPInternalServerErrorException
 	{
 		return true;	//default to authorizing access
 	}

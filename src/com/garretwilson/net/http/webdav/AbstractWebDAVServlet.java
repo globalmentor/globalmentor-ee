@@ -2,6 +2,7 @@ package com.garretwilson.net.http.webdav;
 
 import java.io.*;
 import java.net.*;
+import java.security.Principal;
 import java.util.*;
 import static java.util.Collections.*;
 import java.util.regex.Pattern;
@@ -91,10 +92,10 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 	protected static boolean isRedirectSupported(final HttpServletRequest request)	//TODO maybe transfer this to BasicServlet
 	{
 		final String userAgent=getUserAgent(request);	//get the user agent sending this request
-Debug.trace("checking user agent for redirect support", userAgent);
+//G***del Debug.trace("checking user agent for redirect support", userAgent);
 		for(final Pattern pattern:REDIRECT_UNSUPPORTED_AGENTS)	//look at each agent not supporting redirects
 		{
-Debug.trace("checking pattern", pattern);
+//G***del Debug.trace("checking pattern", pattern);
 			if(pattern.matcher(userAgent).matches())	//if this is a buggy user agent
 			{
 				return false;	//show that we recognize this user agent as one not correctly supporting redirects
@@ -317,7 +318,7 @@ Debug.trace("getting destination");
 				{
 Debug.trace("requested destination", requestedDestinationURI);
 						//get the canonical destination URI
-					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resource);
+					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
 					final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
 	Debug.trace("destination exists?", destinationExists);			
 					final int depth=getDepth(request);	//determine the requested depth
@@ -372,7 +373,7 @@ Debug.trace("getting destination");
 				{
 Debug.trace("requested destination", requestedDestinationURI);
 						//get the canonical destination URI
-					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resource);
+					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
 					final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
 	Debug.trace("destination exists?", destinationExists);			
 					final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
@@ -616,13 +617,12 @@ Debug.trace("setting content length to:", contentLength);
 	</ul>
   @param requestedResourceURI The requested absolute URI of the resource.
   @param method The HTTP request method.
-  @param analogousResource A resource to use by analogy, or <code>null</code> if
-  	no analogous resource is known. This parameter is useful when used with the
-  	COPY or MOVE method.
+  @param analogousResourceURI The URI of a resource to use by analogy, or <code>null</code> if
+  	no analogous resource is known. This parameter is useful when used with the COPY or MOVE method.
   @return The canonical URI of the requested resource, which may be different
   	than the requested resource URI.
   */
-	protected URI getResourceURI(final URI requestedResourceURI, final String method, final R analogousResource)
+	protected URI getResourceURI(final URI requestedResourceURI, final String method, final URI analogousResourceURI)
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
 Debug.trace("requested URI", requestedResourceURI);
@@ -637,10 +637,10 @@ Debug.trace("requested URI", requestedResourceURI);
 			{
 				resourceURI=collectionURI;	//use the collection URI
 			}
-			else if(analogousResource!=null)	//if there is an analogous resource
+			else if(analogousResourceURI!=null)	//if there is an analogous resource
 			{
 					//if the analogous resource ends with '/'
-				if(endsWith(analogousResource.getReferenceURI().toString(), PATH_SEPARATOR))
+				if(endsWith(analogousResourceURI.toString(), PATH_SEPARATOR))
 				{
 					resourceURI=collectionURI;	//use the collection URI					
 				}
@@ -971,6 +971,39 @@ Debug.trace("content length", contentLength);
 			methodSet.add(PUT);  		
 		}
 		return methodSet;	//return the allowed methods
+	}
+
+	/**Checks whether the given principal is authorized to invoke the given method on the given resource.
+	This version performs no specific checks, but recognizes the COPY and MOVE WebDAV methods and
+		correctly calls this method on their destination URIs. For this reason, any child class must
+		call this method.
+  @param request The HTTP request.
+	@param resourceURI The URI of the resource requested.
+	@param method The HTTP method requested on the resource.
+	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
+	@param realm The realm with which the resource is associated, or <code>null</code> if the realm is not known.
+	@return <code>true</code> if the given principal is authorized to perform the given method on the resource represented by the given URI.
+	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
+	*/
+	protected boolean isAuthorized(final HttpServletRequest request, final URI resourceURI, final String method, final Principal principal, final String realm) throws HTTPInternalServerErrorException
+	{
+		boolean isAuthorized=super.isAuthorized(request, resourceURI, method, principal, realm);	//see if this principal passes the default authorization checks
+		if(isAuthorized)	//if this principal passes the default authorization checks
+		{
+			if(COPY_METHOD.equals(method) || MOVE_METHOD.equals(method))	//if this is COPY or MOVE
+			{
+				final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
+				if(requestedDestinationURI!=null)	//if a destination was given (ignore missing destinations---a principal is authorized to copy or move a resource to nowhere)
+				{
+Debug.trace("checking authorization for requested destination", requestedDestinationURI);
+						//get the canonical destination URI
+					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
+						//for COPY and MOVE, make sure the principal is authorized to do a PUT on the destination
+					isAuthorized=isAuthorized(request, destinationURI, PUT_METHOD, principal, realm);
+				}
+			}
+		}
+		return isAuthorized;	//return whether the principal is authorized
 	}
 
   /**Determines if the resource at a given URI exists.
