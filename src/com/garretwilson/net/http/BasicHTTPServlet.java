@@ -84,12 +84,12 @@ Debug.trace("path info:", request.getPathInfo());
 //G***del Debug.trace("unauthorized; ready to issue challenge:", unauthorizedException.getAuthenticateChallenge());
 				//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
-			response.sendError(unauthorizedException.getStatusCode());	//send back the redirect status code as an error
+			response.sendError(unauthorizedException.getStatusCode());	//send back the status code as an error
 		}
 		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
 		{
 			setAllow(response, methodNotAllowedException.getAllowedMethods());	//report the allowed methods
-			response.sendError(methodNotAllowedException.getStatusCode());	//send back the redirect status code as an error
+			response.sendError(methodNotAllowedException.getStatusCode());	//send back the status code as an error
 		}
 		catch(final HTTPException exception)	//if any other HTTP error was encountered
 		{
@@ -111,9 +111,15 @@ Debug.trace("path info:", request.getPathInfo());
   }
 
 	/**Determines the URI of the requested resource.
+	<p>If it is determined that the requested resource is located in another location,
+	this method may throw an <code>HTTPRedirectException</code> with the new location.
+	This method may choose to continue processing the request (e.g. if a client cannot
+	handle redirects) using a different URI; in this case the new URI will be returned.</p>
   @param request The HTTP request indicating the requested resource.
-  @return The URI of the requested resource.
+  @return The URI of the requested resource, which may be different from the URL
+  	specified in the request.
   @exception HTTPRedirectException if the request should be redirected to another URI.
+  @see HttpServletRequest#getRequestURL()
   */
 	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
 	{

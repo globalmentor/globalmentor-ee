@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import static java.util.Collections.*;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.ContentType;
 import javax.servlet.*;
@@ -59,6 +60,49 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 		/**@return The DOM implementation used as a document factory.*/
 		protected DOMImplementation getDOMImplementation() {return domImplementation;}
 
+	/**An array of regular expressions matching user agents not correctly supporting redirects.
+	@see http://httpd.apache.org/docs-2.0/env.html#special
+	@see http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
+	@see http://purl.org/NET/http-errata#saferedirect
+	*/
+	private final static Pattern[] REDIRECT_UNSUPPORTED_AGENTS=new Pattern[]
+		  {
+				Pattern.compile("^gnome-vfs.*"),	//Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
+//G***del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
+				Pattern.compile("Microsoft Data Access Internet Publishing Provider.*"),	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
+				Pattern.compile("Microsoft-WebDAV-MiniRedir/5.1.2600.*"),	//http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html
+				Pattern.compile("^DAVAccess/1.[01234].[1234].*"),	//iCal; see http://macintouch.com/panreader02.html
+				Pattern.compile("^Dreamweaver-WebDAV-SCM1.0[23].*"),	//Dreamweaver MX, 2003; see http://archive.webct.com/docs/mail/nov03/0018.html
+				Pattern.compile("^neon.*"),	//neon; see http://archive.webct.com/docs/mail/nov03/0018.html ; http://www.mail-archive.com/tomcat-dev@jakarta.apache.org/msg53373.html
+				Pattern.compile("^WebDAVFS.*"),	//Macintosh OS X Jaquar; see http://www.askbjoernhansen.com/archives/2002/08/27/000115.html
+//G***del				"^WebDAVFS/1.[012]",	//Macintosh; see http://www.macosxhints.com/article.php?story=20021114063433862
+				Pattern.compile("^WebDrive.*"),	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
+		  };
+
+
+	/**Determines if the user agent sending the request supports redirects.
+	An agent is assumed to support redirects unless its name is recognized
+		as an agent not supporting redirects.
+	@param request The HTTP request.
+	@return <code>true</code> if the agent sending the request is not known
+		 to be redirect-averse.
+	@see #REDIRECT_UNSUPPORTED_AGENTS
+	*/
+	protected static boolean isRedirectSupported(final HttpServletRequest request)	//TODO maybe transfer this to BasicServlet
+	{
+		final String userAgent=getUserAgent(request);	//get the user agent sending this request
+Debug.trace("checking user agent for redirect support", userAgent);
+		for(final Pattern pattern:REDIRECT_UNSUPPORTED_AGENTS)	//look at each agent not supporting redirects
+		{
+Debug.trace("checking pattern", pattern);
+			if(pattern.matcher(userAgent).matches())	//if this is a buggy user agent
+			{
+				return false;	//show that we recognize this user agent as one not correctly supporting redirects
+			}
+		}
+		return true;	//if we didn't recognize the user agent, we assume it supports redirects
+	}
+	
 	/**Services an HTTP request based upon its method.
 	This version provides support for WebDAV methods.
   @param method The HTTP method being serviced. 
@@ -158,8 +202,11 @@ Debug.trace("doing options for URI", resourceURI);
 	{
 		if(!READ_ONLY)	//if this servlet is not read-only
 		{
+Debug.trace("getting resource URI");
 			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+Debug.trace("checking destination existence");
 			final boolean exists=exists(resourceURI);	//see whether the resource already exists
+Debug.trace("exists", exists);
 			final R resource;	//we'll get the existing resource, if there is one 
 			if(exists)	//if this resource exists
 	    {
@@ -167,12 +214,14 @@ Debug.trace("doing options for URI", resourceURI);
 	    }
 			else	//if the resource doesn't exist
 			{
+Debug.trace("trying to create resource");
 				try
 				{
 					resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 				}
 				catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 				{
+Debug.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 				}
 			}
@@ -182,6 +231,7 @@ Debug.trace("doing options for URI", resourceURI);
 				final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
 				try
 				{
+Debug.trace("trying to write");
 					OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
 				}
 				finally
@@ -252,12 +302,19 @@ Debug.trace("doing options for URI", resourceURI);
 		if(!READ_ONLY)	//if this servlet is not read-only
 		{
 			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+Debug.trace("moving; checking to see if resource exists", resourceURI);			
 			if(exists(resourceURI))	//if this resource exists
 	    {
+Debug.trace("resource exists; getting resource");			
 				final R resource=getResource(resourceURI);	//get the resource information
+Debug.trace("getting destination");			
 				final URI destinationURI=getDestination(request);	//get the destination URI for the operation
+Debug.trace("destination", destinationURI);			
+					//TODO check for existence
 				final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+Debug.trace("destination exists?", destinationExists);			
 				boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
+Debug.trace("is overwrite?", overwrite);			
 				moveResource(resource, destinationURI, overwrite);	//move the resource to its new location
 				if(destinationExists)	//if the destination resource already existed
 				{
@@ -456,9 +513,15 @@ Debug.trace("setting content length to:", contentLength);
 	}
 
 	/**Determines the URI of the requested resource.
+	<p>If it is determined that the requested resource is located in another location,
+	this method may throw an <code>HTTPRedirectException</code> with the new location.
+	This method may choose to continue processing the request (e.g. if a client cannot
+	handle redirects) using a different URI; in this case the new URI will be returned.</p>
   @param request The HTTP request indicating the requested resource.
-  @return The URI of the requested resource.
+  @return The URI of the requested resource, which may be different from the URL
+  	specified in the request.
   @exception HTTPRedirectException if the request should be redirected to another URI.
+  @see HttpServletRequest#getRequestURL()
   */
 	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
 	{
@@ -483,26 +546,64 @@ Debug.trace("request URI", requestURI);
 			if(redirect)	//if we should redirect
 			{
 Debug.trace("sending redirect", redirectURI);
-				throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
-			}
-/*G***del when works
-			if(!isCollectionMethod	
-					&& !exists(requestURI))	//if this is not a collection-specific method
-			if(isCollectionMethod || )	//if the client asked for a collection, or there is no such file
-			{
-				final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
-	//G***del Debug.trace("checking redirect URI", redirectURI);
-				if(isCollectionMethod || isCollection(redirectURI))	//if the URI with a trailing slash added is a collection
+				if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
 				{
-	Debug.trace("sending redirect", redirectURI);
 					throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
 				}
+				else	//if we can't redirect
+				{
+					return redirectURI;	//we'll just pretend they requested the correct URI					
+				}
 			}
-//G***del when works		return URI.create(request.getRequestURL().toString());	//return a URI created from the full request URL
-*/
 		}
 		return requestURI;	//return the requested URI
 	}
+
+	/**Determines the URI of a requested resource from its requested URI.
+	<p>If it is determined that the requested resource is located in another location,
+	the new URI will be returned.</p>
+  @param requestURI The absolute URI of the requested resource.
+  @return The URI of the requested resource, which may be different from the URI
+  	specified in the request.
+  @exception IllegalArgumentException if the given URI is not absolute with an absolute path.
+  @see HttpServletRequest#getRequestURL()
+  */
+/*G***fix
+	protected URI getResourceURI(final URI requestURI)
+	{
+Debug.trace("request URI", requestURI);
+//G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
+//G***del Debug.trace("exists?", exists(requestURI));
+		final String requestURIString=requestURI.toString();	//get the string version of the request URI
+		if(!endsWith(requestURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
+		{
+			final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
+			final boolean isCollectionMethod=MKCOL_METHOD.equals(request.getMethod());	//see if this is a method referring to a collection
+			final boolean redirect;	//determine if we need to redirect
+			if(isCollectionMethod)	//if this is a collection-specific method
+			{
+				redirect=true;	//redirect to the real collection URI
+			}
+			else	//if this is not a collection-specific method
+			{
+				redirect=!exists(requestURI) && isCollection(redirectURI);	//redirect if there is no such file but redirecting would take the client to a collection
+			}
+			if(redirect)	//if we should redirect
+			{
+Debug.trace("sending redirect", redirectURI);
+				if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
+				{
+					throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
+				}
+				else	//if we can't redirect
+				{
+					return redirectURI;	//we'll just pretend they requested the correct URI					
+				}
+			}
+		}
+		return requestURI;	//return the requested URI
+	}
+*/
 
 	/**Determines the requested depth.
   @param request The HTTP request.
