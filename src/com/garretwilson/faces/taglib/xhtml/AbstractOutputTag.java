@@ -10,27 +10,15 @@ import com.garretwilson.faces.el.*;
 
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.faces.el.ExpressionUtilities.*;
 
-/**An abstract base class for command component and renderer tags.
+/**An abstract base class for output component and renderer tags.
 @author Garret Wilson
 */
-public abstract class AbstractCommandTag extends AbstractXHTMLTag
+public abstract class AbstractOutputTag extends AbstractXHTMLTag
 {
 
 	/**@return The type of the component to use for this tag.*/
-	public String getComponentType() {return UICommand.COMPONENT_TYPE;}
-
-	/**The component action.*/
-	private String action;
-
-		/**@return The component action.*/
-		public String getAction() {return action;}
-
-		/**Sets the component acdtion.
-		@param action The new component action.
-		*/
-		public void setAction(final String action) {this.action=action;}
+	public String getComponentType() {return UIOutput.COMPONENT_TYPE;}
 
 	/**The value of the component.*/
 	private String value;
@@ -49,14 +37,6 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	protected void setProperties(final UIComponent component)
 	{
 		super.setProperties(component);	//set the default properties
-		final FacesContext context=getFacesContext();	//get the JSF context
-		final Application application=context.getApplication();	//get the JSF application
-		final UICommand command=(UICommand)component;	//get the component as a command
-		if(getAction()!=null)	//if we have an action
-		{
-				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
-			command.setAction(new ExpressionMethodBinding(createExpression(application, getAction())));
-		}
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
    }
 
@@ -64,7 +44,6 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 	public void release()
 	{
 		super.release();	//release the default resources
-		action=null;
 		value=null;
 	}
 }
