@@ -131,7 +131,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 			{
 				writer.endElement(itemElementName);	//end the element for the item
 			}
-			writer.write('\n');	//write a newline after the column
+			writer.writeText("\n", null);	//write a newline after the column
 		}		
 	}
 
