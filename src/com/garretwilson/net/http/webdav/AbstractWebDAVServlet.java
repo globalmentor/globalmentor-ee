@@ -101,6 +101,7 @@ Debug.trace("checking pattern", pattern);
 			}
 		}
 		return true;	//if we didn't recognize the user agent, we assume it supports redirects
+//G***del		return false;	//TODO fix
 	}
 	
 	/**Services an HTTP request based upon its method.
@@ -152,7 +153,7 @@ Debug.trace("checking pattern", pattern);
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("doing options for URI", resourceURI);
-		response.addHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
+		response.setHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
 		final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
 		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
 		response.addHeader(MS_AUTHOR_VIA_HEADER, MS_AUTHOR_VIA_DAV);	//tell Microsoft editing tools to use WebDAV rather than FrontPage
@@ -646,6 +647,8 @@ Debug.trace("requested URI", requestedResourceURI);
 			}
 			else	//if there is no analogous resource (don't do the liberal non-existence check if there is an analogous resource, because this could prevent MOVE or COPY from a non-collection to another non-collection when a similarly-named collection exists)
 			{
+Debug.trace("requested resource exists:", exists(requestedResourceURI));
+Debug.trace("other resource is collection:", isCollection(collectionURI));
 				//if there is no such resource but there is a resource at the collection URI
 				if(!exists(requestedResourceURI) && isCollection(collectionURI))
 				{

@@ -9,8 +9,10 @@ import java.util.Date;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.garretwilson.lang.CharSequenceUtilities;
 import static com.garretwilson.lang.ClassUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
+import static com.garretwilson.net.http.webdav.WebDAVConstants.DAV_HEADER;
 import com.garretwilson.security.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.util.Debug;
@@ -47,7 +49,8 @@ Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 		try
 		{
-			checkAuthorization(request);	//check to see if the request is authorized
+			if(!OPTIONS_METHOD.equals(request.getMethod()))	//G***testing
+				checkAuthorization(request);	//check to see if the request is authorized
 			doMethod(request.getMethod(), request, response);	//allow the subclass to do special processing if needed
 		}
 		catch(final AssertionError assertionError)	//if there was an assertion error, that's a serious internal server error
@@ -82,6 +85,10 @@ Debug.trace("path info:", request.getPathInfo());
 		catch(final HTTPUnauthorizedException unauthorizedException)	//401 Unauthorized
 		{
 //G***del Debug.trace("unauthorized; ready to issue challenge:", unauthorizedException.getAuthenticateChallenge());
+			
+			
+			//G***testing
+			response.setHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
 				//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
 			response.sendError(unauthorizedException.getStatusCode());	//send back the status code as an error
@@ -190,11 +197,13 @@ Debug.trace("path info:", request.getPathInfo());
 	@param method The HTTP method requested on the resource.
 	@param credentials The principal's credentials.
 	@exception HTTPInternalServerErrorException if there is an error checking the authorization.
+	@exception HTTPBadRequestException if the given credentials could not be understood.
   @exception HTTPRedirectException if the request should be redirected to another URI.
+	@exception HTTPForbiddenException if the requested resource is not within any realm of authorization.
 	@exception HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
 	@see #checkAuthorization(URI, String, AuthenticateCredentials)
 	*/
-	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPRedirectException, HTTPUnauthorizedException
+	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPBadRequestException, HTTPRedirectException, HTTPForbiddenException, HTTPUnauthorizedException
 	{
 		try
 		{
@@ -204,7 +213,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final SyntaxException syntaxException)	//if the credentials weren't syntactically correct
 		{
-			throw new HTTPInternalServerErrorException(syntaxException);	//TODO change this to an HTTPBadRequestException when implemented
+			throw new HTTPBadRequestException(syntaxException);
 		}
 	}
 
@@ -214,13 +223,14 @@ Debug.trace("path info:", request.getPathInfo());
 	@param requestURI The request URI as given in the HTTP request.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
 	@exception HTTPInternalServerErrorException if there is an error checking the authorization.
+	@exception HTTPForbiddenException if the requested resource is not within any realm of authorization.
 	@exception HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
 	@see #getPrincipal(AuthenticateCredentials)
 	@see #isAuthenticated(URI, String, Principal, AuthenticateCredentials)
 	@see #isAuthorized(URI, String, Principal)
-	@see #createAuthenticateChallenge(URI, String, Principal, AuthenticateCredentials)
+	@see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials)
 	*/
-	protected void checkAuthorization(final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPUnauthorizedException
+	protected void checkAuthorization(final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
 	{
 		final Principal principal=getPrincipal(credentials);	//get the principal providing credentials
 		if(isAuthenticated(resourceURI, method, requestURI, principal, credentials))	//if this principal is authenticated
@@ -232,8 +242,16 @@ Debug.trace("path info:", request.getPathInfo());
 				return;	//return normally; the request is both authenticated and authorized
 			}
 		}
-		final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, credentials);	//create an authenticate challenge
-		throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
+		final String realm=getRealm(resourceURI);	//get the realm for this resource
+		if(realm!=null)	//if we have a realm to authenticate
+		{
+			final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials);	//create an authenticate challenge
+			throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
+		}
+		else	//if the requested resource is not within a realm
+		{
+			throw new HTTPForbiddenException(resourceURI.toString());	//the request is forbidden for this resource
+		}
 	}
 
 	/**Looks up a principal from the given credentials.
@@ -244,7 +262,26 @@ Debug.trace("path info:", request.getPathInfo());
 	*/
 	protected Principal getPrincipal(final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
 	{
-		return credentials!=null ? getPrincipal(credentials.getPrincipalID()) : null;	//get the principal providing credentials, if there are credentials
+		if(credentials!=null)	//if we have credentials
+		{
+			final String principalID=credentials.getPrincipalID();	//get the ID of the principal
+Debug.trace("checking credentials with ID", principalID);
+			final int separatorIndex=CharSequenceUtilities.indexOf(principalID, '\\');	//G***testing
+			if(separatorIndex>=0)
+			{
+Debug.trace("using real ID", principalID.substring(separatorIndex+1));
+				return getPrincipal(principalID.substring(separatorIndex+1));	//G***testing
+			}
+			else
+			{
+				return getPrincipal(principalID);
+			}
+		}
+		else	//if we have no credentials
+		{
+			return null;	//there is no principal
+		}
+//G***del		return credentials!=null ? getPrincipal(credentials.getPrincipalID()) : null;	//get the principal providing credentials, if there are credentials
 	}
 
 	/**Looks up a principal from the given ID.
@@ -335,7 +372,7 @@ Debug.trace("got password for credentials", new String(password));
 	@param method The HTTP method requested on the resource.
 	@param requestURI The request URI as given in the HTTP request.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
-	@param realm The realm with which the resource is associated.
+	@param realm The realm with which the resource is associated, or <code>null</code> if the realm is not known.
 	@return <code>true</code> if the given principal is authorized to perform the given method on the resource represented by the given URI.
 	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
 	*/
@@ -351,15 +388,16 @@ Debug.trace("got password for credentials", new String(password));
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
+	@param The realm in which the resource is located.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
 	@return An authenticate challenge for the given resource URI and method.
 	@exception HTTPInternalServerErrorException if there is an error creating the authenticate challenge.
 	*/
-	protected AuthenticateChallenge createAuthenticateChallenge(final URI resourceURI, final String method, final Principal principal, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
+	protected AuthenticateChallenge createAuthenticateChallenge(final URI resourceURI, final String method, final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
 	{
 		try
 		{
-			return new DigestAuthenticateChallenge(getRealm(resourceURI), createNonce().toString());	//create a new digest authenticate challenge for the resource's realm, using a new nonce
+			return new DigestAuthenticateChallenge(realm, createNonce().toString());	//create a new digest authenticate challenge for the resource's realm, using a new nonce
 		}
 		catch(final NoSuchAlgorithmException noSuchAlgorithmException)	//if the default algorithm (MD5) is not supported
 		{
@@ -370,7 +408,7 @@ Debug.trace("got password for credentials", new String(password));
 	/**Determines the realm applicable for the resource indicated by the given URI
 	This version returns the local class name of the servlet.
 	@param resourceURI The URI of the resource requested.
-	@return The realm appropriate for the resource.
+	@return The realm appropriate for the resource, or <code>null</code> if the given resource is not in a known realm.
 	@exception HTTPInternalServerErrorException if there is an error getting the realm.
 	*/
 	protected String getRealm(final URI resourceURI) throws HTTPInternalServerErrorException
