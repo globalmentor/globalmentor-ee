@@ -7,6 +7,7 @@ import javax.faces.context.FacesContext;
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.el.*;
+import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
@@ -43,6 +44,17 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		*/
 		public void setValue(final String value) {this.value=value;}
 
+	/**Whether the command is immediate.*/
+	private String immediate;
+
+		/**@return Whether the command is immediate.*/
+		public String getImmediate() {return immediate;}
+
+		/**Sets whether the command is immediate.
+		@param value Whether the command should be immediate.
+		*/
+		public void setImmediate(final String immediate) {this.immediate=immediate;}
+
 	/**Sets the component properties from the tag's attributes.
 	@param component The component the properties of which should be set.
 	*/
@@ -58,6 +70,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 			command.setAction(new ExpressionMethodBinding(createExpression(application, getAction())));
 		}
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
+		setBooleanValue(component, IMMEDIATE_ATTRIBUTE, getImmediate());	//set the immediate attribute
    }
 
 	/**Release our resources.*/

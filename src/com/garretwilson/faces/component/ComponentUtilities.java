@@ -193,7 +193,7 @@ public class ComponentUtilities
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
 		expression or a <code>Boolean</code>.
-	@see Integer
+	@see Boolean
 	*/
 	public static void setBooleanValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
@@ -202,7 +202,7 @@ public class ComponentUtilities
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
-      	component.getAttributes().put(attributeName, new Boolean(attributeValue));	//store the integer value in the component's attributes
+      	component.getAttributes().put(attributeName, Boolean.valueOf(attributeValue));	//store the integer value in the component's attributes
 		}
 	}
 
@@ -215,7 +215,7 @@ public class ComponentUtilities
 	@throws IllegalArgumentException If the given string violates RFC&nbsp;2396
 	@exception NumberFormatException if the attribute value does not contain a
 		parsable integer.
-	@see Integer
+	@see URI
 	*/
 	public static void setURIValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{

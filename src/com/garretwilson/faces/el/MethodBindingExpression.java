@@ -43,6 +43,8 @@ public class MethodBindingExpression<T> implements Expression<T>
 		*/
 		protected MethodBinding getMethodBinding(final FacesContext context)
 		{
+//G***del Debug.setDebug(true);
+//G***del Debug.setVisible(true);
 //G***del Debug.trace("ready to create method binding");
 //G***del			if(methodBinding==null)	//if we haven't created the method-binding, yet
 			{
@@ -50,15 +52,22 @@ public class MethodBindingExpression<T> implements Expression<T>
 				final Class[] parameterTypes=new Class[parameterExpressions.length];	//create an array of classes, indicating parameter types
 				for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
 				{
-//G***del Debug.trace("looking at parameter expression: ", parameterExpressions[i].getExpressionString());
+					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
+//G***del Debug.trace("*****does this fix the type bug?", parameterTypes[i]);	//get the type of this parameter
+/*G***del when works
+Debug.trace("looking at parameter expression: ", parameterExpressions[i].getExpressionString());
 //TODO fix---why does this always return java.lang.Object					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
+Debug.trace("*****does this fix the type bug?", parameterExpressions[i].getType(context));	//get the type of this parameter
 					final Object parameterValue=parameterExpressions[i].getValue(context);	//TODO fix type bug---don't actually get the value here
 					parameterTypes[i]=parameterValue!=null ? parameterValue.getClass() : null;	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
 //G***del; doesn't work with null values					parameterTypes[i]=parameterExpressions[i].getValue(context).getClass();	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
-//G***del Debug.trace("parameter expression type: ", parameterExpressions[i].getType(context).getName());
+Debug.trace("parameter expression type: ", parameterExpressions[i].getType(context).getName());
+*/
 				}
 //G***del Debug.trace("actually creating method binding");
-				return context.getApplication().createMethodBinding(methodReference, parameterTypes);	//create a method binding and return it
+				final MethodBinding methodBinding=context.getApplication().createMethodBinding(methodReference, parameterTypes);	//create a method binding and return it
+//G***del Debug.trace("method binding:", methodBinding);
+				return methodBinding;
 			}
 //G***del			return methodBinding;	//return the method binding
 		}
@@ -80,8 +89,8 @@ public class MethodBindingExpression<T> implements Expression<T>
 	public MethodBindingExpression(final Application application, final String expressionString) throws IllegalArgumentException
 	{
 //G***del Debug.setDebug(true);
+//G***del Debug.setVisible(true);
 //G***del Debug.trace("creating method binding expression for string: ", expressionString);
-//G***del		this.application=application;	//save our application
 		this.expressionString=expressionString;	//save the expression string
 		final int expressionBeginIndex=expressionString.indexOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+1;	//find out where this expression begins
 		final int expressionEndIndex=expressionString.lastIndexOf(REFERENCE_EXPRESSION_END_CHAR);	//find out where this expression ends
@@ -122,17 +131,19 @@ public class MethodBindingExpression<T> implements Expression<T>
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
 //G***del Debug.trace("getting value of a method-binding expression: ", getExpressionString());
+		getMethodBinding(context);	//G***del
 		final Expression<?>[] parameterExpressions=getParameterExpressions();	//get the parameter expressions
 		final Object[] parameterValues=new Object[parameterExpressions.length];	//create an array of objects to hold the actual parameter values
 		for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
 		{
 			parameterValues[i]=parameterExpressions[i].getValue(context);	//get this parameter value
+//G***del Debug.trace("just got value for parameter", i, parameterValues[i]);
 		}
-		final T test=(T)getMethodBinding(context).invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
-/*G***del
-Debug.trace("value: ", test);
-Debug.trace("type: ", getType(context));
-*/
+		final MethodBinding methodBinding=getMethodBinding(context);
+//G***del Debug.trace("ready to invoke a method binding we got: ", methodBinding);
+		final T test=(T)methodBinding.invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
+//G***del Debug.trace("value: ", test);
+//G***del Debug.trace("type: ", getType(context));
 		return test;
 //G***bring back		return (T)getMethodBinding(context).invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
 	}
