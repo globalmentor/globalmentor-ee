@@ -44,6 +44,58 @@ public class ComponentUtilities
 		return message;	//return the message
 	}
 	
+	/**Constructs an ID from several ID components separated by the naming containiner separator character.
+	@param rootID The root ID.
+	@param postfixes The postfixes, each of which will be appended prefixed by the separator character.
+	@return A composite ID.
+	@see NamingContainer#SEPARATOR_CHAR
+	*/
+	public static String createID(final String rootID, final String... postfixes)
+	{
+		final StringBuilder stringBuilder=new StringBuilder(rootID);	//create a string builder starting with the root ID
+		for(final String postfix:postfixes)	//look at each of the following IDs
+		{
+			stringBuilder.append(NamingContainer.SEPARATOR_CHAR).append(postfix);	//:id
+		}
+		return stringBuilder.toString();	//return the ID we constructed
+	}
+
+	/**The character to replace the first character if needed.*/
+	protected final static char REPLACEMENT_FIRST_CHAR='x';
+
+	/**The character to use to replace any other character.*/
+	protected final static char REPLACEMENT_CHAR='_';
+
+	/**Creates a valid ID segmeent by replacing every non-ID character with an underscore
+		('_') character. If the first character of the string cannot begin a valid ID
+		character, it will be replaced with an 'x'.
+	@param string The string to be changed to a valid ID.
+	@return The string modified to be a valid ID.
+	@exception IllegalArgumentException if the string has no characters.
+	*/
+	public static String createValidID(final String string)	//TODO use constants
+	{
+		if(string.length()==0)	//if the string has no characters
+		{
+			throw new IllegalArgumentException(string);
+		}
+		final StringBuilder stringBuilder=new StringBuilder(string); //create a string builder from the string, so that we can modify it as necessary
+		final char firstChar=stringBuilder.charAt(0);	//get the first character
+	  if(!Character.isLetter(firstChar) && firstChar!='_')	//if the first character isn't valid
+	  {
+	  	stringBuilder.setCharAt(0, REPLACEMENT_FIRST_CHAR);	//make the first character valid
+	  }
+		for(int i=stringBuilder.length()-1; i>0; --i)  //look at each character in the string, except the first (which we've already checked)
+		{
+			final char character=stringBuilder.charAt(i);	//get this character
+			if(!Character.isLetter(character) && !Character.isDigit(character) && character!='-' && character!='_')
+			{
+				stringBuilder.setCharAt(i, REPLACEMENT_CHAR);	//make this character valid
+			}
+		}
+		return stringBuilder.toString(); //return the string we constructed
+	}
+
 	/**Encodes a component and its children, either by delegating to the component
  		if that component can render its children, or by recursively rendering that
  		component's children manually.
