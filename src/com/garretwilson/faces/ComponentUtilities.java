@@ -1,9 +1,13 @@
 package com.garretwilson.faces;
 
+import java.net.URI;
 import java.util.*;
 
+import javax.faces.application.Application;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
+import javax.faces.webapp.UIComponentTag;
 
 import com.garretwilson.util.NameValuePair;
 
@@ -103,6 +107,96 @@ public class ComponentUtilities
 			}
 		}
 		return parameterMap;	//return the map of parameters
+	}
+
+	
+	/**Sets a string value of a component.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or a <code>String</code>.
+	@see String
+	*/
+	public static void setStringValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, attributeValue);	//store the string value in the component's attributes
+		}
+	}
+
+	/**Sets an integer value of a component.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or an <code>Integer</code>.
+	@exception NumberFormatException if the attribute value does not contain a
+		parsable integer.
+	@see Integer
+	*/
+	public static void setIntegerValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, new Integer(attributeValue));	//store the integer value in the component's attributes
+		}
+	}
+
+	/**Sets a boolean value of a component.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or a <code>Boolean</code>.
+	@see Integer
+	*/
+	public static void setBooleanValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, new Boolean(attributeValue));	//store the integer value in the component's attributes
+		}
+	}
+
+	/**Sets a URI value of a component.
+	@param component The component on which the value should be set.
+	@param attributeName The name of the attribute.
+	@param attributeValue The value of the attribute; either a value-binding
+		expression or a <code>URI</code>.
+	@throws IllegalArgumentException If the given string violates RFC&nbsp;2396
+	@exception NumberFormatException if the attribute value does not contain a
+		parsable integer.
+	@see Integer
+	*/
+	public static void setURIValue(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
+      else	//if the string is not a value reference
+      	component.getAttributes().put(attributeName, URI.create(attributeValue));	//store the integer value in the component's attributes
+		}
+	}
+   
+	/**Sets a value binding expression attribute value for a component, keyed to the attribute name.
+	@param component The component on which the value should be set.
+	@param attributeName The name under which the value-binding will be stored.
+	@param attributeValue The value-binding expression.
+	 */
+	protected static void setValueBinding(final UIComponent component, final String attributeName, final String attributeValue)
+	{
+		final FacesContext facesContext=FacesContext.getCurrentInstance();	//get the JSF context
+		final ValueBinding valueBinding=facesContext.getApplication().createValueBinding(attributeValue);	//create a value binding for the attribute value
+		component.setValueBinding(attributeName, valueBinding);	//set the value binding for the component
 	}
 
 }
