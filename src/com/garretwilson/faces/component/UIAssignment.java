@@ -6,6 +6,7 @@ import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 import com.garretwilson.faces.*;
+import com.garretwilson.faces.el.*;
 import com.garretwilson.lang.ClassUtilities;
 
 /**Represents an assignment to a variable of a value.
@@ -52,68 +53,16 @@ public class UIAssignment extends UIComponentBase
 		*/
 		public void setVar(final String var) {this.var=var;}
 
-	/**The value binding, or <code>null</code> if there is no value binding.*/
-	private ValueBinding valueBinding=null;
+	/**The expression encapsulating the value or reference.*/
+	private Expression<?> expression;
 
-		/**@return The value binding, or <code>null</code> if there is no value binding.*/
-		public ValueBinding getValueBinding() {return valueBinding;}
+		/**@return The expression encapsulating the value or reference.*/
+		public Expression<?> getExpression() {return expression;}
 
-		/**Sets the value binding.
-		@param valueBinding The value binding, or <code>null</code> if there is no
-			value binding.
+		/**Sets the expression.
+		@param expression The expression encapsulating the value or reference.
 		*/
-		public void setValueBinding(final ValueBinding valueBinding) {this.valueBinding=valueBinding;}
-
-	/**The method binding, or <code>null</code> if there is no method binding.*/
-	private MethodBinding methodBinding=null;
-
-		/**@return The method binding, or <code>null</code> if there is no method binding.*/
-		public MethodBinding getMethodBinding() {return methodBinding;}
-
-		/**Sets the method binding.
-		@param methodBinding The method binding, or <code>null</code> if there is no
-			method binding.
-		*/
-		public void setMethodBinding(final MethodBinding methodBinding) {this.methodBinding=methodBinding;}
-	
-	/**The non-null array of parameter bindings for the method call, or
-		<code>null</code> if there is no method binding.
-	*/
-	private ValueBinding[] parameterBindings=null;
-
-		/**@return The non-null array of parameter bindings for the method call, or
-			<code>null</code> if there is no method binding.
-		@see #getMethodBinding()
-		*/
-		public ValueBinding[] getParameterBindings() {return parameterBindings;}
-
-		/**Sets the parameter bindings
-		@param parameterBindings The parameter bindings to be used by the used
-			by the method binding instantiation.
-		*/
-		public void setParameterBindings(final ValueBinding[] parameterBindings) {this.parameterBindings=parameterBindings;}
-
-	/**The value to be assigned to the variable.*/
-//G***del	private Object value=null;
-
-		/**@return The value to be assigned to the variable.*/
-//G***del		public Object getValue() {return ComponentUtilities.getValue(getFacesContext(), this, value, VALUE_VAR);}
-
-		/**Sets the value to be assigned to the variable.
-		@param value The value to be assigned to the variable
-		*/
-//G***del		public void setValue(final Object value) {this.value=value;}
-
-	/**The name of the variable to hold the method binding.*/
-//G***del	private String method=null;
-
-		/**@return The the method binding.*/
-//G***del		public String getMethod() {return ComponentUtilities.getValue(getFacesContext(), this, method, METHOD_VAR);}
-
-		/**Sets the method binding.
-		@param method The method-binding expression.
-		*/
-//G***del		public void setMethod(final String method) {this.method=method;}
+		public void setExpression(final Expression<?> expression) {this.expression=expression;}
 
 	/**Assigns the value or the method invocation result to the variable.
 	@param context The JSF context.
@@ -126,29 +75,18 @@ public class UIAssignment extends UIComponentBase
 		super.encodeBegin(context);	//do the default encoding
 		if(isRendered())	//if this component is rendered
 		{
-			final Application application=context.getApplication();	//get the application
-			final Object value;	//we'll determine the value
-			if(getValueBinding()!=null)	//if we have a value binding
+			final Expression<?> expression=getExpression();	//get our value expression
+			if(expression!=null)	//if we have an expression
 			{
-				value=getValueBinding().getValue(context);	//use the value of the value binding
-			}
-			else if(getMethodBinding()!=null)	//if we have a method binding
-			{
-				final ValueBinding[] parameterBindings=getParameterBindings();	//get the parameter bindings
-				assert parameterBindings!=null : "No parameter bindings present for invoking the method binding.";
-				final Object[] parameters=new Object[parameterBindings.length];	//create an array of objects to hold the actual parameters
-				for(int i=0; i<parameterBindings.length; ++i)	//look at each parameter value binding
-				{
-					parameters[i]=parameterBindings[i].getValue(context);	//get this parameter value
-				}
-				value=getMethodBinding().invoke(context, parameters);	//invoke the method binding
+				final Object value=expression.getValue(context);	//get the expression value
+				final Application application=context.getApplication();	//get the JSF application
+				final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO refactor into an ExpressionUtilities method
+				varValueBinding.setValue(context, value);	//assign the expression value to the variable
 			}
 			else	//if we have no value binding or method binding
 			{
-				throw new NullPointerException("No value binding or method binding for assignment.");
+				throw new NullPointerException("No expression to assign.");
 			}
-   		final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO use constants
-			varValueBinding.setValue(context, value);	//assign the value to the variable
 		}
 	}
 

@@ -8,23 +8,22 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.Renderer;
 
-import com.garretwilson.text.xml.xhtml.XHTMLConstants;
+import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Encapsulates basic XHTML rendering functionality.
 <p>Inspired by <code>com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.java</code>.</p>
 @author Garret Wilson
 */
-public class AbstractXHTMLRenderer extends Renderer implements XHTMLConstants
+public class AbstractXHTMLRenderer extends Renderer
 {
 
-	
 	/**@return <code>true</code> if the component has an <code>id</code> attribute that isn't automatically generated.*/ 
 	protected boolean hasCustomID(final UIComponent component)
 	{
 		final String id=component.getId();	//get the component's ID
 		return id!=null && !id.startsWith(UIViewRoot.UNIQUE_ID_PREFIX);	//see if there is an ID that wasn't generated
 	}
-
 
 	/**Writes the component ID, if there is a custom ID.
 	@param context The faces context.

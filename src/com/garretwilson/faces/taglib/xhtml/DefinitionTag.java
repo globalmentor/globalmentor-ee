@@ -6,7 +6,7 @@ import com.garretwilson.faces.component.UIDefinition;
 import com.garretwilson.faces.component.UIDefinitionList;
 
 //TODO comment
-public class DefinitionTag extends UIComponentTag {
+public class DefinitionTag extends XHTMLTag {
 
     public String getRendererType() {
         return null;
