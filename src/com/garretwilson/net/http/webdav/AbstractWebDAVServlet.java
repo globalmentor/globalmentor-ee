@@ -81,6 +81,9 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
 		}		
 		switch(webdavMethod)	//see which WebDAV method this is
 		{
+			case MOVE:
+				doMove(request, response);	//delegate to the move method
+				break;
 			case MKCOL:
 				doMkCol(request, response);	//delegate to the mkcol method
 				break;
@@ -205,7 +208,74 @@ Debug.trace("doing options for URI", resourceURI);
 		}
 		else	//if this servlet is read-only
 		{
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that this method is forbidden
+			throw new HTTPForbiddenException();	//indicate that this method is forbidden
+		}
+  }
+
+	/**Services the DELETE method.
+  @param request The HTTP request.
+  @param response The HTTP response.
+  @exception ServletException if there is a problem servicing the request.
+  @exception IOException if there is an error reading or writing data.
+  */
+	public void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	{
+		if(!READ_ONLY)	//if this servlet is not read-only
+		{
+			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+			final boolean exists=exists(resourceURI);	//see whether the resource already exists
+			final R resource;	//we'll get the existing resource, if there is one 
+			if(exists)	//if this resource exists
+	    {
+				resource=getResource(resourceURI);	//get the resource information
+				deleteResource(resource);	//delete the resource
+	    }
+	    else	//if the resource does not exist
+	    {
+  			throw new HTTPNotFoundException(resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+	    }					
+		}
+		else	//if this servlet is read-only
+		{
+			throw new HTTPForbiddenException();	//indicate that this method is forbidden
+		}
+  }
+
+	/**Services the MOVE method.
+  @param request The HTTP request.
+  @param response The HTTP response.
+  @exception ServletException if there is a problem servicing the request.
+  @exception IOException if there is an error reading or writing data.
+  */
+	public void doMove(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	{
+		if(!READ_ONLY)	//if this servlet is not read-only
+		{
+			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+			if(exists(resourceURI))	//if this resource exists
+	    {
+				final R resource=getResource(resourceURI);	//get the resource information
+				final URI destinationURI=getDestination(request);	//get the destination URI for the operation
+				final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+				boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
+				moveResource(resource, destinationURI, overwrite);	//move the resource to its new location
+				if(destinationExists)	//if the destination resource already existed
+				{
+					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+				}
+				else	//if the destination resource did not exist already
+				{
+					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+				}
+	    }
+			else	//if the resource doesn't exist
+			{
+				throw new HTTPNotFoundException();	//we can't move what's not there
+			}
+		}
+		else	//if this servlet is read-only
+		{
+			throw new HTTPForbiddenException();	//indicate that this method is forbidden
 		}
   }
 
@@ -240,7 +310,7 @@ Debug.trace("doing options for URI", resourceURI);
 		}
 		else	//if this servlet is read-only
 		{
-			response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that this method is forbidden
+			throw new HTTPForbiddenException();	//indicate that this method is forbidden
 		}
   }
 
@@ -358,7 +428,7 @@ Debug.trace("setting content type to:", contentType);
       	}
       	final long contentLength=getContentLength(resource);	//get the content length of the resource
       	if(contentLength>=0)	//if we found a content length for the resource
-	      	{
+	      {
 Debug.trace("setting content length to:", contentLength);
       		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
       		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
@@ -494,6 +564,10 @@ Debug.trace("content length", contentLength);
 				final XMLProcessor xmlProcessor=new XMLProcessor();	//create a new XML processor to process the information TODO use a generic way of getting the XML processor
 				return xmlProcessor.parseDocument(xmlInputStream, null);	//parse the document				
 			}
+		}
+		else if(contentLength<0)	//if no content length was given
+		{
+			throw new HTTPLengthRequiredException();	//indicate that we require a content length
 		}
 		return null;	//show that there is no content to return
 	}
@@ -801,6 +875,17 @@ Debug.trace("content length", contentLength);
 	@exception IOException Thrown if the resource could not be deleted.
 	*/
 	protected abstract void deleteResource(final R resource) throws IOException;
+
+	/**Moves a resource.
+	@param resource The resource to move
+	@param destinationURI The destination URI to which the resource should be moved.
+	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IOException Thrown if there is an error moving the resource.
+	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
+	*/
+	protected abstract void moveResource(final R resource, final URI destinationURI, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
 
 	/**Retrieves an list of child resources of the given resource.
 	@param resource The resource for which children should be returned.
