@@ -7,6 +7,7 @@ import javax.servlet.http.*;
 
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
+import com.garretwilson.util.Debug;
 
 /**An HTTP servlet with extended functionality. 
 @author Garret Wilson
@@ -25,6 +26,7 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
+//G***del Debug.setDebug(true);
 		try
 		{
 			doMethod(request.getMethod(), request, response);	//allow the subclass to do special processing if needed
@@ -37,7 +39,22 @@ public class BasicHTTPServlet extends HttpServlet
 				case SC_MOVED_TEMPORARILY:	//302
 					setLocation(response, redirectException.getLocation());	//set the redirect location
 					response.sendError(redirectException.getStatusCode());	//send back the redirect status code as an error
+					break;
+				default:	//if we don't understand the error
+					response.sendError(redirectException.getStatusCode());	//send back the redirect status code as an error
+					break;
 			}
+		}
+		catch(final HTTPUnauthorizedException unauthorizedException)	//401 Unauthorized
+		{
+//G***del Debug.trace("unauthorized; ready to issue challenge:", unauthorizedException.getAuthenticateChallenge());
+				//issue the challenge in the WWW-authenticate header
+			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
+			response.sendError(unauthorizedException.getStatusCode());	//send back the redirect status code as an error
+		}
+		catch(final HTTPException exception)	//if an unknown HTTP error was encountered
+		{
+			response.sendError(exception.getStatusCode());	//send back the status code as an error
 		}
   }
 

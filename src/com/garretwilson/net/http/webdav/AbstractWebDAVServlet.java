@@ -2,6 +2,7 @@ package com.garretwilson.net.http.webdav;
 
 import java.io.*;
 import java.net.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import static java.util.Collections.*;
 
@@ -21,9 +22,7 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import com.garretwilson.model.Resource;
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
-import com.garretwilson.net.http.BasicHTTPServlet;
-import com.garretwilson.net.http.HTTPMovedPermanentlyException;
-import com.garretwilson.net.http.HTTPRedirectException;
+import com.garretwilson.net.http.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
@@ -88,7 +87,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		else	//if the request was not recognized
 		{
-			super.service(request, response);	//do the default servicing
+			super.doMethod(method, request, response);	//do the default servicing
 		}
 /*G***del
       if (method.equals(METHOD_PROPFIND)) {
@@ -148,6 +147,20 @@ Debug.trace("doing options for URI", resourceURI);
   */
 	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
+/*G***fix
+		if(true)
+		{
+					try
+					{
+						final AuthenticateChallenge challenge=new DigestAuthenticateChallenge("some realm", "abc");	//G***testing
+						throw new HTTPUnauthorizedException(challenge);	//G***testing
+					}
+					catch (NoSuchAlgorithmException e)
+					{
+						throw new AssertionError(e);
+					}
+		}
+*/
 		serveResource(request, response, true);	//serve the resource with its content
 		//TODO ignore any broken pipe error
 	}
@@ -239,6 +252,22 @@ Debug.trace("doing options for URI", resourceURI);
 	{
 		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
 Debug.trace("doing propfind for URI", resourceURI);
+		
+/*G***fix
+if(true)
+{
+			try
+			{
+				final AuthenticateChallenge challenge=new DigestAuthenticateChallenge("some realm", "abc");	//G***testing
+				throw new HTTPUnauthorizedException(challenge);	//G***testing
+			}
+			catch (NoSuchAlgorithmException e)
+			{
+				throw new AssertionError(e);
+			}
+}
+*/
+		
 		if(LIST_DIRECTORIES)	//if we allow directory listing
 		{
 			if(exists(resourceURI))	//if the resource exists
