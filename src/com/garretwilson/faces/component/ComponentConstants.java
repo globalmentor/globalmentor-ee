@@ -18,6 +18,8 @@ public class ComponentConstants
 		//UICommand attributes
 	/**The UICommand.action attribute.*/
 	public final static String COMMAND_ACTION_ATTRIBUTE="action";
+	/**The UICommand.actionListener attribute.*/
+	public final static String COMMAND_ACTION_LISTENER_ATTRIBUTE="actionListener";
 
 		//UIGraphic attributes
 	/**The UIGraphic.url attribute.*/

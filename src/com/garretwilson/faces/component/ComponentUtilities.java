@@ -6,7 +6,7 @@ import java.util.*;
 import javax.faces.application.Application;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
-import javax.faces.el.ValueBinding;
+import javax.faces.el.*;
 import javax.faces.webapp.UIComponentTag;
 
 import com.garretwilson.faces.*;
@@ -438,6 +438,23 @@ public class ComponentUtilities
 		final ValueBinding valueBinding=new ExpressionValueBinding(createExpression(application, attributeValue));
 //G***del when works		final ValueBinding valueBinding=facesContext.getApplication().createValueBinding(attributeValue);	//create a value binding for the attribute value
 		component.setValueBinding(attributeName, valueBinding);	//set the value binding for the component
+	}
+
+	/**Sets a method binding expression attribute value for a component, keyed to the attribute name.
+	@param component The component on which the value should be set.
+	@param attributeName The name under which the method-binding will be stored.
+	@param attributeValue The method-binding expression, or <code>null</code> if
+		no method-binding expression should be set.
+	@param parameterTypes The parameter types of the method-binding expression.
+	*/
+	public static void setMethodBindingAttribute(final UIComponent component, final String attributeName, final String attributeValue, final Class... parameterTypes)
+	{
+		if(attributeValue!=null)	//if there is an attribute value
+		{
+			final Application application=FacesContext.getCurrentInstance().getApplication();	//get the JSF application
+			final MethodBinding methodBinding=application.createMethodBinding(attributeValue, parameterTypes);	//create a method binding for the attribute value
+     	component.getAttributes().put(attributeName, methodBinding);	//store the method binding in the component's attributes
+		}
 	}
 
 }

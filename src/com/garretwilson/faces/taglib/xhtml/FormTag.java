@@ -7,10 +7,10 @@ import javax.faces.webapp.UIComponentTag;
 
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.component.*;
-import com.garretwilson.faces.component.renderkit.xhtml.FileUploadFormRenderer;
 import com.garretwilson.faces.el.*;
 import com.garretwilson.faces.component.ComponentUtilities;
 
+import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
@@ -25,7 +25,7 @@ public class FormTag extends AbstractXHTMLTag
 	public String getComponentType() {return UIForm.COMPONENT_TYPE;}
 
 	/**@return The default renderer for this component.*/
-	public String getRendererType() {return FileUploadFormRenderer.RENDERER_TYPE;}
+	public String getRendererType() {return FORM_RENDER_TYPE;}
 
 	/**The encoding type.*/
 	private String enctype;

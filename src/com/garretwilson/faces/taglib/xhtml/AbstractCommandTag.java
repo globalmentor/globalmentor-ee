@@ -3,6 +3,7 @@ package com.garretwilson.faces.taglib.xhtml;
 import javax.faces.application.Application;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.component.*;
@@ -28,10 +29,21 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		/**@return The component action.*/
 		public String getAction() {return action;}
 
-		/**Sets the component acdtion.
+		/**Sets the component action.
 		@param action The new component action.
 		*/
 		public void setAction(final String action) {this.action=action;}
+
+	/**The component action listener.*/
+	private String actionListener;
+
+		/**@return The component action listener.*/
+		public String getActionListener() {return actionListener;}
+
+		/**Sets the component action listener.
+		@param action The new component action listener.
+		*/
+		public void setActionListener(final String actionListener) {this.actionListener=actionListener;}
 
 	/**The value of the component.*/
 	private String value;
@@ -71,6 +83,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		}
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
 		setBooleanValue(component, IMMEDIATE_ATTRIBUTE, getImmediate());	//set the immediate attribute
+		setMethodBindingAttribute(component, COMMAND_ACTION_LISTENER_ATTRIBUTE, getActionListener(), ActionEvent.class);	//set the action listener attribute
    }
 
 	/**Release our resources.*/
