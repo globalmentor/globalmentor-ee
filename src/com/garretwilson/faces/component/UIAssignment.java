@@ -25,10 +25,7 @@ public class UIAssignment extends UIComponentBase
 	public static final String COMPONENT_FAMILY=COMPONENT_TYPE;
 
 	/**The name of the value binding variable.*/
-//G***del	public static final String VALUE_BINDING_VAR="value";
-
-	/**The name of the method binding variable.*/
-//G***del	public static final String METHOD_BINDING_VAR="method";
+	public static final String VALUE_VAR="value";
 
 	/**@return The component family.*/
 	public String getFamily()
@@ -54,45 +51,71 @@ public class UIAssignment extends UIComponentBase
 		*/
 		public void setVar(final String var) {this.var=var;}
 
-	/**The expression encapsulating the value or reference.*/
-	private Expression<?> expression;
+	/**The value, which overrides any value binding.*/
+	private Object value=null;
 
-		/**@return The expression encapsulating the value or reference.*/
-		public Expression<?> getExpression() {return expression;}
+		/**@return The value of the assignment.*/
+		protected Object getValue()
+		{
+			return ComponentUtilities.getValue(this, getFacesContext(), value, VALUE_VAR);	//get the local value or value binding
+		}		
 
-		/**Sets the expression.
-		@param expression The expression encapsulating the value or reference.
+		/**Sets the value.
+		@param value The new assignment value.
 		*/
-		public void setExpression(final Expression<?> expression) {this.expression=expression;}
+		public void setValue(final Object value)
+		{
+			this.value=value;	//set the value
+		}
 
 	/**Assigns the value or the method invocation result to the variable.
 	@param context The JSF context.
 	@exception IOException Thrown if there is an error writing to the output.
-	@exception NullPointerException Thrown if there is neither a value binding
-		or a method binding, or there is no parameter array for the method binding.
 	*/
 	public void encodeBegin(final FacesContext context) throws IOException
 	{
 		super.encodeBegin(context);	//do the default encoding
 		if(isRendered())	//if this component is rendered
 		{
-			final Expression<?> expression=getExpression();	//get our value expression
-			if(expression!=null)	//if we have an expression
-			{
-				final Object value=expression.getValue(context);	//get the expression value
+			performAssignment(context);	//perform the assignment
+		}
+	}
+
+	/**Performs the component tree processing required by the
+		<em>Apply Request Values</em> phase of the request processing
+		lifecycle for all facets of this component, all children of this
+    component, and this component itself.
+	This version performs the requested assignment.
+	@param context The JSF context for the request being processed.
+	@exception NullPointerException if <code>context</code> is <code>null</code>,
+		there is neither a value binding or a method binding, or there is no
+		parameter array for the method binding.
+	*/
+	public void processDecodes(final FacesContext context)
+	{
+		if(isRendered())	//if this component is rendered
+		{
+			performAssignment(context);	//perform the assignment
+		}
+		super.processDecodes(context);	//do the default decoding
+	}
+
+	/**Performs the requested assignment.
+	@param context The JSF context.
+	*/
+	protected void performAssignment(final FacesContext context)
+	{
+		final Object value=getValue();	//get our value
+		if(value!=null)	//if we have a value
+		{
 /*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
 Debug.trace("value of ", expression.getExpressionString(), "is", value, "of type", value!=null ? value.getClass() : null);
 */
-				final Application application=context.getApplication();	//get the JSF application
-				final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO refactor into an ExpressionUtilities method
-				varValueBinding.setValue(context, value);	//assign the expression value to the variable
-			}
-			else	//if we have no value binding or method binding
-			{
-				throw new NullPointerException("No expression to assign.");
-			}
+			final Application application=context.getApplication();	//get the JSF application
+			final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO refactor into an ExpressionUtilities method
+			varValueBinding.setValue(context, value);	//assign the expression value to the variable
 		}
 	}
 
@@ -101,7 +124,7 @@ Debug.trace("value of ", expression.getExpressionString(), "is", value, "of type
 	*/
 	public Object saveState(final FacesContext context)
 	{
-		return new Object[]{super.saveState(context), var, expression};	//TODO finish
+		return new Object[]{super.saveState(context), var, value};
 	}
 
 	/**Restores the state of the component.
@@ -113,7 +136,7 @@ Debug.trace("value of ", expression.getExpressionString(), "is", value, "of type
 		final Object values[]=(Object[])state;
 		super.restoreState(context, values[0]);
 		var=(String)values[1];
-		expression=(Expression<?>)values[2];
+		value=values[2];
 	}
 
 }

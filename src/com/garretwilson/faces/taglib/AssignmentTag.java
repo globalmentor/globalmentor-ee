@@ -10,6 +10,7 @@ import javax.faces.webapp.UIComponentTag;
 import com.garretwilson.faces.component.UIAssignment;
 import com.garretwilson.faces.el.*;
 
+import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 
 /**The tag for creating a <code>UIAssignment</code> component.
@@ -34,16 +35,16 @@ public class AssignmentTag extends UIComponentTag
 		*/
 		public void setVar(final String var) {this.var=var;}
 
-	/**The expression, or <code>null</code> if there is no expression.*/
-	private String expression=null;
+	/**The value of the assignment.*/
+	private String value;
 
-		/**@return The expression, or <code>null</code> if there is no expression.*/
-		public String getExpression() {return expression;}
+		/**@return The value of the assignment.*/
+		public String getValue() {return value;}
 
-		/**Sets the expression.
-		@param expression The expression, or <code>null</code> if there is no expression.
+		/**Sets the value of the assignment.
+		@param value The value of the assignment.
 		*/
-		public void setExpression(final String expression) {this.expression=expression;}
+		public void setValue(final String value) {this.value=value;}
 
 	/**Sets the component properties.
 	@param component The component, which must be a <code>UIAssignment</code>.
@@ -60,12 +61,7 @@ public class AssignmentTag extends UIComponentTag
 		{
 			assignment.setVar(var);	//tell the assignment which variable to use
 		}
-		final String expressionString=getExpression();	//see if there is an expression
-		if(expressionString!=null)	//if there is an expression
-		{
-			final Expression<?> expression=ExpressionUtilities.createReferenceExpression(application, expressionString);	//create an expression reference
-			assignment.setExpression(expression);	//tell the assignment which expression to use
-		}
+		setStringValue(component, UIAssignment.VALUE_VAR, getValue());	//set the value
 	}
 
 	/**Releases resources used by the tag.*/
@@ -73,7 +69,7 @@ public class AssignmentTag extends UIComponentTag
 	{
 		super.release();	//do the default release
 		var=null;
-		expression=null;
+		value=null;
 	}
 
 }

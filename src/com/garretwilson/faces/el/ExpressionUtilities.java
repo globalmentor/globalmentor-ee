@@ -79,9 +79,10 @@ public class ExpressionUtilities
 			}
 			else	//if this is not a method reference, it must be a value reference
 			{
+//G***del Debug.setDebug(true);
 //G***del Debug.trace("creating value-binding expression for string: ", string);
 				final ValueBinding valueBinding=application.createValueBinding(string);	//create a value binding for the string
-//G***fix Debug.trace("value-binding type: ", valueBinding.getType(context));
+//G***Debug.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
 				return new ValueBindingExpression(valueBinding);	//create and return a value binding expression from the value binding we created
 			}
 		}
