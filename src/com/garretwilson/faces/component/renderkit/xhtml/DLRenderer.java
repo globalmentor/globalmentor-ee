@@ -34,8 +34,6 @@ public class DLRenderer extends AbstractXHTMLRenderer
     public void encodeBegin(FacesContext context, UIComponent component)
         throws IOException {
 
-Debug.setDebug(true);
-Debug.trace("ready to begin encoding of <gw:dl>");
 /*G***replace with assertions
         if ((context == null) || (component == null)) {
             throw new NullPointerException(Util.getExceptionMessageString(
@@ -48,17 +46,14 @@ Debug.trace("ready to begin encoding of <gw:dl>");
 
         // suppress rendering if "rendered" property on the component is
         // false.
-Debug.trace("checking rendered");
         if (!component.isRendered()) {
             return;
         }
         UIData data = (UIData) component;
-Debug.trace("setting row index");
         data.setRowIndex(-1);
 
         // Render the beginning of the table
         ResponseWriter writer = context.getResponseWriter();
-Debug.trace("writing begin tag dl");
         writer.startElement("dl", data);
         writeIDAttribute(context, writer, component);
         String styleClass = (String) data.getAttributes().get("styleClass");	//TODO use a constant
@@ -79,7 +74,6 @@ Debug.trace("writing begin tag dl");
                 Util.NULL_PARAMETERS_ERROR_MESSAGE_ID));
         }
 */
-Debug.trace("ready to encode dl children");
         if (!component.isRendered()) {
             return;
         }
@@ -93,7 +87,6 @@ Debug.trace("ready to encode dl children");
         String rowClasses[] = getRowClasses(data);
         int rowStyles = rowClasses.length;
 */
-Debug.trace("getting response writer");
         ResponseWriter writer = context.getResponseWriter();
         Iterator kids = null;
         Iterator grandkids = null;
@@ -101,23 +94,18 @@ Debug.trace("getting response writer");
         // Iterate over the rows of data that are provided
         int processed = 0;
         int rowIndex = data.getFirst() - 1;
-Debug.trace("row index: ", rowIndex);
         int rows = data.getRows();
-Debug.trace("number of rows: ", rows);
         int rowStyle = 0;
 
         while (true) {
 
             // Have we displayed the requested number of rows?
             if ((rows > 0) && (++processed > rows)) {
-Debug.trace("displayed requested number of rows; exiting");
                 break;
             }
             // Select the current row
-Debug.trace("selecting row "+(rowIndex+1));
             data.setRowIndex(++rowIndex);
             if (!data.isRowAvailable()) {
-Debug.trace("this row isn't available");
                 break; // Scrolled past the last row
             }
 /*G***del if not needed
@@ -140,7 +128,6 @@ Debug.trace("this row isn't available");
 	      while (children.hasNext())
 	      {
 	         UIComponent child = (UIComponent) children.next();
-Debug.trace("Looking at dl child: ", child.getClass().getName());
 	            if (child.isRendered())
 	            {
 	            	final String definitionTag;
