@@ -297,12 +297,12 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 				catch(final DOMException domException)	//any XML problem here is the server's fault
 				{
 					Debug.error(domException);	//report the error
-		      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
+					throw new HTTPInternalServerErrorException(domException);	//show that the XML wasn't correct
 				}
 	    }
 	    else	//if the resource does not exist
 	    {
-  			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+  			throw new HTTPNotFoundException(resourceURI.toString());	//show that we didn't find a resource for which to find properties					
 	    }					
 		}
 		else	//if directory listing is not allowed
@@ -344,8 +344,7 @@ Debug.trace("serving resource", resourceURI);
     		}
     		else	//if we're not allowed to list directories
     		{
-    			response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource to return
-//G***del    			return;	//don't do anything else
+    			throw new HTTPNotFoundException(resourceURI.toString());	//show that we didn't find a resource to return				
     		}    		
     	}
     	else	//if this resource is not a collection
@@ -382,7 +381,7 @@ Debug.trace("setting content length to:", contentLength);
     }
     else	//if the resource does not exist
     {
-    	response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());
+			throw new HTTPNotFoundException(resourceURI.toString());	//show that we didn't find a resource for which to find properties					
     }
 	}
 
