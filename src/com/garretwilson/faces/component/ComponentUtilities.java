@@ -217,13 +217,13 @@ public class ComponentUtilities
 
 	/**Retrieves the values of the first direct <code>UIParameter</code>
 	 	children of the given component with the given name.
-	@param context The JSF context.
 	@param component The component for which parameters should be retrieved.
+	@param context The JSF context.
 	@param name The name of the parameter to retrieve.
 	@return The parameter value, or <code>null</code> if no parameter with the
 		given name exists.
 	*/
-	public static Object getParameter(final FacesContext context, final UIComponent component, final String name)
+	public static Object getParameter(final UIComponent component, final FacesContext context, final String name)
 	{
 		for(Object child:component.getChildren())	//look at all children
 		{
@@ -241,11 +241,11 @@ public class ComponentUtilities
 
 	/**Retrieves the names and values of all direct <code>UIParameter</code>
 	 	children of the given component.
-	@param context The JSF context.
 	@param component The component for which parameters should be retrieved.
+	@param context The JSF context.
 	@return A non-<code>null</code> array of parameters.
 	*/
-	public static NameValuePair<String, Object>[] getParameters(final FacesContext context, final UIComponent component)
+	public static NameValuePair<String, Object>[] getParameters(final UIComponent component, final FacesContext context)
 	{
 		final List<NameValuePair<String, Object>> nameValuePairList=new ArrayList<NameValuePair<String, Object>>(component.getChildCount());	//create a list of name-value pairs long enough to store all direct children, if needed
 		for(Object child:component.getChildren())	//look at all children
@@ -263,12 +263,12 @@ public class ComponentUtilities
 	 	<code>UIParameter</code> children of the given component.
 	If multiple parameters with the same name exist, only the first one will be
 		returned. Parameters with no name will be ignored.
-	@param context The JSF context.
 	@param component The component for which parameters should be retrieved.
+	@param context The JSF context.
 	@return A non-<code>null</code> map of parameter values, keyed to parameter
 		names.
 	*/
-	public static Map<String, Object> getParameterMap(final FacesContext context, final UIComponent component)
+	public static Map<String, Object> getParameterMap(final UIComponent component, final FacesContext context)
 	{
 		final Map<String, Object> parameterMap=new HashMap<String, Object>();	//create a map of objects keyed to strings
 		for(Object child:component.getChildren())	//look at all children
@@ -418,6 +418,7 @@ public class ComponentUtilities
 
 	/**Looks for a value in a value binding, if the value is not already present
 		and returns <code>null</code> as a last result.
+	@param component The component from which a value should be obtained.
 	@param context The JSF context.
 	@param value The existing value, or <code>null</code> if there is no value
 		present.
@@ -426,13 +427,14 @@ public class ComponentUtilities
 	@return The existing value, the value binding, or <code>null</code> if
 		neither are present.
 	*/
-	public static <T> T getValue(final FacesContext context, final UIComponent component, final T value, final String name)
+	public static <T> T getValue(final UIComponent component, final FacesContext context, final T value, final String name)
 	{
-		return getValue(context, component, value, name, null);	//get the value, returning null as a default
+		return getValue(component, context, value, name, null);	//get the value, returning null as a default
 	}
 
 	/**Looks for a value in a value binding, if the value is not already present,
 		and returns a default value as a last result.
+	@param component The component from which a value should be obtained.
 	@param context The JSF context.
 	@param value The existing value, or <code>null</code> if there is no value
 		present.
@@ -443,7 +445,7 @@ public class ComponentUtilities
 	@return The existing value, the value binding, or if neither are present,
 		the default value.
 	*/
-	public static <T> T getValue(final FacesContext context, final UIComponent component, final T value, final String name, final T defaultValue)
+	public static <T> T getValue(final UIComponent component, final FacesContext context, final T value, final String name, final T defaultValue)
 	{
 		if(value!=null)	//if there is a value
 		{

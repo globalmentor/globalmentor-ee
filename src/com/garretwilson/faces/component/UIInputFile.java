@@ -9,6 +9,7 @@ import javax.faces.el.*;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
+import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.garretwilson.lang.ClassUtilities;
 import com.garretwilson.util.Debug;
@@ -37,21 +38,9 @@ public class UIInputFile extends UIInput
 	private File directory=null;
 
 		/**@return The directory in which to store files, if there is one.*/
-		protected File getDirectory()	//TODO refactor this into a generic routine, and replace the code in UIBurrow
+		public File getDirectory()
 		{
-			if(directory!=null)	//if we have a directory
-			{
-				return directory;	//return our directory
-			}
-			else	//if we don't have a directory
-			{
-				final ValueBinding valueBinding=getValueBinding(DIRECTORY_VAR);	//get a value binding to the directory
-				if(valueBinding!=null)//if there is a value binding
-				{
-					return (File)valueBinding.getValue(getFacesContext());	//get the value binding expression's value
-				}
-			}
-			return null;	//show that we couldn't find a value binding
+			return ComponentUtilities.getValue(this, getFacesContext(), directory, DIRECTORY_VAR);	//get the local value or value binding
 		}		
 
 		/**Sets the directory.
@@ -68,21 +57,9 @@ public class UIInputFile extends UIInput
 		/**@return The filename to use when storing files, or <code>null</code> if
 			the default name of the submitted file should be used.
 		*/
-		protected String getFilename()
+		public String getFilename()
 		{
-			if(filename!=null)	//if we have a filename
-			{
-				return filename;	//return our filename
-			}
-			else	//if we don't have a filename
-			{
-				final ValueBinding valueBinding=getValueBinding(FILENAME_VAR);	//get a value binding to the filename
-				if(valueBinding!=null)//if there is a value binding
-				{
-					return (String)valueBinding.getValue(getFacesContext());	//get the value binding expression's value
-				}
-			}
-			return null;	//show that we couldn't find a value binding
+			return ComponentUtilities.getValue(this, getFacesContext(), filename, FILENAME_VAR);	//get the local value or value binding
 		}		
 
 		/**Sets the filename to use when storing the file.
