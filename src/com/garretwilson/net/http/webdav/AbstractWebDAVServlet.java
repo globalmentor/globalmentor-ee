@@ -21,6 +21,9 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import com.garretwilson.model.Resource;
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
+import com.garretwilson.net.http.BasicHTTPServlet;
+import com.garretwilson.net.http.HTTPMovedPermanentlyException;
+import com.garretwilson.net.http.HTTPRedirectException;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
@@ -38,7 +41,7 @@ import com.garretwilson.util.*;
 <a href="http://www.ietf.org/rfc/rfc2518.txt">RFC 2518</a>,	"HTTP Extensions for Distributed Authoring -- WEBDAV". 
 @author Garret Wilson
 */
-public abstract class AbstractWebDAVServlet<R extends Resource> extends HttpServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
+public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
 	
 	private final static boolean LIST_DIRECTORIES=true;	//TODO fix
@@ -57,16 +60,16 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends HttpServ
 		/**@return The DOM implementation used as a document factory.*/
 		protected DOMImplementation getDOMImplementation() {return domImplementation;}
 
-	/**Services an HTTP request.
-  This version provides support for WebDAV methods.
+	/**Services an HTTP request based upon its method.
+	This version provides support for WebDAV methods.
+  @param method The HTTP method being serviced. 
   @param request The HTTP request.
   @param response The HTTP response.
   @exception ServletException if there is a problem servicing the request.
   @exception IOException if there is an error reading or writing data.
   */
-	protected void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-		final String method=request.getMethod();	//get the method
 /*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
@@ -119,14 +122,11 @@ Debug.trace("path info:", request.getPathInfo());
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
-		if(resourceURI!=null)	//if we have an appropriate resource URI
-		{
 Debug.trace("doing options for URI", resourceURI);
-			response.addHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
-			final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
-			response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
-			response.addHeader(MS_AUTHOR_VIA_HEADER, MS_AUTHOR_VIA_DAV);	//tell Microsoft editing tools to use WebDAV rather than FrontPage
-		}
+		response.addHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
+		final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
+		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
+		response.addHeader(MS_AUTHOR_VIA_HEADER, MS_AUTHOR_VIA_DAV);	//tell Microsoft editing tools to use WebDAV rather than FrontPage
 	}
 
 	/**Services the HEAD method.
@@ -176,59 +176,56 @@ Debug.trace("doing options for URI", resourceURI);
 		if(!READ_ONLY)	//if this servlet is not read-only
 		{
 			final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
-			if(resourceURI!=null)	//if we have an appropriate resource URI
+			final boolean exists=exists(resourceURI);	//see whether the resource already exists
+			final R resource;	//we'll get the existing resource, if there is one 
+			if(exists(resourceURI))	//if this resource exists
+	    {
+				resource=getResource(resourceURI);	//get the resource information
+	    }
+			else	//if the resource doesn't exist
 			{
-				final boolean exists=exists(resourceURI);	//see whether the resource already exists
-				final R resource;	//we'll get the existing resource, if there is one 
-				if(exists(resourceURI))	//if this resource exists
-		    {
-					resource=getResource(resourceURI);	//get the resource information
-		    }
-				else	//if the resource doesn't exist
-				{
-					try
-					{
-						resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
-					}
-					catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
-					{
-						response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that access to this resource is forbidden TODO throw a general exception and catch it in the main service method
-						return;	//TODO throw an exception
-					}
-				}
 				try
 				{
-					final InputStream inputStream=request.getInputStream();	//get an input stream from the request
-					final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
-					try
-					{
-						OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
-					}
-					finally
-					{
-						outputStream.close();	//always close the output stream
-					}
+					resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 				}
-				catch(final IOException ioException)	//if we have any problems saving the resource contents
+				catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 				{
-					if(!exists)	//if the resource didn't exist before
-					{
-						deleteResource(resource);	//delete the resource, as we weren't able to save its contents
-					}
-				}
-				if(exists)	//if the resource already existed
-				{
-					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
-				}
-				else	//if the resource did not exist already
-				{
-					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that access to this resource is forbidden TODO throw a general exception and catch it in the main service method
+					return;	//TODO throw an exception
 				}
 			}
-			else	//if this servlet is read-only
+			try
 			{
-				response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that this method is forbidden
+				final InputStream inputStream=request.getInputStream();	//get an input stream from the request
+				final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
+				try
+				{
+					OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
+				}
+				finally
+				{
+					outputStream.close();	//always close the output stream
+				}
 			}
+			catch(final IOException ioException)	//if we have any problems saving the resource contents
+			{
+				if(!exists)	//if the resource didn't exist before
+				{
+					deleteResource(resource);	//delete the resource, as we weren't able to save its contents
+				}
+			}
+			if(exists)	//if the resource already existed
+			{
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+			}
+			else	//if the resource did not exist already
+			{
+				response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+			}
+		}
+		else	//if this servlet is read-only
+		{
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that this method is forbidden
 		}
   }
 
@@ -241,68 +238,64 @@ Debug.trace("doing options for URI", resourceURI);
 	protected void doPropfind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
-		if(resourceURI!=null)	//if we have an appropriate resource URI
-		{
-			//TODO don't we need to check for existence somewhere?
 Debug.trace("doing propfind for URI", resourceURI);
-			if(LIST_DIRECTORIES)	//if we allow directory listing
+		if(LIST_DIRECTORIES)	//if we allow directory listing
+		{
+			if(exists(resourceURI))	//if the resource exists
 			{
-				if(exists(resourceURI))	//if the resource exists
+				final int depth=getDepth(request);	//determine the requested depth
+Debug.trace("depth requested:", depth);
+				IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+				try
 				{
-					final int depth=getDepth(request);	//determine the requested depth
-	Debug.trace("depth requested:", depth);
-					IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
-					try
+					final Document document=getXML(request);	//get the XML from the request body
+					if(document!=null)	//if there was an XML document in the request
 					{
-						final Document document=getXML(request);	//get the XML from the request body
-						if(document!=null)	//if there was an XML document in the request
-						{
-		Debug.trace("Found XML request content:", XMLUtilities.toString(document));
-							final Element documentElement=document.getDocumentElement();	//get the document element
-								//TODO check to make sure the document element is correct
-							propertyList=getProperties(documentElement);	//get the property list from the XML document
-						}
+	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
+						final Element documentElement=document.getDocumentElement();	//get the document element
+							//TODO check to make sure the document element is correct
+						propertyList=getProperties(documentElement);	//get the property list from the XML document
 					}
-					catch(final DOMException domException)	//any XML problem here is the client's fault
+				}
+				catch(final DOMException domException)	//any XML problem here is the client's fault
+				{
+		      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
+				}
+				try
+				{
+					final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
+					final Document multistatusDocument=createMultistatusDocument();	//create a multistatus document
+					for(final R resource:resourceList)	//for each resource
 					{
-			      response.sendError(HttpServletResponse.SC_BAD_REQUEST, domException.getMessage());	//show that the XML wasn't correct				
+						final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
+						addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
+						final Element propstatElement=addPropstat(responseElement);	//add a property container
+						final Element propElement=addProp(propstatElement);	//add a property element
+						findProperties(resource, propElement, propertyList);	//find the properties for this resource
+						addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
+						//TODO add a response description here
 					}
-					try
-					{
-						final List<R> resourceList=getResources(resourceURI, depth);	//get a list of resources
-						final Document multistatusDocument=createMultistatusDocument();	//create a multistatus document
-						for(final R resource:resourceList)	//for each resource
-						{
-							final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
-							addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
-							final Element propstatElement=addPropstat(responseElement);	//add a property container
-							final Element propElement=addProp(propstatElement);	//add a property element
-							findProperties(resource, propElement, propertyList);	//find the properties for this resource
-							addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
-							//TODO add a response description here
-						}
-						response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
+					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
 Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument));
-						setXML(response, multistatusDocument);	//put the XML in our response and send it back
-					}
-					catch(final DOMException domException)	//any XML problem here is the server's fault
-					{
-						Debug.error(domException);	//report the error
-			      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
-					}
-		    }
-		    else	//if the resource does not exist
-		    {
-    			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
-		    }					
-			}
-			else	//if directory listing is not allowed
-			{
-					//show which methods we support
-				final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
-				response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
-	      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);	//show that we don't allow listing properties
-			}
+					setXML(response, multistatusDocument);	//put the XML in our response and send it back
+				}
+				catch(final DOMException domException)	//any XML problem here is the server's fault
+				{
+					Debug.error(domException);	//report the error
+		      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, domException.getMessage());	//show that the XML wasn't correct				
+				}
+	    }
+	    else	//if the resource does not exist
+	    {
+  			response.sendError(SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource for which to find properties					
+	    }					
+		}
+		else	//if directory listing is not allowed
+		{
+				//show which methods we support
+			final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
+			response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
+      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);	//show that we don't allow listing properties
 		}
   }
 
@@ -317,81 +310,77 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 	{
 		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
 Debug.trace("serving resource", resourceURI);
-		if(resourceURI!=null)	//if we have an appropriate resource URI
-		{
-			if(exists(resourceURI))	//if this resource exists
-	    {
-	    	//TODO check if headers
-	    	final R resource=getResource(resourceURI);	//get a resource description
-	//G***del    	final ContentType contentType;	//determine the content type of the resource
-	    	if(isCollection(resource.getReferenceURI()))	//if the resource is a collection
-	    	{
-	    		if(LIST_DIRECTORIES)	//if we should list directories
-	    		{
-	    			final Writer writer=response.getWriter();
-	    			response.setContentType("text/plain");
-	    			final List<R> resourceList=getChildResources(resource);
-	    			for(final R childResource:resourceList)
-	    			{
-	    				writer.append(childResource.toString()).append('\n');
-	    			}
-	    			
-	//TODO fix          contentType = "text/html;charset=UTF-8";
-	    			
-	    		}
-	    		else	//if we're not allowed to list directories
-	    		{
-	    			response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource to return
-	//G***del    			return;	//don't do anything else
-	    		}    		
-	    	}
-	    	else	//if this resource is not a collection
+		if(exists(resourceURI))	//if this resource exists
+    {
+    	//TODO check if headers
+    	final R resource=getResource(resourceURI);	//get a resource description
+//G***del    	final ContentType contentType;	//determine the content type of the resource
+    	if(isCollection(resource.getReferenceURI()))	//if the resource is a collection
+    	{
+    		if(LIST_DIRECTORIES)	//if we should list directories
+    		{
+    			final Writer writer=response.getWriter();
+    			response.setContentType("text/plain");
+    			final List<R> resourceList=getChildResources(resource);
+    			for(final R childResource:resourceList)
+    			{
+    				writer.append(childResource.toString()).append('\n');
+    			}
+    			
+//TODO fix          contentType = "text/html;charset=UTF-8";
+    			
+    		}
+    		else	//if we're not allowed to list directories
+    		{
+    			response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());	//show that we didn't find a resource to return
+//G***del    			return;	//don't do anything else
+    		}    		
+    	}
+    	else	//if this resource is not a collection
 	    	{
 Debug.trace("ready to send back a file");
-	    		final ContentType contentType=getContentType(resource);	//get the content type of the resource
-	      	if(contentType!=null)	//if we know the content type
+    		final ContentType contentType=getContentType(resource);	//get the content type of the resource
+      	if(contentType!=null)	//if we know the content type
 	      	{
 Debug.trace("setting content type to:", contentType);
-	      		response.setContentType(contentType.toString());	//tell the response which content type we're serving
-	      	}
-	      	final long contentLength=getContentLength(resource);	//get the content length of the resource
-	      	if(contentLength>=0)	//if we found a content length for the resource
+      		response.setContentType(contentType.toString());	//tell the response which content type we're serving
+      	}
+      	final long contentLength=getContentLength(resource);	//get the content length of the resource
+      	if(contentLength>=0)	//if we found a content length for the resource
 	      	{
 Debug.trace("setting content length to:", contentLength);
-	      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
-	      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
-	      	}
-	      	if(serveContent)	//if we should serve content
-	      	{
-	      		//TODO fix ranges
-	      		final OutputStream outputStream=response.getOutputStream();	//get the output stream TODO do we want to check for an IllegalStateException, and send back text if we can?
-	      		final InputStream inputStream=getInputStream(resource);	//get an input stream to the resource
-	      		try
-	      		{
-	      			OutputStreamUtilities.write(inputStream, outputStream);	//copy the input stream to the output stream
-	      		}
-	      		finally
-	      		{
-	     				inputStream.close();	//always close the input stream to the resource
-	      		}
-	      	}
-	    	}
-	    }
-	    else	//if the resource does not exist
-	    {
-	    	response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());
-	    }
-		}
+      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
+      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
+      	}
+      	if(serveContent)	//if we should serve content
+      	{
+      		//TODO fix ranges
+      		final OutputStream outputStream=response.getOutputStream();	//get the output stream TODO do we want to check for an IllegalStateException, and send back text if we can?
+      		final InputStream inputStream=getInputStream(resource);	//get an input stream to the resource
+      		try
+      		{
+      			OutputStreamUtilities.write(inputStream, outputStream);	//copy the input stream to the output stream
+      		}
+      		finally
+      		{
+     				inputStream.close();	//always close the input stream to the resource
+      		}
+      	}
+    	}
+    }
+    else	//if the resource does not exist
+    {
+    	response.sendError(HttpServletResponse.SC_NOT_FOUND, resourceURI.toString());
+    }
 	}
 
 	/**Determines the URI of the requested resource.
   @param request The HTTP request indicating the requested resource.
   @param response The HTTP response, so that redirects may occur.
-  @return The URI of the requested resource, or <code>null</code> if there is no
-  	appropriate URI indicating that no further processing should occur.
-  @exception IOException if there is an error redirecting if needed.
+  @return The URI of the requested resource.
+  @exception HTTPRedirectException if the request should be redirected to another URI.
   */
-	protected URI getResourceURI(final HttpServletRequest request, final HttpServletResponse response) throws IOException	//TODO convert to using new URI()
+	protected URI getResourceURI(final HttpServletRequest request, final HttpServletResponse response) throws HTTPRedirectException
 	{
 		final String requestURIString=request.getRequestURL().toString();	//get the requested URI string
 		final URI requestURI=URI.create(requestURIString);	//create a URI from the full request URL
@@ -405,8 +394,7 @@ Debug.trace("request URI", requestURI);
 			if(isCollection(redirectURI))	//if the URI with a trailing slash added is a collection
 			{
 Debug.trace("sending redirect", redirectURI);
-				response.sendRedirect(redirectURI.toString());	//redirect to the collection TODO do we want to do a permanent redirect?
-				return null;	//don't send back a URI
+				throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
 			}
 		}
 		return requestURI;	//return the requested URI
@@ -643,7 +631,7 @@ Debug.trace("content length", contentLength);
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
   */
-	protected Set<WebDAVMethod> getAllowedMethods(final URI resourceURI)
+	protected Set<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using generics---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
 	{
 		final Set<WebDAVMethod> methodSet=EnumSet.of(WebDAVMethod.OPTIONS);	//we always allow options 
 		if(exists(resourceURI))	//if the resource exists
