@@ -488,6 +488,8 @@ public class ComponentUtilities
 
 	/**Looks for a value in a value binding, if the value is not already present,
 		and returns a default value as a last result.
+	The default value is turned if the local value, the value binding, and the
+		value binding value all return <code>null</code>.
 	@param component The component from which a value should be obtained.
 	@param context The JSF context.
 	@param value The existing value, or <code>null</code> if there is no value
@@ -510,13 +512,14 @@ public class ComponentUtilities
 			final ValueBinding valueBinding=component.getValueBinding(name);	//get a value binding for the given name
 			if(valueBinding!=null)	//if we have a value binding
 			{
-				return (T)valueBinding.getValue(context);	//get the value of the value binding
-			}
-			else	//if we have no value binding
-			{
-				return defaultValue;	//return the default value
+				final T valueBindingValue=(T)valueBinding.getValue(context);	//get the value of the value binding
+				if(valueBindingValue!=null)	//if the value binding has a value
+				{
+					return valueBindingValue;	//return the value from the value binding
+				}
 			}
 		}
+		return defaultValue;	//return the default value if we can't find a better value
 	}
 	
 	/**Sets a value binding expression attribute value for a component, keyed to the attribute name.
