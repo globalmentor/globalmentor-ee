@@ -52,7 +52,9 @@ public class MethodBindingExpression<T> implements Expression<T>
 				{
 //G***del Debug.trace("looking at parameter expression: ", parameterExpressions[i].getExpressionString());
 //TODO fix---why does this always return java.lang.Object					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
-					parameterTypes[i]=parameterExpressions[i].getValue(context).getClass();	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
+					final Object parameterValue=parameterExpressions[i].getValue(context);	//TODO fix type bug---don't actually get the value here
+					parameterTypes[i]=parameterValue!=null ? parameterValue.getClass() : null;	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
+//G***del; doesn't work with null values					parameterTypes[i]=parameterExpressions[i].getValue(context).getClass();	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
 //G***del Debug.trace("parameter expression type: ", parameterExpressions[i].getType(context).getName());
 				}
 //G***del Debug.trace("actually creating method binding");
