@@ -46,13 +46,6 @@ public class UIBasicData extends UIData
 		super();	//construct the parent class
 	}
 
-/*G***del	
-	public void broadcast(FacesEvent event)
-	{
-		Debug.trace("basic data ready to broadcast event:", event);
-		super.broadcast(event);
-	}
-*/
 
 /*G***del
     public void setRowIndex(int rowIndex)
@@ -104,8 +97,16 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 		}
 		updateValue(context);	//update our value before further processing
 		super.encodeBegin(context);	//do the default encoding
-//TODO move this to encodeEnd()
-/*G***bring back
+	}
+
+	/**Finishes component for encoding.
+	@param context The JSF context.
+	@throws IOException if there is an error encoding the information.
+	*/
+	public void encodeEnd(final FacesContext context) throws IOException
+	{
+		super.encodeEnd(context);	//do the default end encoding
+/*G***fix
 		if(getSupport()!=null)	//if we have a support variable
 		{
 			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
@@ -126,7 +127,7 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 		}
 		updateValue(context);	//update our value before further processing
 		super.processDecodes(context);
-		/*G***bring back
+/*G***fix
 		if(getSupport()!=null)	//if we have a support variable
 		{
 			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page
@@ -157,7 +158,7 @@ Debug.trace("Found support, storing it under variable", getSupportVariableName(g
 		}
 		updateValue(context);	//update our value before further processing
 		super.broadcast(event);	//do the default broadcasting
-		/*G***bring back
+/*G***fix
 		if(getSupport()!=null)	//if we have a support variable
 		{
 			//remove the support variable from the request TODO later create a variable based upon this component's client ID in case there is more than one component on the page

@@ -94,10 +94,12 @@ Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
 /*G***del
+		Debug.setDebug(true);
+		Debug.setVisible(true);
 Debug.trace("getting type of a value-binding expression: ", getExpressionString());
 Debug.trace("value: ", getValueBinding().getValue(context));
 Debug.trace("type: ", getValueBinding().getType(context));
-Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
+//G***del; can throw NullPointerException Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
 */
 		return getValueBinding().getType(context);	//return the type of the value binding
 	}

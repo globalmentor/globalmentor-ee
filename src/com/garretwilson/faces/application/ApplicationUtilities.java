@@ -12,6 +12,7 @@ import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
+import com.garretwilson.util.Debug;
 
 /**Utilities for working with JSF applications.
 @author Garret Wilson
@@ -22,9 +23,15 @@ public class ApplicationUtilities
 	@param application The current JSF application
 	@return A new <code>UIColumn</code> component.
 	*/
-	public static UIColumn createColumn(final Application application)
+	public static UIColumn createColumn(final Application application)	//TODO probably require a unique ID here, too
 	{
-		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE, FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//create a column component
+		final String id=FacesContext.getCurrentInstance().getViewRoot().createUniqueId();	//G***testing
+		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE, id);	//create a column component
+/*G***del
+Debug.setDebug(true);
+Debug.setVisible(true);
+Debug.trace("created column with ID", id);
+*/
 		return column;	//return the component
 	}
 

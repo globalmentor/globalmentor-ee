@@ -113,23 +113,22 @@ Debug.trace("parameter expression type: ", parameterExpressions[i].getType(conte
 		final String params=expressionString.substring(groupBeginIndex, groupEndIndex);	//get a string representing the parameters
 		final List<Expression<?>> parameterExpressionList=new ArrayList<Expression<?>>();	//create a new list for the parameter expressions
 		final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
-			//tokenize the parameters by commas, grouping by reference groups
-//TODO del when works		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR), String.valueOf(REFERENCE_EXPRESSION_END_CHAR));
-		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+"\"'", String.valueOf(REFERENCE_EXPRESSION_END_CHAR)+"\"'");	//TODO use constants
+			//tokenize the parameters by commas, grouping by reference groups and quotes
+		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, WHITESPACE_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR, String.valueOf(REFERENCE_EXPRESSION_END_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR);
 		while(tokenizer.hasNext())	//if there are more tokens
 		{
 			final String param=tokenizer.next();	//get the next parameter
-//G***del Debug.setDebug(true);
-Debug.trace("found method param: ", param);
-			final Expression<?> parameterExpression;
-			if(param.length()>0 && (param.charAt(0)=='"' || param.charAt(0)=='\'') && param.charAt(0)==param.charAt(param.length()-1))	//G***testing; use constants
+			final int length=param.length();	//get the length of the parameter
+			assert param.length()>0 : "Unexpected empty parameter.";	//tokenizers should never return empty strings
+			final char firstChar=param.charAt(0);	//get the first character
+			final Expression<?> parameterExpression;	//we'll determine if this is a literal expression or a value-binding expression
+			if(length>1 && (firstChar==QUOTATION_MARK_CHAR || firstChar==APOSTROPHE_CHAR) && firstChar==param.charAt(length-1))	//if the parameter is at least two characters, with beginning and ending quotes
 			{
-				final String string=param.substring(1, param.length()-1);	//TODO comment
-Debug.trace("creating literal expression", string);
-				parameterExpression=new LiteralExpression<String>(string);	//TODO comment
+				final String string=param.substring(1, length-1);	//get the string between the quotes
+				parameterExpression=new LiteralExpression<String>(string);	//create a literal expression from the string
 
 			}
-			else	//TODO comment
+			else	//if this is not a literal expression, assume it's a reference expression
 			{
 				parameterExpression=createReferenceExpression(application, param);	//create an expression for the parameter
 			}
