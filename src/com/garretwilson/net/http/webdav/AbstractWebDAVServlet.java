@@ -69,18 +69,6 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
   */
 	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-*/
-Debug.trace("servicing method", method);
-Debug.trace("user agent:", getUserAgent(request));
-/*G***del
-Debug.trace("servlet path:", request.getServletPath());
-Debug.trace("request URI:", request.getRequestURI());
-Debug.trace("request URL:", request.getRequestURL());
-Debug.trace("path info:", request.getPathInfo());
-*/
 		if(WebDAVMethod.PROPFIND.toString().equals(method))	//PROPFIND
 		{
 			doPropfind(request, response);	//delegate to the propfind method
@@ -120,7 +108,7 @@ Debug.trace("path info:", request.getPathInfo());
   */
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
+		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("doing options for URI", resourceURI);
 		response.addHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
 		final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
@@ -147,27 +135,6 @@ Debug.trace("doing options for URI", resourceURI);
   */
 	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*TODO fix
-		final DigestAuthenticateCredentials credentials=(DigestAuthenticateCredentials)getAuthorization(request);	//G***testing
-		if(credentials!=null)
-		{
-Debug.trace("valid credentials?", credentials.isValid(request.getMethod(), "def"));
-		}
-		
-		
-		if(true)
-		{
-					try
-					{
-						final AuthenticateChallenge challenge=new DigestAuthenticateChallenge("some realm", "abc");	//G***testing
-						throw new HTTPUnauthorizedException(challenge);	//G***testing
-					}
-					catch (NoSuchAlgorithmException e)
-					{
-						throw new AssertionError(e);
-					}
-		}
-*/
 		serveResource(request, response, true);	//serve the resource with its content
 		//TODO ignore any broken pipe error
 	}
@@ -196,7 +163,7 @@ Debug.trace("valid credentials?", credentials.isValid(request.getMethod(), "def"
 	{
 		if(!READ_ONLY)	//if this servlet is not read-only
 		{
-			final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
+			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 			final boolean exists=exists(resourceURI);	//see whether the resource already exists
 			final R resource;	//we'll get the existing resource, if there is one 
 			if(exists(resourceURI))	//if this resource exists
@@ -258,24 +225,8 @@ Debug.trace("valid credentials?", credentials.isValid(request.getMethod(), "def"
   */
 	protected void doPropfind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
+		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("doing propfind for URI", resourceURI);
-		
-/*G***fix
-if(true)
-{
-			try
-			{
-				final AuthenticateChallenge challenge=new DigestAuthenticateChallenge("some realm", "abc");	//G***testing
-				throw new HTTPUnauthorizedException(challenge);	//G***testing
-			}
-			catch (NoSuchAlgorithmException e)
-			{
-				throw new AssertionError(e);
-			}
-}
-*/
-		
 		if(LIST_DIRECTORIES)	//if we allow directory listing
 		{
 			if(exists(resourceURI))	//if the resource exists
@@ -345,7 +296,7 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
   */
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent) throws ServletException, IOException
 	{
-		final URI resourceURI=getResourceURI(request, response);	//get the URI of the requested resource
+		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("serving resource", resourceURI);
 		if(exists(resourceURI))	//if this resource exists
     {
@@ -413,17 +364,16 @@ Debug.trace("setting content length to:", contentLength);
 
 	/**Determines the URI of the requested resource.
   @param request The HTTP request indicating the requested resource.
-  @param response The HTTP response, so that redirects may occur.
   @return The URI of the requested resource.
   @exception HTTPRedirectException if the request should be redirected to another URI.
   */
-	protected URI getResourceURI(final HttpServletRequest request, final HttpServletResponse response) throws HTTPRedirectException
+	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
 	{
-		final String requestURIString=request.getRequestURL().toString();	//get the requested URI string
-		final URI requestURI=URI.create(requestURIString);	//create a URI from the full request URL
+		final URI requestURI=super.getResourceURI(request);	//get the default resource URI for this request
 Debug.trace("request URI", requestURI);
 //G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
 //G***del Debug.trace("exists?", exists(requestURI));
+		final String requestURIString=requestURI.toString();	//get the string version of the request URI
 		if(!endsWith(requestURIString, PATH_SEPARATOR) && !exists(requestURI))	//if the client asked for a collection that doesn't exist
 		{
 			final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash
