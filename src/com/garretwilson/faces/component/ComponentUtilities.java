@@ -6,21 +6,21 @@ import java.net.URI;
 import java.util.*;
 
 import javax.faces.application.Application;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
-import javax.faces.webapp.UIComponentTag;
 
-import com.garretwilson.faces.*;
 import com.garretwilson.faces.el.*;
+import com.garretwilson.lang.ObjectUtilities;
 import com.garretwilson.util.Debug;
 import com.garretwilson.util.NameValuePair;
 
 import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.ValueUtilities.*;
+import static com.garretwilson.faces.application.FacesMessageUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
-import com.garretwilson.lang.ObjectUtilities;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
@@ -221,7 +221,33 @@ public class ComponentUtilities
 		setStringValue(parameter, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
 		return parameter;	//return the component
 	}
+
+	/**Creates a <code>UISelectBoolean</code> component rendered as a checkbox with the given id and value.
+	@param application The current JSF application
+	@param id The new ID.
+	@param value The new value.
+	@return A new <code>UISelectBoolean</code> component with the given values.
+	*/
+	public static UISelectBoolean createSelectBooleanCheckbox(final Application application, final String id, final String value)
+	{
+		final UISelectBoolean selectBoolean=createSelectBoolean(application, id, value);	//create a select boolean component with the given ID and value
+		selectBoolean.setRendererType(CHECKBOX_RENDER_TYPE);	//render the select boolean as a checkbox
+		return selectBoolean;	//return the component		
+	}
 	
+	/**Creates a <code>UISelectBoolean</code> component with the given id and value.
+	@param application The current JSF application
+	@param id The new ID.
+	@param value The new value.
+	@return A new <code>UISelectBoolean</code> component with the given values.
+	*/
+	public static UISelectBoolean createSelectBoolean(final Application application, final String id, final String value)
+	{
+		final UISelectBoolean selectBoolean=(UISelectBoolean)createComponent(application, UISelectBoolean.COMPONENT_TYPE, id);	//create a select boolean component with the given ID
+		setBooleanValue(selectBoolean, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		return selectBoolean;	//return the component
+	}
+
 	/**Creates a <code>UIComponent</code> with a unique ID.
 	@param application The current JSF application
 	@param componentType The type of component to create.
@@ -244,6 +270,21 @@ public class ComponentUtilities
 		return component;	//return the component we created
 	}
 
+	//message methods
+	
+	/**Adds a message based upon a throwable error.
+	@param component The component for which a message should be added.
+	@param context The Faces context.
+	@param throwable The error on which to base the message.
+	@return A Faces message appropriate for the error. 
+	*/
+	public static FacesMessage addMessage(final UIComponent component, final FacesContext context, final Throwable throwable)
+	{
+		final FacesMessage message=createMessage(throwable);	//create a message and add it to the context based upon the component ID	
+		context.addMessage(component.getClientId(context), message);	//add the message
+		return message;	//return the message
+	}
+	
 	/**Encodes a component and its children, either by delegating to the component
  		if that component can render its children, or by recursively rendering that
  		component's children manually.

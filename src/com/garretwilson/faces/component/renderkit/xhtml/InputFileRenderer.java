@@ -1,25 +1,15 @@
 package com.garretwilson.faces.component.renderkit.xhtml;
 
-import java.io.IOException;
-import java.util.*;
-
 import javax.faces.component.*;
-import javax.faces.context.*;
-import javax.faces.convert.*;
-import javax.faces.event.*;
 
 import com.garretwilson.faces.component.*;
 
-import org.apache.commons.fileupload.*;
-
-import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>file</code>.
 @author Garret Wilson
 */
-public class InputFileRenderer extends InputTextRenderer
+public class InputFileRenderer extends AbstractInputRenderer
 {
 
 	/**The type of renderer.*/
