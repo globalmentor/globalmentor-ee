@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 /**Provides JSF-specific support for tag creation.
 @author Garret Wilson
 */
-public class FacesTagSupport extends TagSupport
+public class FacesTagSupport extends TagSupport	//TODO probably remove this class; we shouldn't cache the faces context, or we should know when to do it and when not
 {
 
 	/**The cached faces context.*/
