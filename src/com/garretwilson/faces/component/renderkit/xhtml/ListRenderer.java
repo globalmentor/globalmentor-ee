@@ -12,7 +12,7 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 /**The default renderer for a XHTML ordered list
 @author Garret Wilson
 */
-public class ListRenderer extends AbstractListRenderer
+public class ListRenderer extends DataRenderer
 {
 
 	/**The type of renderer for XHTML &lt;ol&gt;.*/

@@ -12,6 +12,7 @@ import javax.faces.render.Renderer;
 import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.util.CollectionUtilities.*;;
 
 /**Encapsulates basic XHTML rendering functionality.
 <p>Inspired by <code>com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.java</code>.</p>
@@ -89,11 +90,24 @@ public abstract class AbstractXHTMLRenderer extends Renderer
     };
 */
 
+	/**The set of attributes to pass through when rendering.*/
+	private final Set<String> passthroughAttributeSet;
+
+		/**@return The set of attributes to pass through when rendering.*/
+		protected Set<String> getPassthroughAttributeSet() {return passthroughAttributeSet;}
+
 	/**@return The attributes to pass through when rendering.*/
-	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
+//G***del	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
 
 	/**@return The name of the XML element for the component.*/
 	protected abstract String getComponentElementName();
+
+	/**Default constructor.*/
+	public AbstractXHTMLRenderer()
+	{
+		passthroughAttributeSet=new HashSet<String>(DEFAULT_PASSTHROUGH_ATTRIBUTES.length);	//create the set of passthrough attributes
+		addAll(passthroughAttributeSet, DEFAULT_PASSTHROUGH_ATTRIBUTES);	//initialize our set of passthrough attributes to the default
+	}
 
 	/**Begins encoding the component.
 	@param context The JSF context.
@@ -116,7 +130,7 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 			{
 				writer.writeAttribute(ATTRIBUTE_CLASS, styleClass, STYLE_CLASS_ATTRIBUTE);	//write the style class attribute
 			}
-			renderPassthroughAttributes(writer, component, getPassthroughAttributes());	//render the XHTML passthrough attributes
+			renderPassthroughAttributes(writer, component, (String[])getPassthroughAttributeSet().toArray(new String[getPassthroughAttributeSet().size()]));	//render the XHTML passthrough attributes
 //TODO fix        Util.renderBooleanPassThruAttributes(writer, component);
 		}
 	}

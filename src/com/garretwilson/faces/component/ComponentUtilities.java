@@ -24,6 +24,16 @@ import static com.garretwilson.faces.el.ExpressionUtilities.*;
 public class ComponentUtilities
 {
 
+	/**Creates a <code>UIColumn</code> component.
+	@param application The current JSF application
+	@return A new <code>UIColumn</code> component.
+	*/
+	public static UIColumn createColumn(final Application application)
+	{
+		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE);	//create a column component
+		return column;	//return the component
+	}
+
 	/**Creates a <code>UICommand</code> component rendered as a link with the given action.
 	@param application The current JSF application
 	@param action The command action.
@@ -50,6 +60,21 @@ public class ComponentUtilities
 			command.setAction(new ExpressionMethodBinding(createExpression(application, action)));
 		}
 		return command;	//return the component
+	}
+
+	/**Creates a <code>UIData</code> component with the given value and var.
+	@param application The current JSF application
+	@param value The value of the data.
+	@param var The name of the variable to use for iteration, with no
+		value-binding allowed.
+	@return A new <code>UIData</code> component with the given values.
+	*/
+	public static UIData createData(final Application application, final String value, final String var)
+	{
+		final UIData data=(UIData)createComponent(application, UIData.COMPONENT_TYPE);	//create a data component
+		setStringValue(data, VALUE_ATTRIBUTE, value);	//store the value, creating a value binding if necessary
+		data.setVar(var);	//set the variable name
+		return data;	//return the component
 	}
 
 	/**Creates a <code>UIGraphic</code> component with the given URL and alternate text.

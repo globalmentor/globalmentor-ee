@@ -8,7 +8,7 @@ import com.garretwilson.lang.ClassUtilities;
 */
 public class UIList extends UIBasicData
 {
-	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIList.class, "List");
+	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIList.class, "List");	//TODO we probably don't even need a special list type
 
 	/**Constructor.*/
 	public UIList()

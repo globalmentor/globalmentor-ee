@@ -145,18 +145,18 @@ Debug.trace("parameter expression type: ", parameterExpressions[i].getType(conte
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
 //G***del Debug.trace("getting value of a method-binding expression: ", getExpressionString());
-		getMethodBinding(context);	//G***del
+//G***del		getMethodBinding(context);	//G***del
 		final Expression<?>[] parameterExpressions=getParameterExpressions();	//get the parameter expressions
 		final Object[] parameterValues=new Object[parameterExpressions.length];	//create an array of objects to hold the actual parameter values
 		for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
 		{
 			parameterValues[i]=parameterExpressions[i].getValue(context);	//get this parameter value
-//G***fix Debug.trace("just got value for parameter", i, parameterValues[i], "of type", parameterExpressions[i].getType(context));
+//G***del Debug.trace("just got value for parameter", i, parameterValues[i], "of type", parameterExpressions[i].getType(context));
 		}
 		final MethodBinding methodBinding=getMethodBinding(context);
-//G***fix Debug.trace("ready to invoke a method binding we got: ", methodBinding);
+//G***del Debug.trace("ready to invoke a method binding we got: ", methodBinding);
 		final T test=(T)methodBinding.invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
-//G***fix Debug.trace("value: ", test);
+//G***del Debug.trace("value: ", test);
 //G***fix Debug.trace("type: ", getType(context));
 		return test;
 //G***bring back		return (T)getMethodBinding(context).invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type

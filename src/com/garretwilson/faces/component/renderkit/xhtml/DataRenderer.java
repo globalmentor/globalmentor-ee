@@ -9,21 +9,41 @@ import javax.faces.context.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
-/**Abstract class providing basic rendering functionality for lists.
+/**Renders a sequence of objects contained in a <code>UIData</code> component.
+This class can function on its own or provide base functionality for more
+	sophisticated data rendering
+This version creates a span of bare objects.
 @author Garret Wilson
 <p>Inspired by com.sun.faces.renderkit.html_basic.TableRenderer.java,v 1.23 2004/05/12 18:30:41 ofung</p>
 */
-public abstract class AbstractListRenderer extends AbstractXHTMLRenderer
+public class DataRenderer extends AbstractXHTMLRenderer
 {
-	/**@return The name of the XML element for an item in a column.
+
+	/**@return The name of the XML element for the component.*/
+	protected String getComponentElementName() {return ELEMENT_SPAN;}
+
+	/**Determines the name of the XML element for an item in a column.
+	This version defaults to not providing an element for item, writing the
+		bare contents.
 	@param column The column for which to return the list item name.
+	@return The name of the XML element for an item in a column, or
+		<code>null</code> if no element should be rendered for items in this column.
 	*/
-	protected abstract String getItemElementName(final UIColumn column);
+	protected String getItemElementName(final UIColumn column)
+	{
+		return null;
+	}
 
 	/**@return <code>true</code>, as a list renderer renders its children.*/
 	public boolean getRendersChildren()
 	{
 		return true;
+	}
+
+	/**Default constructor.*/
+	public DataRenderer()
+	{
+		getPassthroughAttributeSet().remove("rows");	//don't pass through the rows attribute
 	}
 
 	/**Begins encoding the list.
@@ -74,17 +94,7 @@ public abstract class AbstractListRenderer extends AbstractXHTMLRenderer
 						final UIComponent child=(UIComponent)childIterator.next();	//get the next child
 						if(child instanceof UIColumn)	//if the child is a column
 						{
-							final UIColumn column=(UIColumn)child;	//get the child as a column
-							if(column.isRendered())	//if the column is rendered
-							{
-				        writer.write('\t');	//write a tab before the list
-								final String itemElementName=getItemElementName(column);	//get the element name for this item
-								assert itemElementName!=null : "Missing element name for list column item.";
-								writer.startElement(itemElementName, column);	//start the element for the item
-	            	encodeTree(context, column);	//encode this column and all its descendants 
-								writer.endElement(itemElementName);	//end the element for the item
-				        writer.write('\n');	//write a newline after the column
-	            }
+							encodeColumn(context, (UIColumn)child);	//encode this column child
 						}
 					}
 				}
@@ -96,6 +106,33 @@ public abstract class AbstractListRenderer extends AbstractXHTMLRenderer
 			}
 			data.setRowIndex(-1);	//show that we're not using the data anymore
     }
+	}
+
+	/**Encodes an item in a single column.
+	@param context The JSF context.
+	@param column The column being rendered.
+	@exception IOException Thrown if there is an error writing the output.
+	@exception NullPointerException Thrown if <var>context</var> or
+		<var>column</var> is <code>null</code>.
+	*/
+	protected void encodeColumn(final FacesContext context, final UIColumn column) throws IOException
+	{
+		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
+		if(column.isRendered())	//if the column is rendered
+		{
+			writer.write('\t');	//write a tab before the list
+			final String itemElementName=getItemElementName(column);	//get the element name for this item
+			if(itemElementName!=null)	//if there is an element name for an item in this column
+			{
+				writer.startElement(itemElementName, column);	//start the element for the item
+			}
+			encodeTree(context, column);	//encode this column and all its descendants 
+			if(itemElementName!=null)	//if there is an element name for an item in this column
+			{
+				writer.endElement(itemElementName);	//end the element for the item
+			}
+			writer.write('\n');	//write a newline after the column
+		}		
 	}
 
 	/**Encodes the end of the list.
