@@ -36,8 +36,10 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
+/*G***del
 Debug.setDebug(true);
 Debug.setVisible(true);
+*/
 Debug.trace("servicing method", request.getMethod());
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
