@@ -3,8 +3,11 @@ package com.garretwilson.faces.component;
 import java.io.*;
 import java.util.*;
 
+import javax.faces.component.NamingContainer;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
 import javax.faces.context.FacesContext;
+import javax.faces.context.ResponseWriter;
 import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.*;
@@ -12,6 +15,8 @@ import com.garretwilson.faces.context.RequestParametersFacesContextDecorator;
 import com.garretwilson.util.*;
 
 import org.apache.commons.fileupload.*;
+
+import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Basic form component with enhanced functionality to process multipart form
 	submissions.
@@ -25,6 +30,10 @@ import org.apache.commons.fileupload.*;
 public class UIBasicForm extends UIForm
 {
 
+	/**The ID of the hidden field used to hold the button value.*/
+	protected final static String HIDDEN_FIELD_ID="button";
+
+
 	/**The map of encode-scope variables and values.*/
 	private final Map<?, ?> encodeMap=new HashMap(); 
 			
@@ -33,6 +42,18 @@ public class UIBasicForm extends UIForm
 		 */
 		public Map<?, ?> getEncodeMap() {return encodeMap;}
 
+		/**Constructs a client ID for the hidden field associated with this button.
+		@param context The JSF context.
+		@param component The component being rendered.
+		@return The client ID of the hidden field that holds this button's value.
+		*/
+		public String getHiddenFieldClientID(final FacesContext context)
+		{
+			final String clientID=getClientId(context);	//get the component's client ID
+			return clientID+NamingContainer.SEPARATOR_CHAR+HIDDEN_FIELD_ID;	//construct a client ID for the hidden field
+		}	
+		
+		
 	/**Default constructor.*/
 	public UIBasicForm()
 	{
@@ -48,6 +69,16 @@ public class UIBasicForm extends UIForm
 	{
   	getEncodeMap().clear();	//make sure the encode map is clear
   	super.encodeBegin(context);	//do the default encoding
+			//render the hidden field
+		if(isRendered())	//if the component should be rendered
+		{
+			final String hiddenFieldClientID=getHiddenFieldClientID(context);	//get the client ID of the hidden field
+			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
+			writer.startElement(ELEMENT_INPUT, null);	//<input>
+			writer.writeAttribute(ATTRIBUTE_NAME, hiddenFieldClientID, ATTRIBUTE_NAME);	//name="xxx:button"
+			writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN, ELEMENT_INPUT_ATTRIBUTE_TYPE);	//type="hidden"
+			writer.endElement(ELEMENT_INPUT);	//</input>
+		}
   }
 
   /**Finishes encoding and then clears the map of encode attributes.

@@ -10,6 +10,7 @@ import javax.faces.event.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.UIBasicCommand;
+import com.garretwilson.faces.component.UIBasicForm;
 import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
@@ -50,8 +51,14 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	protected String getHiddenFieldClientID(final FacesContext context, final UIComponent component)
 	{
+			//G***testing	TODO try not to rely on UIBasicForm
+		final UIBasicForm parentForm=(UIBasicForm)ComponentUtilities.getParent(component, UIForm.class);	//get the parent form, if there is one
+		assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
+		return parentForm.getHiddenFieldClientID(context);
+/*G***fix
 		final String clientID=component.getClientId(context);	//get the component's client ID
 		return clientID+NamingContainer.SEPARATOR_CHAR+HIDDEN_FIELD_ID;	//construct a client ID for the hidden field
+*/
 	}	
 	
 	/**Begins encoding the component.
@@ -69,6 +76,8 @@ Debug.setVisible(true);
 */
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 		final String clientID=component.getClientId(context);	//get the component's client ID
+
+/*TODO fix without relying on UIBasicForm
 		if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
 		{
 			final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
@@ -81,6 +90,8 @@ Debug.setVisible(true);
 				writer.endElement(ELEMENT_INPUT);	//</input>
 			}
 		}
+*/
+		
 //G***del		renderPopupJavaScript(writer, null);	//G***testing
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
@@ -154,14 +165,72 @@ Debug.setVisible(true);
 				{
 					onclickJavaScript.append(popupWindow(popupURI, "popupwindow"));	//TODO fix the window name
 				}
-						
+
+//G***del				onclickJavaScript.append("if(oldsubmitcontrol!=null)");	//G***testing
+/*G***del
+				final String form=getFormVariable(parentFormID);
+				final String var=getFormComponentVariable(parentFormID, "oldsubmitcontrol");
+				final String hiddenField=getFormComponentVariable(parentFormID, hiddenFieldClientID);
+				final String hiddenFieldValue=getPropertyVariable(hiddenField, "value");
+*/
+
+//G***fix				final String var="window.oldsubmitcontrol";
+
+/*G***del
+				onclickJavaScript.append("if("+form+"!=undefined)");	//G***testing
+				onclickJavaScript.append(createStatement("alert('found the form')"));	//G***testing
+*/
+
+/*G***del
+				onclickJavaScript.append("if("+var+"==undefined)");	//G***testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+
+				onclickJavaScript.append(createStatement(var+"='test'"));	//G***testing
+
+				onclickJavaScript.append("if("+var+"!=undefined)");	//G***testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+*/
+
+/*G***fix
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+				onclickJavaScript.append(createStatement(var+"="+hiddenField));	//G***testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+*/
+
+//G***del				onclickJavaScript.append(createStatement(var+"='testvalue'"));	//G***testing
+				
+				
+//G***del				onclickJavaScript.append(createStatement("alert('before submit hidden field value: '+"+hiddenFieldValue+")"));	//G***testing
+				
+				
+//G***del				onclickJavaScript.append(createStatement("alert('custom form variable is now defined')"));	//G***testing
+
+/*G***fix
+				onclickJavaScript.append("if("+form+"==undefined and "+var+"==undefined)");	//G***testing
+				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//G***testing
+*/
+
+/*G***fix
+				onclickJavaScript.append("var "+var+";if("+var+"==undefined)");	//G***testing
+				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//G***testing
+*/
+				
+//G***fix				onclickJavaScript.append(createStatement(setLiteralValue(getPropertyVariable(var, "value"), "")));	//G***testing
+
+//G***fix				onclickJavaScript.append(createStatement(var+"="+getFormComponentVariable(parentFormID, hiddenFieldClientID)));	//G***testing
+				
+				
+				
 					//document.forms['formID']['hiddenFieldClientID'].value='clientID';
 				onclickJavaScript.append(createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", (value!=null ? value.toString() : clientID))));
 					//document.forms['formID'].submit();
 				onclickJavaScript.append(createStatement(submitForm(parentFormID)));
 					//document.forms['formID']['hiddenFieldClientID'].value='';
 				onclickJavaScript.append(createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", "")));
-//TODO return false here
+
+//G***del				onclickJavaScript.append(createStatement("alert('aftersubmit hidden field value: '+"+hiddenFieldValue+")"));	//G***testing
+
+				onclickJavaScript.append("return false;");	//TODO use constants
 				writer.writeAttribute(ATTRIBUTE_ONCLICK, onclickJavaScript, null);	//write the JavaScript
 			}
 		}
@@ -190,9 +259,9 @@ Debug.trace("decoding command", component, "client id", component.getClientId(co
 			{
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				final String hiddenFieldValue=(String)requestParameterMap.get(hiddenFieldClientID);	//see if there is a value for our hidden field
-/*G***del when works			
-Debug.trace("hidden field value:", hiddenFieldValue, "length", hiddenFieldValue.length());
-Debug.trace("expecting value of client ID:", clientID, "length", clientID.length());
+/*G***del
+Debug.trace("hidden field value:", hiddenFieldValue);
+Debug.trace("expecting value of client ID:", clientID);
 */
 				isClientIDMatch=clientID.equals(hiddenFieldValue);	//record whether the the hidden field value contains our client ID
 			}
