@@ -186,7 +186,54 @@ public class ComponentUtilities
       	component.getAttributes().put(attributeName, URI.create(attributeValue));	//store the integer value in the component's attributes
 		}
 	}
-   
+
+	/**Looks for a value in a value binding, if the value is not already present
+		and returns <code>null</code> as a last result.
+	@param context The JSF context.
+	@param value The existing value, or <code>null</code> if there is no value
+		present.
+	@param name The name of the value binding to be used if there is no given
+		<var>value</var>.
+	@return The existing value, the value binding, or <code>null</code> if
+		neither are present.
+	*/
+	public static <T> T getValue(final FacesContext context, final UIComponent component, final T value, final String name)
+	{
+		return getValue(context, component, value, name, null);	//get the value, returning null as a default
+	}
+
+	/**Looks for a value in a value binding, if the value is not already present,
+		and returns a default value as a last result.
+	@param context The JSF context.
+	@param value The existing value, or <code>null</code> if there is no value
+		present.
+	@param name The name of the value binding to be used if there is no given
+		<var>value</var>.
+	@param defaultValue The default value if there is no existing value and no
+		value binding.
+	@return The existing value, the value binding, or if neither are present,
+		the default value.
+	*/
+	public static <T> T getValue(final FacesContext context, final UIComponent component, final T value, final String name, final T defaultValue)
+	{
+		if(value!=null)	//if there is a value
+		{
+			return value;	//return the value
+		}
+		else	//if there is no value
+		{
+			final ValueBinding valueBinding=component.getValueBinding(name);	//get a value binding for the given name
+			if(valueBinding!=null)	//if we have a value binding
+			{
+				return (T)valueBinding.getValue(context);	//get the value of the value binding
+			}
+			else	//if we have no value binding
+			{
+				return defaultValue;	//return the default value
+			}
+		}
+	}
+	
 	/**Sets a value binding expression attribute value for a component, keyed to the attribute name.
 	@param component The component on which the value should be set.
 	@param attributeName The name under which the value-binding will be stored.
