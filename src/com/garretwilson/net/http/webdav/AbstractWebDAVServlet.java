@@ -2,7 +2,6 @@ package com.garretwilson.net.http.webdav;
 
 import java.io.*;
 import java.net.*;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import static java.util.Collections.*;
 
@@ -25,6 +24,7 @@ import static com.garretwilson.net.URIUtilities.*;
 import com.garretwilson.net.http.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
+import static com.garretwilson.net.http.webdav.WebDAVMethod.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
@@ -69,35 +69,27 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends BasicHTT
   */
 	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-		if(WebDAVMethod.PROPFIND.toString().equals(method))	//PROPFIND
+		final WebDAVMethod webdavMethod;
+		try
 		{
-			doPropfind(request, response);	//delegate to the propfind method
+			webdavMethod=WebDAVMethod.valueOf(method);	//see which WebDAV method was requested
 		}
-		else	//if the request was not recognized
+		catch(final IllegalArgumentException illegalArgumentException)	//if we don't understand the method
 		{
 			super.doMethod(method, request, response);	//do the default servicing
+			return;	//don't process the method further
+		}		
+		switch(webdavMethod)	//see which WebDAV method this is
+		{
+			case MKCOL:
+				doMkCol(request, response);	//delegate to the mkcol method
+				break;
+			case PROPFIND:
+				doPropFind(request, response);	//delegate to the propfind method
+				break;
+			default:
+				super.doMethod(method, request, response);	//do the default servicing if we don't service the method
 		}
-/*G***del
-      if (method.equals(METHOD_PROPFIND)) {
-          doPropfind(req, resp);
-      } else if (method.equals(METHOD_PROPPATCH)) {
-          doProppatch(req, resp);
-      } else if (method.equals(METHOD_MKCOL)) {
-          doMkcol(req, resp);
-      } else if (method.equals(METHOD_COPY)) {
-          doCopy(req, resp);
-      } else if (method.equals(METHOD_MOVE)) {
-          doMove(req, resp);
-      } else if (method.equals(METHOD_LOCK)) {
-          doLock(req, resp);
-      } else if (method.equals(METHOD_UNLOCK)) {
-          doUnlock(req, resp);
-      } else {
-          // DefaultServlet processing
-          super.service(req, resp);
-      }
-*/
-	
   }
 
 	/**Services the OPTIONS method.
@@ -166,7 +158,7 @@ Debug.trace("doing options for URI", resourceURI);
 			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 			final boolean exists=exists(resourceURI);	//see whether the resource already exists
 			final R resource;	//we'll get the existing resource, if there is one 
-			if(exists(resourceURI))	//if this resource exists
+			if(exists)	//if this resource exists
 	    {
 				resource=getResource(resourceURI);	//get the resource information
 	    }
@@ -178,8 +170,7 @@ Debug.trace("doing options for URI", resourceURI);
 				}
 				catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 				{
-					response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that access to this resource is forbidden TODO throw a general exception and catch it in the main service method
-					return;	//TODO throw an exception
+					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 				}
 			}
 			try
@@ -201,6 +192,7 @@ Debug.trace("doing options for URI", resourceURI);
 				{
 					deleteResource(resource);	//delete the resource, as we weren't able to save its contents
 				}
+				throw ioException;	//rethrow the exception
 			}
 			if(exists)	//if the resource already existed
 			{
@@ -217,13 +209,48 @@ Debug.trace("doing options for URI", resourceURI);
 		}
   }
 
+	/**Services the MkCol method.
+  @param request The HTTP request.
+  @param response The HTTP response.
+  @exception ServletException if there is a problem servicing the request.
+  @exception IOException if there is an error reading or writing data.
+  */
+	public void doMkCol(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	{
+		if(!READ_ONLY)	//if this servlet is not read-only
+		{
+			final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
+			final boolean exists=exists(resourceURI);	//see whether the resource already exists
+			final R resource;	//we'll get the existing resource, if there is one
+			if(!exists(resourceURI))	//if the resource doesn't exist
+			{
+				try
+				{
+					resource=createCollection(resourceURI);	//create the resource
+				}
+				catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
+				{
+					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
+				}
+			}
+			else	//if the resource doesn't exist
+			{
+				throw new HTTPMethodNotAllowedException(getAllowedMethods(resourceURI));	//report that we don't allow creating collections that already exist, indicating the methods we do allow for this resource				
+			}
+		}
+		else	//if this servlet is read-only
+		{
+			response.sendError(HttpServletResponse.SC_FORBIDDEN);	//indicate that this method is forbidden
+		}
+  }
+
 	/**Services the PROPFIND method.
   @param request The HTTP request.
   @param response The HTTP response.
   @exception ServletException if there is a problem servicing the request.
   @exception IOException if there is an error reading or writing data.
   */
-	protected void doPropfind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
+	protected void doPropFind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("doing propfind for URI", resourceURI);
@@ -280,10 +307,7 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 		}
 		else	//if directory listing is not allowed
 		{
-				//show which methods we support
-			final Set<WebDAVMethod> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
-			response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
-      response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED);	//show that we don't allow listing properties
+			throw new HTTPMethodNotAllowedException(getAllowedMethods(resourceURI));	//report that we don't allow this method, indicating the methods we do allow for this resource
 		}
   }
 
@@ -374,18 +398,41 @@ Debug.trace("request URI", requestURI);
 //G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
 //G***del Debug.trace("exists?", exists(requestURI));
 		final String requestURIString=requestURI.toString();	//get the string version of the request URI
-		if(!endsWith(requestURIString, PATH_SEPARATOR) && !exists(requestURI))	//if the client asked for a collection that doesn't exist
+		if(!endsWith(requestURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
 		{
-			final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash
-//G***del Debug.trace("checking redirect URI", redirectURI);
-			if(isCollection(redirectURI))	//if the URI with a trailing slash added is a collection
+			final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
+			final boolean isCollectionMethod=MKCOL_METHOD.equals(request.getMethod());	//see if this is a method referring to a collection
+			final boolean redirect;	//determine if we need to redirect
+			if(isCollectionMethod)	//if this is a collection-specific method
+			{
+				redirect=true;	//redirect to the real collection URI
+			}
+			else	//if this is not a collection-specific method
+			{
+				redirect=!exists(requestURI) && isCollection(redirectURI);	//redirect if there is no such file but redirecting would take the client to a collection
+			}
+			if(redirect)	//if we should redirect
 			{
 Debug.trace("sending redirect", redirectURI);
 				throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
 			}
+/*G***del when works
+			if(!isCollectionMethod	
+					&& !exists(requestURI))	//if this is not a collection-specific method
+			if(isCollectionMethod || )	//if the client asked for a collection, or there is no such file
+			{
+				final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
+	//G***del Debug.trace("checking redirect URI", redirectURI);
+				if(isCollectionMethod || isCollection(redirectURI))	//if the URI with a trailing slash added is a collection
+				{
+	Debug.trace("sending redirect", redirectURI);
+					throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
+				}
+			}
+//G***del when works		return URI.create(request.getRequestURL().toString());	//return a URI created from the full request URL
+*/
 		}
 		return requestURI;	//return the requested URI
-//G***del when works		return URI.create(request.getRequestURL().toString());	//return a URI created from the full request URL
 	}
 
 	/**Determines the requested depth.
@@ -618,35 +665,35 @@ Debug.trace("content length", contentLength);
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
   */
-	protected Set<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using generics---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
+	protected EnumSet<WebDAVMethod> getAllowedMethods(final URI resourceURI)	//TODO we probably can't keep using generics---when we implement DeltaV, there will probably be more methods, and other servlets may allow custom methods
 	{
-		final Set<WebDAVMethod> methodSet=EnumSet.of(WebDAVMethod.OPTIONS);	//we always allow options 
+		final EnumSet<WebDAVMethod> methodSet=EnumSet.of(OPTIONS);	//we always allow options 
 		if(exists(resourceURI))	//if the resource exists
 		{
-			methodSet.add(WebDAVMethod.COPY);
-			methodSet.add(WebDAVMethod.GET);
-			methodSet.add(WebDAVMethod.DELETE);
-			methodSet.add(WebDAVMethod.HEAD);
+			methodSet.add(COPY);
+			methodSet.add(GET);
+			methodSet.add(DELETE);
+			methodSet.add(HEAD);
 //  	TODO implement  		methodSet.add(WebDAVMethod.LOCK);
-			methodSet.add(WebDAVMethod.MOVE);
-			methodSet.add(WebDAVMethod.POST);
+			methodSet.add(MOVE);
+			methodSet.add(POST);
 			if(LIST_DIRECTORIES)	//if we allow directory listings
 			{
-//  		TODO implement  			methodSet.add(WebDAVMethod.PROPFIND);
+//  		TODO implement  			methodSet.add(PROPFIND);
 			}
-//  	TODO implement  		methodSet.add(WebDAVMethod.PROPPATCH);
-//  	TODO implement  		methodSet.add(WebDAVMethod.TRACE);
-//  	TODO implement  		methodSet.add(WebDAVMethod.UNLOCK);
+//  	TODO implement  		methodSet.add(PROPPATCH);
+//  	TODO implement  		methodSet.add(TRACE);
+//  	TODO implement  		methodSet.add(UNLOCK);
 			if(!isCollection(resourceURI))	//if the resource is not a collection
 			{
-				methodSet.add(WebDAVMethod.PUT);	//allow saving a resource to this location  			
+				methodSet.add(PUT);	//allow saving a resource to this location  			
 			}
 		}
 		else	//if the resource does not exist
 		{
-//  	TODO implement  		methodSet.add(WebDAVMethod.LOCK);
-			methodSet.add(WebDAVMethod.MKCOL);
-			methodSet.add(WebDAVMethod.PUT);  		
+//  	TODO implement  		methodSet.add(LOCK);
+			methodSet.add(MKCOL);
+			methodSet.add(PUT);  		
 		}
 		return methodSet;	//return the allowed methods
 	}
@@ -728,13 +775,27 @@ Debug.trace("content length", contentLength);
 	protected abstract OutputStream getOutputStream(final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 	/**Creates a resource.
+	For collections, <code>createCollection</code> should be used instead.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
 	@exception IOException Thrown if there is an error creating the resource.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@see #createCollection(URI)
 	*/
-	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException;
+	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
+
+	/**Creates a collection resource.
+	@param resourceURI The URI of the resource to create.
+	@return The description of a newly created resource, or <code>null</code> if
+		the resource is not allowed to be created.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IOException Thrown if there is an error creating the resource.
+	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@see #createResource(URI)
+	*/
+	protected abstract R createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**Deletes a resource.
 	@param resource The resource to delete.

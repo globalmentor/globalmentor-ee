@@ -60,7 +60,7 @@ Debug.trace("path info:", request.getPathInfo());
 			Debug.warn(illegalArgumentException);	//log the problem
 			response.sendError(SC_BAD_REQUEST, illegalArgumentException.getMessage());	//send back a 400 Bad Request error
 		}
-		catch(final UnsupportedOperationException unsupportedOperationException)	//if some operation is not supported bythe server
+		catch(final UnsupportedOperationException unsupportedOperationException)	//if some operation is not supported by the server
 		{
 			Debug.warn(unsupportedOperationException);	//log the problem
 			response.sendError(SC_NOT_IMPLEMENTED, unsupportedOperationException.getMessage());	//send back a 401 Not Implemented error
@@ -85,6 +85,11 @@ Debug.trace("path info:", request.getPathInfo());
 				//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
 			response.sendError(unauthorizedException.getStatusCode());	//send back the redirect status code as an error
+		}
+		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
+		{
+			setAllow(response, methodNotAllowedException.getAllowedMethods());	//report the allowed methods
+			response.sendError(methodNotAllowedException.getStatusCode());	//send back the redirect status code as an error
 		}
 		catch(final HTTPException exception)	//if any other HTTP error was encountered
 		{
