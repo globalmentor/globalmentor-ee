@@ -6,13 +6,13 @@ import com.garretwilson.faces.*;
 
 import static com.garretwilson.faces.FacesConstants.*;
 
-/**A tag representing a command rendered as a button.
+/**A tag representing a command rendered as a link.
 @author Garret Wilson
 */
-public class CommandButtonTag extends AbstractCommandTag
+public class CommandLinkTag extends AbstractCommandTag
 {
 
 	/**@return The renderer for this component.*/
-	public String getRendererType() {return BUTTON_RENDER_TYPE;}
+	public String getRendererType() {return LINK_RENDER_TYPE;}
 
 }

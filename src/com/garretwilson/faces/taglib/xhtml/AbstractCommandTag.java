@@ -10,6 +10,8 @@ import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.component.renderkit.xhtml.ButtonRenderer;
 import com.garretwilson.faces.el.*;
 
+import static com.garretwilson.faces.component.ComponentConstants.*;
+import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
 
 /**An abstract base class for command component and renderer tags.
@@ -57,16 +59,7 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
 			command.setAction(new ExpressionMethodBinding(createExpression(application, getAction())));
 		}
-		if(component instanceof UIBasicCommand)	//if the component is a basic command with its extended functionality
-		{
-				//TODO now that we have ExpressionValueBinding, take away all the special UIBasicCommand and UIBasicData value encodings
-			final UIBasicCommand basicCommand=(UIBasicCommand)command;	//cast the component to a command component TODO maybe refactor this out
-			if(getValue()!=null)	//if we have a value
-			{
-					//create an expression from the value
-				basicCommand.setValueExpression(ExpressionUtilities.createExpression(application, getValue()));
-			}
-		}
+		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
    }
 
 	/**Release our resources.*/

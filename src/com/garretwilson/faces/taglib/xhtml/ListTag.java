@@ -11,6 +11,9 @@ import com.garretwilson.faces.component.renderkit.xhtml.ListRenderer;
 import com.garretwilson.faces.el.*;
 import com.garretwilson.faces.component.ComponentUtilities;
 
+import static com.garretwilson.faces.component.ComponentConstants.*;
+import static com.garretwilson.faces.component.ComponentUtilities.*;
+
 /**A tag representing a list component.
 @author Garret Wilson
 */
@@ -64,13 +67,8 @@ viewer.setRows(Integer.parseInt(rows));
 }
 }      
 */
-		final UIBasicData data=(UIBasicData)component;	//cast the component to a data component TODO probably move this up into a AbstractDataTag component
-		ComponentUtilities.setStringValue(component, UIBasicData.VAR_ATTRIBUTE, getVar());	//store the variable name
-		if(getValue()!=null)	//if we have a value
-		{
-				//create an expression from the value
-			data.setValueExpression(ExpressionUtilities.createExpression(getFacesContext().getApplication(), getValue()));
-		}
+		setStringValue(component, UIBasicData.VAR_ATTRIBUTE, getVar());	//store the variable name
+		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
    }
 
 	/**Release our resources.*/

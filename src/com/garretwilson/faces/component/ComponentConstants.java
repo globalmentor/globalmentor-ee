@@ -10,4 +10,6 @@ public class ComponentConstants
 	public final static String DISABLED_ATTRIBUTE="disabled";
 	/**The read-only attribute.*/
 	public final static String READONLY_ATTRIBUTE="readonly";
+	/**The value attribute.*/
+	public final static String VALUE_ATTRIBUTE="value";
 }

@@ -10,10 +10,12 @@ import javax.faces.el.ValueBinding;
 import javax.faces.webapp.UIComponentTag;
 
 import com.garretwilson.faces.*;
+import com.garretwilson.faces.el.ExpressionValueBinding;
 import com.garretwilson.util.NameValuePair;
 
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
+import static com.garretwilson.faces.el.ExpressionUtilities.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
@@ -146,6 +148,7 @@ public class ComponentUtilities
 	}
 
 	/**Sets a string value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
 	@param component The component on which the value should be set.
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
@@ -156,7 +159,7 @@ public class ComponentUtilities
 	{
 		if(attributeValue!=null)	//if there is an attribute value
 		{
-			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
       	component.getAttributes().put(attributeName, attributeValue);	//store the string value in the component's attributes
@@ -164,6 +167,7 @@ public class ComponentUtilities
 	}
 
 	/**Sets an integer value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
 	@param component The component on which the value should be set.
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
@@ -176,7 +180,7 @@ public class ComponentUtilities
 	{
 		if(attributeValue!=null)	//if there is an attribute value
 		{
-			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
       	component.getAttributes().put(attributeName, new Integer(attributeValue));	//store the integer value in the component's attributes
@@ -184,6 +188,7 @@ public class ComponentUtilities
 	}
 
 	/**Sets a boolean value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
 	@param component The component on which the value should be set.
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
@@ -194,7 +199,7 @@ public class ComponentUtilities
 	{
 		if(attributeValue!=null)	//if there is an attribute value
 		{
-			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
       	component.getAttributes().put(attributeName, new Boolean(attributeValue));	//store the integer value in the component's attributes
@@ -202,6 +207,7 @@ public class ComponentUtilities
 	}
 
 	/**Sets a URI value of a component.
+	This method recognizes extended JSF EL for property-value and method-value binding.
 	@param component The component on which the value should be set.
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
@@ -215,7 +221,7 @@ public class ComponentUtilities
 	{
 		if(attributeValue!=null)	//if there is an attribute value
 		{
-			if(UIComponentTag.isValueReference(attributeValue))	//if the string is a value reference
+			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
       	component.getAttributes().put(attributeName, URI.create(attributeValue));	//store the integer value in the component's attributes
@@ -270,14 +276,18 @@ public class ComponentUtilities
 	}
 	
 	/**Sets a value binding expression attribute value for a component, keyed to the attribute name.
+	This method recognizes extended JSF EL for property-value and method-value binding.
 	@param component The component on which the value should be set.
 	@param attributeName The name under which the value-binding will be stored.
 	@param attributeValue The value-binding expression.
-	 */
+	*/
 	protected static void setValueBinding(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		final FacesContext facesContext=FacesContext.getCurrentInstance();	//get the JSF context
-		final ValueBinding valueBinding=facesContext.getApplication().createValueBinding(attributeValue);	//create a value binding for the attribute value
+//G***del when works		final FacesContext facesContext=FacesContext.getCurrentInstance();	//get the JSF context
+		final Application application=FacesContext.getCurrentInstance().getApplication();	//get the JSF application
+			//create an expression and wrap it in a value binding
+		final ValueBinding valueBinding=new ExpressionValueBinding(createExpression(application, attributeValue));
+//G***del when works		final ValueBinding valueBinding=facesContext.getApplication().createValueBinding(attributeValue);	//create a value binding for the attribute value
 		component.setValueBinding(attributeName, valueBinding);	//set the value binding for the component
 	}
 
