@@ -2,10 +2,11 @@ package com.garretwilson.servlet.jsp.taglib;
 
 import java.io.IOException;
 
+import javax.mail.internet.ContentType;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.garretwilson.io.MediaType;
+import com.garretwilson.io.ContentTypeUtilities;
 import com.garretwilson.text.xml.XMLUtilities;
 
 import static com.garretwilson.text.xml.XMLUtilities.*;
@@ -54,13 +55,15 @@ public class DeclareXMLTag extends TagSupport
 		/**@return The document content type object.
 		Defaults to the appropriate content type if a recognized document type is
 			requested; otherwise "text/xml".
+		@exception IllegalArgumentException Thrown if the string is not a
+			syntactically correct content type.
 		*/
-		protected MediaType getMediaType()
+		protected ContentType getMediaType() throws IllegalArgumentException
 		{
-			MediaType mediaType=null;	//we'll determine the media type if we can
+			ContentType mediaType=null;	//we'll determine the media type if we can
 			if(contentType!=null)	//if there is a content type string
 			{
-				mediaType=new MediaType(contentType);	//create a new media type
+				mediaType=ContentTypeUtilities.createContentType(contentType);	//create a new media type
 			}
 			else	//if there is no content type string
 			{
@@ -94,7 +97,7 @@ public class DeclareXMLTag extends TagSupport
 			String element=rootElement;	//get the current root element
 			if(element==null)	//if we don't have a root element
 			{
-				final MediaType mediaType=getMediaType();	//determine the media type
+				final ContentType mediaType=getMediaType();	//determine the media type
 				element=getDefaultRootElementLocalName(mediaType);	//determine the root element name based upon the media type
 			}
 			return element;	//return our determined root element
@@ -152,6 +155,27 @@ public class DeclareXMLTag extends TagSupport
 		try
 		{
 				//set the content type
+			final ContentType mediaType=getMediaType();	//get the media type
+/*G***fix
+			if(mediaType.get)
+			
+<jsp:directive.page import="java.util.Enumeration"/>
+<jsp:scriptlet>
+  String contentType="text/html";
+  final Enumeration httpAcceptEnumeration=request.getHeaders("accept");
+  while(httpAcceptEnumeration.hasMoreElements())
+  {
+
+if(((String)httpAcceptEnumeration.nextElement()).indexOf("application/xhtml+xml")>=0)
+    {
+      contentType="application/xhtml+xml";
+      break;
+
+    }
+  }
+ 
+  response.setContentType(contentType);    //set the content type to whatever we decided upon 			
+*/
 			//TODO set the content type
 				//write the XML declaration
 			writer.write(XML_DECL_START);	//<?xml
