@@ -7,17 +7,18 @@ import javax.faces.convert.ConverterException;
 
 /**Converts an enum value to and from a string representation.
 @author Garret Wilson
+@param <T> The type of enum this converter supports.
 */
-public class EnumConverter implements Converter
+public class EnumConverter<T extends Enum<T>> implements Converter
 {
 	
 	/**The type of enumeration this converter converts.*/
-	private final Class<? extends Enum<?>> enumType;
+	private final Class<T> enumType;
 
 	/**Creates an enum converter for a particular enumeration type.
 	@param enumType
 	*/
-	public EnumConverter(final Class<? extends Enum<?>> enumType)
+	public EnumConverter(final Class<T> enumType)
 	{
 		this.enumType=enumType;	//save the enum type
 	}
