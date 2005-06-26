@@ -42,11 +42,13 @@ public class BasicHTTPServlet extends HttpServlet
 Debug.setDebug(true);
 Debug.setVisible(true);
 */
+/*TODO del
 Debug.trace("servicing method", request.getMethod());
 Debug.trace("servlet path:", request.getServletPath());
 Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
+*/
 		try
 		{
 			if(!OPTIONS_METHOD.equals(request.getMethod()))	//G***testing
@@ -276,11 +278,11 @@ Debug.trace("path info:", request.getPathInfo());
 		if(credentials!=null)	//if we have credentials
 		{
 			final String principalID=credentials.getPrincipalID();	//get the ID of the principal
-Debug.trace("checking credentials with ID", principalID);
+//TODO delDebug.trace("checking credentials with ID", principalID);
 			final int separatorIndex=CharSequenceUtilities.indexOf(principalID, '\\');	//G***testing
 			if(separatorIndex>=0)
 			{
-Debug.trace("using real ID", principalID.substring(separatorIndex+1));
+//TODO del Debug.trace("using real ID", principalID.substring(separatorIndex+1));
 				return getPrincipal(principalID.substring(separatorIndex+1));	//G***testing
 			}
 			else
@@ -337,12 +339,12 @@ Debug.trace("using real ID", principalID.substring(separatorIndex+1));
 	*/
 	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
 	{
-Debug.trace("authenticating");
+//TODO del Debug.trace("authenticating");
 		final String realm=credentials!=null ? credentials.getRealm() : null;	//see if the credentials reports the realm, if we have credentials
-Debug.trace("got realm", realm);
+//TODO del Debug.trace("got realm", realm);
 		if(realm!=null && !realm.equals(getRealm(resourceURI)))	//if a realm is given but it doesn't equal the expected realm for the requested resource
 		{
-Debug.trace("realm doesn't match", getRealm(resourceURI));
+//TODO del Debug.trace("realm doesn't match", getRealm(resourceURI));
 			return false;	//don't allow credentials marked for one realm to be used for another realm
 		}
 		if(credentials!=null)	//if there are credentials given
@@ -350,7 +352,7 @@ Debug.trace("realm doesn't match", getRealm(resourceURI));
 			if(credentials instanceof DigestAuthenticateCredentials)	//if these are digest credentials, make sure they are valid
 			{
 				final DigestAuthenticateCredentials digestCredentials=(DigestAuthenticateCredentials)credentials;	//get the credentials as digest credentials
-Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
+//TODO del Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
 				if(!requestURI.equals(digestCredentials.getURI().toString()))	//if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
 				{
 					return false;	//don't allow authentication for other resources
@@ -359,7 +361,7 @@ Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against re
 				if(principal!=null)	//if a principal was given
 				{
 					final char[] password=getPassword(principal);	//get the password for the principal
-Debug.trace("got password for credentials", new String(password));
+//TODO del Debug.trace("got password for credentials", new String(password));
 					return password!=null && digestCredentials.isValid(method, password);	//see if the credentials are valid for this principal's password
 				}
 				else	//if no principal is given
