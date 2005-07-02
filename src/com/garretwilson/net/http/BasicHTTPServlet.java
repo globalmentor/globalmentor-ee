@@ -5,6 +5,7 @@ import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.Date;
+import java.util.MissingResourceException;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -105,6 +106,11 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			Debug.warn(httpException);	//log the problem
 			response.sendError(httpException.getStatusCode(), httpException.getMessage());	//send back the status code as an error
+		}
+		catch(final MissingResourceException missingResourceException)	//if there is a resource missing, the server isn't property configured
+		{
+			Debug.warn(missingResourceException);	//log the problem
+			response.sendError(SC_INTERNAL_SERVER_ERROR, missingResourceException.getMessage());	//send back a 500 Internal Server Error			
 		}
   }
 
