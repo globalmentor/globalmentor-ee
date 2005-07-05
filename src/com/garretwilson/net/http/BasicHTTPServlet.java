@@ -25,7 +25,21 @@ import com.garretwilson.util.SyntaxException;
 public class BasicHTTPServlet extends HttpServlet
 {
 
-	
+	/**The context path of the servlet. This is set on the first request received by the servlet.*/
+	private String contextPath=null;
+
+		/**@return The context path of the servlet: either a string starting with '/' or the empty string.
+		@exception IllegalStateException if this servlet has not yet received any requests.
+		*/
+		protected String getContextPath()
+		{
+			if(contextPath==null)	//if the context path has not been set
+			{
+				throw new IllegalStateException("Servlet has received no requests and context path has not yet been set.");
+			}
+			return contextPath;	//return the servlet's context path
+		}
+
 	/**Services an HTTP request.
 	This version checks authorization for all requests.
   This version provides support for special exceptions.
@@ -50,6 +64,15 @@ Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 */
+		final String requestContextPath=request.getContextPath();	//get the current context path for this request
+		if(contextPath==null)	//if we haven't yet set the context path
+		{
+			contextPath=requestContextPath;	//set the context path
+		}
+		else if(!contextPath.equals(requestContextPath))	//if the context path has changed (we expect the context path to stay the same through the life of this servlet)
+		{
+			throw new IllegalStateException("Servlet context path changed unexpectedly from "+contextPath+" to "+requestContextPath);
+		}
 		try
 		{
 			if(!OPTIONS_METHOD.equals(request.getMethod()))	//G***testing
@@ -65,6 +88,11 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			Debug.warn(illegalArgumentException);	//log the problem
 			response.sendError(SC_BAD_REQUEST, illegalArgumentException.getMessage());	//send back a 400 Bad Request error
+		}
+		catch(final IllegalStateException illegalStateException)	//if there was an illgal state exception, that's a serious internal server error
+		{
+			Debug.warn(illegalStateException);	//log the problem
+			response.sendError(SC_INTERNAL_SERVER_ERROR, illegalStateException.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final UnsupportedOperationException unsupportedOperationException)	//if some operation is not supported by the server
 		{
@@ -95,6 +123,10 @@ Debug.trace("path info:", request.getPathInfo());
 				//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
 			response.sendError(unauthorizedException.getStatusCode());	//send back the status code as an error
+		}
+		catch(final HTTPNotFoundException httpNotFoundException)	//404 Not Found
+		{
+			response.sendError(httpNotFoundException.getStatusCode(), httpNotFoundException.getMessage());	//send back the status code as an error, but don't both logging the error
 		}
 		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
 		{
@@ -426,14 +458,14 @@ Debug.trace("path info:", request.getPathInfo());
 	}
 
 	/**Determines the realm applicable for the resource indicated by the given URI
-	This version returns the local class name of the servlet.
+	This version returns <code>null</code>.
 	@param resourceURI The URI of the resource requested.
 	@return The realm appropriate for the resource, or <code>null</code> if the given resource is not in a known realm.
 	@exception HTTPInternalServerErrorException if there is an error getting the realm.
 	*/
 	protected String getRealm(final URI resourceURI) throws HTTPInternalServerErrorException
 	{
-		return getLocalName(getClass());	//return the local name of the servlet class
+		return null;
 	}
 
 }
