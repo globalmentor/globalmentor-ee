@@ -633,8 +633,9 @@ Debug.trace("content length", contentLength);
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
+	@exception IOException Thrown if there is an error accessing the resource;
 	*/
-	protected abstract long getContentLength(final R resource);
+	protected abstract long getContentLength(final R resource) throws IOException;
 
 	/**Retrieves an input stream to the given resource.
 	@param resource The resource for which an input stream should be retrieved.

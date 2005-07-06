@@ -3,16 +3,28 @@ package com.garretwilson.net.http;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import static java.util.Collections.*;
 
-import com.garretwilson.io.FileResource;
-import static com.garretwilson.io.FileUtilities.*;
-import com.garretwilson.net.URIUtilities;
+import static com.garretwilson.lang.ObjectUtilities.*;
+import com.garretwilson.model.DefaultResource;
 
-/**The default implementation of an HTTP servlet that accesses files in the web application directory.
+/**The default implementation of an HTTP servlet that accesses files in the web application.
+This servlet may access files within a War file because it uses general servlet routines for resource access.
+For this reason the servlet is read-only by default, because the servlet context does not offer any writing methods.
 @author Garret Wilson
 */
-public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
+public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.HTTPServletResource>	//TODO implement writing using the resource URL methods
 {
+
+	//TODO fix checks for WEB-INF
+
+	/**Default constructor.
+	This servlet defaults to being read-only.
+	*/
+	public DefaultHTTPServlet()
+	{
+		setReadOnly(true);	//default to being read-only, because the servlet context only provides read methods
+	}
 
   /**Determines if the resource at a given URI exists.
   @param resourceURI The URI of the requested resource.
@@ -21,7 +33,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
   */
   protected boolean exists(final URI resourceURI) throws IOException
   {
-  	return getResource(resourceURI).getFile().exists();	//return whether the file exists
+		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
+  	return getServletContext().getResource(resourceContextAbsolutePath)!=null;	//return whether the servlet has mapped a resource to this path
   }
 
   /**Determines if the resource at a given URI is a collection.
@@ -31,7 +44,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
   */
   protected boolean isCollection(final URI resourceURI) throws IOException
   {
-  	return getResource(resourceURI).getFile().isDirectory();	//return whether the file is a directory
+  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relateive path
   }
 
 	/**Determines the requested resource.
@@ -41,26 +54,21 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException if there is an error accessing the resource.
   */
-	protected FileResource getResource(final URI resourceURI) throws IllegalArgumentException, IOException
+	protected HTTPServletResource getResource(final URI resourceURI) throws IllegalArgumentException, IOException
 	{
-		final String contextPath=getContextPath();	//get the servlet context path
-		final String path=resourceURI.getPath();	//get the path of the resource URI
-		if(!path.startsWith(contextPath))	//if the path does not start with the context path
-		{
-			throw new IllegalArgumentException("Resource URI "+resourceURI+" path "+path+" is not located under context path "+contextPath);
-		}
-		final String contextRelativePath=URIUtilities.getRelativePath(path.substring(contextPath.length()));	//remove the context path and then make the path relative
-		return new FileResource(new File(getServletContext().getRealPath(contextRelativePath)), resourceURI);	//create a file to the real path in the file system
+		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
+		return new HTTPServletResource(resourceURI, resourceContextAbsolutePath);	//create a new default resource
 	}
 
 	/**Determines the content length of the given resource.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
+	@exception IOException Thrown if there is an error accessing the resource;
 	*/
-	protected long getContentLength(final FileResource resource)
+	protected long getContentLength(final HTTPServletResource resource) throws IOException
 	{
-		return resource.getFile().length();	//return the length of the file
+		return resource.getContentLength();	//return the content length of the resource
 	}
 
 	/**Retrieves an input stream to the given resource.
@@ -69,9 +77,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@exception IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
-	protected InputStream getInputStream(final FileResource resource) throws IOException
+	protected InputStream getInputStream(final HTTPServletResource resource) throws IOException
 	{
-		return new BufferedInputStream(new FileInputStream(resource.getFile()));	//return a buffered input stream from the file
+		return resource.getInputStream();	//return the input stream to the resource, creating one if we haven't yet done so
 	}
 
 	/**Retrieves an output stream to the given resource.
@@ -79,9 +87,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@return An output stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected OutputStream getOutputStream(final FileResource resource) throws IOException
+	protected OutputStream getOutputStream(final HTTPServletResource resource) throws IOException
 	{
-		return new BufferedOutputStream(new FileOutputStream(resource.getFile()));	//return a buffered output stream to the file		
+		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
 	/**Creates a resource.
@@ -94,11 +102,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected FileResource createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected HTTPServletResource createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
-		final FileResource fileResource=getResource(resourceURI);	//get the resource associated with this URI
-		createNewFile(fileResource.getFile());	//create a new file
-		return fileResource;	//return the file resource
+		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
 	/**Creates a collection resource.
@@ -109,25 +115,18 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
-	protected FileResource createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected HTTPServletResource createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
-		final FileResource fileResource=getResource(resourceURI);	//get the resource associated with this URI
-		final File file=fileResource.getFile();	//get the associated file
-		if(!file.getParentFile().isDirectory())	//if the file's parent is not an existing directory
-		{
-			throw new HTTPConflictException();	//indicate the conflict with the parent resource TODO report the URI at some point, which is not the same as the URI of the parent file
-		}
-		mkdir(file);	//create the directory
-		return fileResource;	//return the file resource		
+		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
 	/**Deletes a resource.
 	@param resource The resource to delete.
 	@exception IOException Thrown if the resource could not be deleted.
 	*/
-	protected void deleteResource(final FileResource resource) throws IOException
+	protected void deleteResource(final HTTPServletResource resource) throws IOException
 	{
-		
+		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");		
 	}
 
 	/**Retrieves an list of child resources of the given resource.
@@ -135,9 +134,92 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<FileResource>
 	@return A list of child resources.
 	@exception IOException Thrown if there is an error retrieving the list of child resources.
 	*/
-	protected List<FileResource> getChildResources(final FileResource resource) throws IOException
+	protected List<HTTPServletResource> getChildResources(final HTTPServletResource resource) throws IOException
 	{
-		return resource.getChildResources();	//return the child resources of this file resource
+		return emptyList();	//TODO implement		
+	}
+
+	/**A resource with associated context-relative absolute path.
+	@author Garret Wilson
+	*/
+	protected class HTTPServletResource extends DefaultResource
+	{
+
+		/**The absolute path of the resource relative to the servlet context.*/
+		private final String resourceContextAbsolutePath;
+
+			/**@public The absolute path of the resource relative to the servlet context.*/
+			public String getResourceContextAbsolutePath() {return resourceContextAbsolutePath;}
+
+		/**The URL of the resource.*/
+		private final URL url;
+
+			/**@return The URL of the resource.*/
+			protected final URL getURL() {return url;}
+
+		/**The lazily-created URL connection to the resource.*/
+		private URLConnection urlConnection=null;
+
+			/**@return The lazily-created URL connection to the resource.
+			@exception IOException if there is an error getting a connection to the resource.
+			*/
+			protected URLConnection getURLConnection() throws IOException
+			{
+				if(urlConnection==null)	//if we don't yet have a URL connection to the resource
+				{
+					final URL url=getURL();	//get the resource URL
+					assert url!=null : "URL unexpectedly null.";	//TODO check elsewhere to make sure we don't create instances of non-existent resource
+					urlConnection=url.openConnection();	//open a connection to the resource
+				}
+				return urlConnection;	//return the connection we created, or the one we already had
+			}
+
+		/**The content length of the resource, or -1 if the length has not yet been initialized.*/
+		private long contentLength=-1;
+
+			/**@return The content length of the resource.
+			@exception IOException if there is an error getting the length of the resource.
+			*/
+			public long getContentLength() throws IOException
+			{
+				return getURLConnection().getContentLength();	//get a connection to the resource and return the length from the connection
+			}
+
+		/**The lazily-created input stream to the resource.*/
+		private InputStream inputStream=null;
+
+			/**@return The lazily-created input stream to the resource.
+			@exception IOException if there is an error getting an input stream to the resource.
+			*/
+			public InputStream getInputStream() throws IOException
+			{
+				if(inputStream==null)	//if we don't yet have an input stream to the resource
+				{
+					inputStream=getURLConnection().getInputStream();	//get an output stream to the resource from its URL connection
+				}
+				return inputStream;	//return the input stream we created, or the one we already had
+			}
+
+		/**Constructs a resource with a reference URI and a context-relative absolute path.
+		@param referenceURI The reference URI for the new resource.
+		@param resourceContextAbsolutePath The absolute path of the resource relative to the servlet context.
+		@exception NullPointerException if the reference URI or path is <code>null</code>.
+		@exception IllegalArgumentException if the given path is not in the correct form.
+		*/
+		public HTTPServletResource(final URI referenceURI, final String resourceContextAbsolutePath)
+		{
+			super(checkNull(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
+			this.resourceContextAbsolutePath=checkNull(resourceContextAbsolutePath, "HTTP resource context-relative absolute path cannot be null.");	//save the path
+			try
+			{
+				url=getServletContext().getResource(getResourceContextAbsolutePath());	//get the URL of the resource
+			}
+			catch(final MalformedURLException malformedURLException)	//if the path was not well-formed
+			{
+				throw new IllegalArgumentException(malformedURLException);
+			}
+		}
+
 	}
 
 }

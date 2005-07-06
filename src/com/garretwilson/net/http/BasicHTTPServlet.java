@@ -10,14 +10,15 @@ import java.util.MissingResourceException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.garretwilson.io.FileResource;
 import com.garretwilson.lang.CharSequenceUtilities;
 import static com.garretwilson.lang.ClassUtilities.*;
+import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.DAV_HEADER;
 import com.garretwilson.security.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import com.garretwilson.util.Debug;
-import com.garretwilson.util.SyntaxException;
+import com.garretwilson.util.*;
 
 /**An HTTP servlet with extended functionality. 
 @author Garret Wilson
@@ -39,6 +40,27 @@ public class BasicHTTPServlet extends HttpServlet
 			}
 			return contextPath;	//return the servlet's context path
 		}
+
+	/**From an absolute path to the server domain determines the context-relative absolute path.
+	@param resourceServerAbsolutePath The absolute path to the server domain.
+	@return An absolute path relative to the servlet context.
+	@exception IllegalArgumentException if the given server absolute path does not begin with the servlet context path.
+	@see #getContextPath()
+	*/
+	protected String getResourceContextAbsolutePath(final String resourceServerAbsolutePath)
+	{
+		final String contextPath=getContextPath();	//get the servlet context path
+		if(!resourceServerAbsolutePath.startsWith(contextPath))	//if the server absolute path does not start with the context path
+		{
+			throw new IllegalArgumentException("Resource server absolute path "+resourceServerAbsolutePath+" is not located under context path "+contextPath);
+		}
+		final String resourceContextAbsolutePath=resourceServerAbsolutePath.substring(contextPath.length());	//remove the context path
+		if(!isAbsolutePath(resourceContextAbsolutePath))	//if the resulting path is not absolute, we split a segment in two
+		{
+			throw new IllegalArgumentException("Resource server absolute path "+resourceServerAbsolutePath+" is not located under context path "+contextPath);			
+		}
+		return resourceContextAbsolutePath;	//create the context-relative absolute path
+	}
 
 	/**Services an HTTP request.
 	This version checks authorization for all requests.
