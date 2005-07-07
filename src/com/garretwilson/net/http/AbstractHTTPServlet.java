@@ -298,7 +298,7 @@ Debug.trace("setting content length to:", contentLength);
       	{
       		//TODO fix ranges
       		final OutputStream outputStream=response.getOutputStream();	//get the output stream TODO do we want to check for an IllegalStateException, and send back text if we can?
-      		final InputStream inputStream=getInputStream(resource);	//get an input stream to the resource
+      		final InputStream inputStream=new BufferedInputStream(getInputStream(resource));	//get an input stream to the resource
       		try
       		{
       			OutputStreamUtilities.write(inputStream, outputStream);	//copy the input stream to the output stream

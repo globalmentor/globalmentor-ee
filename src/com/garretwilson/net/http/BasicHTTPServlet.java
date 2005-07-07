@@ -41,6 +41,21 @@ public class BasicHTTPServlet extends HttpServlet
 			return contextPath;	//return the servlet's context path
 		}
 
+	/**The path of the servlet. This is set on the first request received by the servlet.*/
+	private String servletPath=null;
+
+		/**@return The path of the servlet: either a string starting with '/' or the empty string.
+		@exception IllegalStateException if this servlet has not yet received any requests.
+		*/
+		protected String getServletPath()
+		{
+			if(servletPath==null)	//if the context path has not been set
+			{
+				throw new IllegalStateException("Servlet has received no requests and servlet path has not yet been set.");
+			}
+			return servletPath;	//return the servlet path
+		}
+
 	/**From an absolute path to the server domain determines the context-relative absolute path.
 	@param resourceServerAbsolutePath The absolute path to the server domain.
 	@return An absolute path relative to the servlet context.
@@ -94,6 +109,15 @@ Debug.trace("path info:", request.getPathInfo());
 		else if(!contextPath.equals(requestContextPath))	//if the context path has changed (we expect the context path to stay the same through the life of this servlet)
 		{
 			throw new IllegalStateException("Servlet context path changed unexpectedly from "+contextPath+" to "+requestContextPath);
+		}
+		final String requestServletPath=request.getServletPath();	//get the current servlet path for this request
+		if(servletPath==null)	//if we haven't yet set the servlet path
+		{
+			servletPath=requestServletPath;	//set the servlet path
+		}
+		else if(!servletPath.equals(requestServletPath))	//if the servlet path has changed (we expect the servlet path to stay the same through the life of this servlet)
+		{
+			throw new IllegalStateException("Servlet path changed unexpectedly from "+servletPath+" to "+requestServletPath);
 		}
 		try
 		{

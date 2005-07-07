@@ -69,7 +69,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	*/
 	protected InputStream getInputStream(final FileResource resource) throws IOException
 	{
-		return new BufferedInputStream(new FileInputStream(resource.getFile()));	//return a buffered input stream from the file
+		return new FileInputStream(resource.getFile());	//return a an input stream from the file
 	}
 
 	/**Retrieves an output stream to the given resource.
@@ -79,7 +79,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	*/
 	protected OutputStream getOutputStream(final FileResource resource) throws IOException
 	{
-		return new BufferedOutputStream(new FileOutputStream(resource.getFile()));	//return a buffered output stream to the file		
+		return new FileOutputStream(resource.getFile());	//return an output stream to the file		
 	}
 
 	/**Creates a resource.

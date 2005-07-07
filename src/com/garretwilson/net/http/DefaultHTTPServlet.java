@@ -142,7 +142,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**A resource with associated context-relative absolute path.
 	@author Garret Wilson
 	*/
-	protected class HTTPServletResource extends DefaultResource
+	protected class HTTPServletResource extends DefaultResource	//TODO create a cache of these resources with cached content lengths, etc.; but that would entail checking cache settings and such
 	{
 
 		/**The absolute path of the resource relative to the servlet context.*/
@@ -191,7 +191,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			/**@return The lazily-created input stream to the resource.
 			@exception IOException if there is an error getting an input stream to the resource.
 			*/
-			public InputStream getInputStream() throws IOException
+			public InputStream getInputStream() throws IOException	//TODO do we really want to assume there's only one input stream needed to the resource? maybe; probably not
 			{
 				if(inputStream==null)	//if we don't yet have an input stream to the resource
 				{
