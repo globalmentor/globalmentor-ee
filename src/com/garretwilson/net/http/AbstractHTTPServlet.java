@@ -115,7 +115,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("doing options for URI", resourceURI);
+//TODO del Debug.trace("doing options for URI", resourceURI);
 		final Set<String> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
 		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
 		response.setContentLength(0);	//set the content length to zero, according to the HTTP specification for OPTIONS
@@ -165,11 +165,11 @@ Debug.trace("doing options for URI", resourceURI);
   */
 	public void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-Debug.trace("getting resource URI");
+//	TODO del Debug.trace("getting resource URI");
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("checking destination existence");
+//	TODO del Debug.trace("checking destination existence");
 		final boolean exists=exists(resourceURI);	//see whether the resource already exists
-Debug.trace("exists", exists);
+//	TODO del Debug.trace("exists", exists);
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
@@ -177,14 +177,14 @@ Debug.trace("exists", exists);
     }
 		else	//if the resource doesn't exist
 			{
-Debug.trace("trying to create resource");
+//		TODO del Debug.trace("trying to create resource");
 			try
 			{
 				resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 				{
-Debug.warn(illegalArgumentException);
+//			TODO del Debug.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
 		}
@@ -194,7 +194,7 @@ Debug.warn(illegalArgumentException);
 			final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
 				try
 				{
-Debug.trace("trying to write");
+//				TODO del Debug.trace("trying to write");
 				OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
 			}
 			finally
@@ -252,7 +252,7 @@ Debug.trace("trying to write");
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("serving resource", resourceURI);
+//	TODO del Debug.trace("serving resource", resourceURI);
 		if(exists(resourceURI))	//if this resource exists
     {
     	//TODO check if headers
@@ -280,17 +280,17 @@ Debug.trace("serving resource", resourceURI);
     	}
     	else	//if this resource is not a collection
 	    	{
-Debug.trace("ready to send back a file");
+//    	TODO del Debug.trace("ready to send back a file");
     		final ContentType contentType=getContentType(resource);	//get the content type of the resource
       	if(contentType!=null)	//if we know the content type
 	      	{
-Debug.trace("setting content type to:", contentType);
+//      	TODO del Debug.trace("setting content type to:", contentType);
       		response.setContentType(contentType.toString());	//tell the response which content type we're serving
       	}
       	final long contentLength=getContentLength(resource);	//get the content length of the resource
       	if(contentLength>=0)	//if we found a content length for the resource
 	      {
-Debug.trace("setting content length to:", contentLength);
+//      	TODO del Debug.trace("setting content length to:", contentLength);
       		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
       		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
       	}
@@ -361,7 +361,7 @@ Debug.trace("setting content length to:", contentLength);
 	protected URI getResourceURI(final URI requestedResourceURI, final String method, final URI analogousResourceURI)
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
-Debug.trace("requested URI", requestedResourceURI);
+//	TODO del Debug.trace("requested URI", requestedResourceURI);
 //G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
 //G***del Debug.trace("exists?", exists(requestURI));
 		final String requestResourceURIString=requestedResourceURI.toString();	//get the string version of the request URI
@@ -385,8 +385,8 @@ Debug.trace("requested URI", requestedResourceURI);
 			{
 				try
 				{
-	Debug.trace("requested resource exists:", exists(requestedResourceURI));
-	Debug.trace("other resource is collection:", isCollection(collectionURI));
+//TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
+//TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
 					//if there is no such resource but there is a resource at the collection URI
 					if(!exists(requestedResourceURI) && isCollection(collectionURI))
 					{
@@ -399,7 +399,7 @@ Debug.trace("requested URI", requestedResourceURI);
 				}
 			}
 		}
-Debug.trace("using URI", resourceURI);
+//TODO del Debug.trace("using URI", resourceURI);
 		return resourceURI;	//return the resource URI we decided on
 	}
 
@@ -457,9 +457,9 @@ Debug.trace("sending redirect", redirectURI);
 	*/
 	protected Document getXML(final HttpServletRequest request) throws IOException
 	{
-Debug.trace("getting XML");
+//	TODO del Debug.trace("getting XML");
 		final int contentLength=request.getContentLength();	//get the length of the request
-Debug.trace("content length", contentLength);
+//	TODO del Debug.trace("content length", contentLength);
 //TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
 		if(contentLength>0)	//if content is present	//TODO fix chunked coding
 		{
