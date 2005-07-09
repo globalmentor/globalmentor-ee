@@ -63,9 +63,9 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		protected DOMImplementation getDOMImplementation() {return domImplementation;}
 
 	/**An array of regular expressions matching user agents not correctly supporting redirects.
-	@see http://httpd.apache.org/docs-2.0/env.html#special
 	@see http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 	@see http://purl.org/NET/http-errata#saferedirect
+	@see http://httpd.apache.org/docs-2.0/env.html#special
 	*/
 	private final static Pattern[] REDIRECT_UNSUPPORTED_AGENTS=new Pattern[]
 		  {

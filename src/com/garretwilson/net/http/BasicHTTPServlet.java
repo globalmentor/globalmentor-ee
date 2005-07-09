@@ -315,8 +315,8 @@ Debug.trace("path info:", request.getPathInfo());
 	@exception HTTPForbiddenException if the requested resource is not within any realm of authorization.
 	@exception HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
 	@see #getPrincipal(AuthenticateCredentials)
-	@see #isAuthenticated(URI, String, Principal, AuthenticateCredentials)
-	@see #isAuthorized(URI, String, Principal)
+	@see #isAuthenticated(HttpServletRequest, URI, String, String, Principal, AuthenticateCredentials)
+	@see #isAuthorized(HttpServletRequest, URI, String, Principal, String)
 	@see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials)
 	*/
 	protected void checkAuthorization(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
@@ -486,7 +486,7 @@ Debug.trace("path info:", request.getPathInfo());
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
-	@param The realm in which the resource is located.
+	@param realm The realm in which the resource is located.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
 	@return An authenticate challenge for the given resource URI and method.
 	@exception HTTPInternalServerErrorException if there is an error creating the authenticate challenge.
