@@ -7,16 +7,15 @@ import javax.faces.component.NamingContainer;
 import javax.faces.component.UIForm;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.*;
 import com.garretwilson.faces.context.RequestParametersFacesContextDecorator;
+import com.garretwilson.text.xml.xhtml.XHTMLConstants;
 import com.garretwilson.util.*;
 
 import org.apache.commons.fileupload.*;
 
-import static com.garretwilson.io.ContentTypeConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 
 /**Basic form component with enhanced functionality to process multipart form
@@ -32,12 +31,8 @@ import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
 public class UIBasicForm extends UIForm
 {
 
-	/**The "multipart/form-data" encoding type.*/
-	protected final static ContentType MULTIPART_FORM_DATA_MEDIA_TYPE=new ContentType(MULTIPART, FORM_DATA_SUBTYPE, null);
-
 	/**The ID of the hidden field used to hold the button value.*/
 	protected final static String HIDDEN_FIELD_ID="button";
-
 
 	/**The map of encode-scope variables and values.*/
 	private final Map<?, ?> encodeMap=new HashMap(); 
@@ -116,7 +111,7 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 */
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype=(String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE);	//get the enctype
-		if(enctype!=null && MULTIPART_FORM_DATA_MEDIA_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
+		if(enctype!=null && XHTMLConstants.MULTIPART_FORM_DATA_CONTENT_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
 		{
 			if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
 			{
