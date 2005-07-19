@@ -7,6 +7,8 @@ import static java.util.Collections.*;
 
 import static com.garretwilson.lang.ObjectUtilities.*;
 import com.garretwilson.model.DefaultResource;
+import com.garretwilson.net.URIUtilities;
+import com.garretwilson.util.Debug;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -44,7 +46,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
   */
   protected boolean isCollection(final URI resourceURI) throws IOException
   {
-  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relateive path
+		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
+		return URIUtilities.isContainerPath(resourceContextAbsolutePath);	//return whether the context absolute path ends in a slash
   }
 
 	/**Determines the requested resource.
@@ -137,6 +140,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected List<HTTPServletResource> getChildResources(final HTTPServletResource resource) throws IOException
 	{
 		return emptyList();	//TODO implement		
+//	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
 	}
 
 	/**A resource with associated context-relative absolute path.

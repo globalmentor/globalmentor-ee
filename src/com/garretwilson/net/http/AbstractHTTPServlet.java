@@ -43,7 +43,7 @@ import com.garretwilson.util.*;
 public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
 
-	protected final static boolean LIST_DIRECTORIES=true;	//TODO fix
+	protected final static boolean LIST_DIRECTORIES=false;	//TODO fix
 
 	/**Whether access is restricted to read methods.*/
 	private boolean readOnly=false;
@@ -253,13 +253,16 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //	TODO del Debug.trace("serving resource", resourceURI);
+Debug.trace("serving resource", resourceURI);
 		if(exists(resourceURI))	//if this resource exists
     {
+Debug.trace("resource exists", resourceURI);
     	//TODO check if headers
     	final R resource=getResource(resourceURI);	//get a resource description
 //G***del    	final ContentType contentType;	//determine the content type of the resource
     	if(isCollection(resource.getReferenceURI()))	//if the resource is a collection
     	{
+Debug.trace("is collection", resourceURI);
     		if(LIST_DIRECTORIES)	//if we should list directories
     		{
     			final Writer writer=response.getWriter();
@@ -279,7 +282,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
     		}    		
     	}
     	else	//if this resource is not a collection
-	    	{
+	    {
+Debug.trace("is not a collection; ready to send back file", resourceURI);
 //    	TODO del Debug.trace("ready to send back a file");
     		final ContentType contentType=getContentType(resource);	//get the content type of the resource
       	if(contentType!=null)	//if we know the content type

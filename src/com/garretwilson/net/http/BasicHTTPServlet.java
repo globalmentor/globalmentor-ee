@@ -25,6 +25,9 @@ import com.garretwilson.util.*;
 */
 public class BasicHTTPServlet extends HttpServlet
 {
+	
+	/**Whether this servlet has been initialized from an incoming request.*/
+	private boolean isInitializedFromRequest=false;
 
 	/**The context path of the servlet. This is set on the first request received by the servlet.*/
 	private String contextPath=null;
@@ -77,6 +80,22 @@ public class BasicHTTPServlet extends HttpServlet
 		return resourceContextAbsolutePath;	//create the context-relative absolute path
 	}
 
+	/**Initializes the servlet upon receipt of the first request.
+	This version sets the context path and the servlet path.
+	@param request The servlet request.
+	@exception IllegalStateException if this servlet has already been initialized from a request.
+	@exception ServletException if there is a problem initializing.
+	*/
+	public void init(final HttpServletRequest request) throws ServletException
+	{
+		if(isInitializedFromRequest)	//if we've already initialized from a request
+		{
+			throw new IllegalStateException("Servlet already initialized from a request.");
+		}
+		contextPath=request.getContextPath();	//set the context path from the request
+		servletPath=request.getServletPath();	//set the servlet path from the request
+	}
+
 	/**Services an HTTP request.
 	This version checks authorization for all requests.
   This version provides support for special exceptions.
@@ -101,23 +120,22 @@ Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 */
-		final String requestContextPath=request.getContextPath();	//get the current context path for this request
-		if(contextPath==null)	//if we haven't yet set the context path
+		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet
 		{
-			contextPath=requestContextPath;	//set the context path
+			init(request);	//initialize from this request
 		}
-		else if(!contextPath.equals(requestContextPath))	//if the context path has changed (we expect the context path to stay the same through the life of this servlet)
+		else	//if we have initialized from a request, make sure the variables are still the same
 		{
-			throw new IllegalStateException("Servlet context path changed unexpectedly from "+contextPath+" to "+requestContextPath);
-		}
-		final String requestServletPath=request.getServletPath();	//get the current servlet path for this request
-		if(servletPath==null)	//if we haven't yet set the servlet path
-		{
-			servletPath=requestServletPath;	//set the servlet path
-		}
-		else if(!servletPath.equals(requestServletPath))	//if the servlet path has changed (we expect the servlet path to stay the same through the life of this servlet)
-		{
-			throw new IllegalStateException("Servlet path changed unexpectedly from "+servletPath+" to "+requestServletPath);
+			final String requestContextPath=request.getContextPath();	//get the current context path for this request
+			if(!requestContextPath.equals(contextPath))	//if the context path has changed (we expect the context path to stay the same through the life of this servlet)
+			{
+				throw new IllegalStateException("Servlet context path changed unexpectedly from "+contextPath+" to "+requestContextPath);
+			}
+			final String requestServletPath=request.getServletPath();	//get the current servlet path for this request
+			if(!requestServletPath.equals(servletPath))	//if the servlet path has changed (we expect the servlet path to stay the same through the life of this servlet)
+			{
+				throw new IllegalStateException("Servlet path changed unexpectedly from "+servletPath+" to "+requestServletPath);
+			}
 		}
 		try
 		{
