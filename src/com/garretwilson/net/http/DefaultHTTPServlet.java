@@ -39,15 +39,16 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
   	return getServletContext().getResource(resourceContextAbsolutePath)!=null;	//return whether the servlet has mapped a resource to this path
   }
 
-  /**Determines if the resource at a given URI is a collection.
+  /**Determines if the resource at a given URI is an existing collection.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
+	@see #exists(URI)
   */
   protected boolean isCollection(final URI resourceURI) throws IOException
   {
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
-		return URIUtilities.isContainerPath(resourceContextAbsolutePath);	//return whether the context absolute path ends in a slash
+		return URIUtilities.isContainerPath(resourceContextAbsolutePath) && exists(resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
   }
 
 	/**Determines the requested resource.

@@ -27,10 +27,11 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
   	return getResource(resourceURI).getFile().exists();	//return whether the file exists
   }
 
-  /**Determines if the resource at a given URI is a collection.
+  /**Determines if the resource at a given URI is an existing collection.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
+	@see #exists(URI)
   */
   protected boolean isCollection(final URI resourceURI) throws IOException
   {

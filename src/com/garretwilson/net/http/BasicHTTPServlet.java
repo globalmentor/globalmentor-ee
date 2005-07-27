@@ -4,8 +4,9 @@ import java.io.*;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.Date;
-import java.util.MissingResourceException;
+import java.util.*;
+import static java.util.Collections.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -25,7 +26,60 @@ import com.garretwilson.util.*;
 */
 public class BasicHTTPServlet extends HttpServlet
 {
+
+	/**A thread-safe map of nonces, keyed to nonce ID strings.*/
+	private final Map<String, Nonce> nonceMap=new ConcurrentHashMap<String, Nonce>();
+
+		/**Stores a nonce for later retrieval.
+		@param nonceID The ID of the nonce; usually a hash of the nonce information.
+		@param nonce The nonce to store, keyed to its ID.
+		*/
+		protected void storeNonce(final String nonceID, final Nonce nonce)
+		{
+			nonceMap.put(nonceID, nonce);	//store the nonce in the map
+		}
+		
+		/**Retrieves a nonce by its ID.
+		This implementation takes the time to clear old nonces.
+		@param nonceID The ID of the nonce to retrieve.
+		@return The nonce with the given ID, or <code>null</code> if there is no matching nonce.
+		*/
+		protected Nonce getNonce(final String nonceID)
+		{
+			final Nonce nonce=nonceMap.get(nonceID);	//get the nonce with the given ID
+			final long currentTimeMillis=System.currentTimeMillis();	//get the current time
+			for(final Map.Entry<String, Nonce> nonceEntry:nonceMap.entrySet())	//for each nonce entry in the map TODO remove old nonces some other way, perhaps in a separate thread
+			{
+				if(currentTimeMillis-nonceEntry.getValue().getTime().getTime()>=60*60*1000)	//if the nonce has been around for an hour
+				{
+					nonceMap.remove(nonceEntry.getKey());	//remove this ultra-stale nonce
+				}
+			}
+			return nonce;	//return the nonce with the given ID
+		}
+
+	/**The thread-safe map of principal IDs weakly keyed to nonces.*/
+	private final Map<Nonce, String> noncePrincipalIDMap=synchronizedMap(new WeakHashMap<Nonce, String>());
+
+		/**Associates a principal with a nonce.
+		@param nonce The nonce with which a principal should be associated.
+		@param principalID The ID of the principal to associate with the nonce.
+		*/
+		protected void setNoncePrincipalID(final Nonce nonce, final String principalID)
+		{
+			noncePrincipalIDMap.put(nonce, principalID);	//associate the principal with the nonce
+		}
+
+		/**Retrieves the principal associated with a nonce.
+		@param nonce The nonce for which a principal should be associated.
+		@return The ID of the principal associated with the given nonce, or <code>null</code> if there is no principal associated with the given nonce.
+		*/
+		protected String getNoncePrincipalID(final Nonce nonce)
+		{
+			return noncePrincipalIDMap.get(nonce);	//return the ID of the principal associated with this nonce, if there is one
+		}
 	
+
 	/**Whether this servlet has been initialized from an incoming request.*/
 	private boolean isInitializedFromRequest=false;
 
@@ -248,10 +302,8 @@ Debug.trace("path info:", request.getPathInfo());
 	{
 		return getClass().getName();	//return the name of the implementing servlet class
 	}
-	
-	/**@return A newly generated nonce.
-	@see #createNonce(String)
-	*/
+
+	/**@return A newly generated nonce.*/
 	protected Nonce createNonce()
 	{
 		return new DefaultNonce(getNoncePrivateKey());	//create a default nonce using our private key
@@ -263,10 +315,12 @@ Debug.trace("path info:", request.getPathInfo());
 	@exception SyntaxException if the given string does not have the correct format for this type of nonce.
 	@see #createNonce()
 	*/
+/*TODO del if not needed
 	protected Nonce createNonce(final String nonceString) throws SyntaxException
 	{
 		return new DefaultNonce(getNoncePrivateKey());	//create a default nonce using our private key
 	}
+*/
 
 	/**The number of milliseconds after which a nonce will expire: 60 seconds.*/
 	protected final long NONCE_EXPIRATION_DURATION=60*1000;
@@ -275,16 +329,15 @@ Debug.trace("path info:", request.getPathInfo());
 	This includes checking:
 	<ul>
 		<li>The nonce private key to ensure it matches this server's nonce private key.</li>
-		<li>The time to ensure that too much time has not lapsed.</li>
 	</ul>
+  @param request The HTTP request.
 	@param nonce The nonce to check for validity.
 	@return <code>true</code> if the nonce is not valid.
 	@see #getNoncePrivateKey()
-	@see #isStale(Nonce)
 	*/
-	protected boolean isValid(final Nonce nonce)
+	protected boolean isValid(final HttpServletRequest request, final Nonce nonce)
 	{
-		return getNoncePrivateKey().equals(nonce.getPrivateKey()) && !isStale(nonce);	//check for an identical key and for staleness
+		return getNoncePrivateKey().equals(nonce.getPrivateKey());	//check for an identical key
 	}
 
 	/**Determines if the given nonce is stale.
@@ -294,20 +347,18 @@ Debug.trace("path info:", request.getPathInfo());
 	*/
 	protected boolean isStale(final Nonce nonce)
 	{
-		return System.currentTimeMillis()-nonce.getTime().getTime()<NONCE_EXPIRATION_DURATION;	//see if the difference between now and then is longer than we allow
+//TODO del Debug.trace("checking staleness of nonce", nonce, "with time", nonce.getTime().getTime());
+		return System.currentTimeMillis()-nonce.getTime().getTime()>NONCE_EXPIRATION_DURATION;	//see if the difference between now and then is longer than we allow
 	}
 
 	/**Checks whether the given request is authorized.
   @param request The HTTP request.
-	@param resourceURI The URI of the resource requested.
-	@param method The HTTP method requested on the resource.
-	@param credentials The principal's credentials.
 	@exception HTTPInternalServerErrorException if there is an error checking the authorization.
 	@exception HTTPBadRequestException if the given credentials could not be understood.
   @exception HTTPRedirectException if the request should be redirected to another URI.
 	@exception HTTPForbiddenException if the requested resource is not within any realm of authorization.
 	@exception HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
-	@see #checkAuthorization(URI, String, AuthenticateCredentials)
+	@see #checkAuthorization(HttpServletRequest, URI, String, String, AuthenticateCredentials)
 	*/
 	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPBadRequestException, HTTPRedirectException, HTTPForbiddenException, HTTPUnauthorizedException
 	{
@@ -333,23 +384,24 @@ Debug.trace("path info:", request.getPathInfo());
 	@exception HTTPForbiddenException if the requested resource is not within any realm of authorization.
 	@exception HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
 	@see #getPrincipal(AuthenticateCredentials)
-	@see #isAuthenticated(HttpServletRequest, URI, String, String, Principal, AuthenticateCredentials)
+	@see #isAuthenticated(HttpServletRequest, URI, String, String, Principal, String, AuthenticateCredentials)
 	@see #isAuthorized(HttpServletRequest, URI, String, Principal, String)
-	@see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials)
+	@see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials, Nonce, boolean)
 	*/
 	protected void checkAuthorization(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
 	{
 		final Principal principal=getPrincipal(credentials);	//get the principal providing credentials
 		final String realm=getRealm(resourceURI);	//get the realm for this resource
-		boolean isAuthorized=false;	//every principal by default is unauthorized
-		if(isAuthenticated(request, resourceURI, method, requestURI, principal, credentials))	//if this principal is authenticated
+		boolean isAuthenticated=false;	//every principal by default is unauthenticated
+		if(isAuthenticated(request, resourceURI, method, requestURI, principal, realm, credentials))	//if this principal is authenticated
 		{
-				//determine the realm (which has already been confirmed, if present); it is more effecient to get the realm from the credentials, if we can
-//G***del			final String realm=credentials!=null && credentials.getRealm()!=null ? credentials.getRealm() : getRealm(resourceURI);
-			if(isAuthorized(request, resourceURI, method, principal, realm))	//if this principal is authorized
-			{
-				isAuthorized=true;	//the request is both authenticated and authorized
-			}
+			isAuthenticated=true;	//the request is authenticated
+		}
+		authenticated(request, resourceURI, method, requestURI, principal, realm, credentials, isAuthenticated);	//indicate whether the principal has been authenticated
+		boolean isAuthorized=false;	//every principal by default is unauthorized
+		if(isAuthenticated && isAuthorized(request, resourceURI, method, principal, realm))	//if this principal is authorized
+		{
+			isAuthorized=true;	//the request is both authenticated and authorized
 		}
 		if(credentials!=null)	//if credentials were provided
 		{
@@ -359,7 +411,7 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			if(realm!=null)	//if we have a realm to authenticate
 			{
-				final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials);	//create an authenticate challenge
+				final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials, createNonce(), false);	//create an authenticate challenge with a newly created nonce
 				throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
 			}
 			else	//if the requested resource is not within a realm
@@ -367,6 +419,20 @@ Debug.trace("path info:", request.getPathInfo());
 				throw new HTTPForbiddenException(resourceURI.toString());	//the request is forbidden for this resource
 			}
 		}
+	}
+
+	/**Called when a principal has went through authentication and indicates the result of authentication.
+  @param request The HTTP request.
+	@param resourceURI The URI of the resource requested.
+	@param method The HTTP method requested on the resource.
+	@param requestURI The request URI as given in the HTTP request.
+	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
+	@param realm The realm for which the principal was authenticated.
+	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
+	@param authenticated <code>true</code> if the principal succeeded in authentication, else <code>false</code>.
+	*/
+	protected void authenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final String realm, final AuthenticateCredentials credentials, final boolean authenticated)
+	{
 	}
 
 	/**Looks up a principal from the given credentials.
@@ -435,16 +501,18 @@ Debug.trace("path info:", request.getPathInfo());
 	@param method The HTTP method requested on the resource.
 	@param requestURI The request URI as given in the HTTP request.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
+	@param realm The expected realm for the given request URI.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
 	@return <code>true</code> if the given credentials provide authentication for the given principal.
 	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authenticated.
+	@exception HTTPUnauthorizedException if the credentials represent a stale digest authentication nonce.
 	*/
-	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
+	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPUnauthorizedException
 	{
 //TODO del Debug.trace("authenticating");
-		final String realm=credentials!=null ? credentials.getRealm() : null;	//see if the credentials reports the realm, if we have credentials
+		final String credentialsRealm=credentials!=null ? credentials.getRealm() : null;	//see if the credentials reports the realm, if we have credentials
 //TODO del Debug.trace("got realm", realm);
-		if(realm!=null && !realm.equals(getRealm(resourceURI)))	//if a realm is given but it doesn't equal the expected realm for the requested resource
+		if(credentialsRealm!=null && !credentialsRealm.equals(realm))	//if a realm is given but it doesn't equal the expected realm for the requested resource
 		{
 //TODO del Debug.trace("realm doesn't match", getRealm(resourceURI));
 			return false;	//don't allow credentials marked for one realm to be used for another realm
@@ -459,17 +527,34 @@ Debug.trace("path info:", request.getPathInfo());
 				{
 					return false;	//don't allow authentication for other resources
 				}
-				//TODO later find a way to recover the original nonce and make sure it isn't stale
-				if(principal!=null)	//if a principal was given
+//			TODO del Debug.trace("getting nonce for credentials nonce ID", digestCredentials.getNonce());
+				final Nonce nonce=getNonce(digestCredentials.getNonce());	//get the nonce the request is using
+				if(nonce==null || !isValid(request, nonce))	//if we have no knowledge of this nonce or the nonce is invalid
 				{
-					final char[] password=getPassword(principal);	//get the password for the principal
-//TODO del Debug.trace("got password for credentials", new String(password));
-					return password!=null && digestCredentials.isValid(method, password);	//see if the credentials are valid for this principal's password
+//				TODO del Debug.trace("nonce is not valid", nonce);
+					return false;	//the nonce is either very old or an incorrect nonce altogether
 				}
-				else	//if no principal is given
+				if(principal==null)	//if no principal was given
 				{
 					return false;	//an anonymous principal cannot authenticate against given credentials
 				}			
+				final char[] password=getPassword(principal);	//get the password for the principal
+//TODO del Debug.trace("got password for credentials", new String(password));
+				if(password==null || !digestCredentials.isValid(method, password))	//see if the credentials are valid for this principal's password
+				{
+					return false;	//indicate that the credentials have an invalid password
+				}
+				setNoncePrincipalID(nonce, principal.getName());	//associate this principal with the nonce
+//			TODO del Debug.trace("checking staleness");
+				if(isStale(nonce))	//if the nonce is stale
+				{
+//				TODO del Debug.trace("nonce is stale");
+					final Nonce newNonce=createNonce();	//create a new, unstale nonce
+					setNoncePrincipalID(newNonce, principal.getName());	//associate this principal with the new nonce
+					final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials, newNonce, true);	//create an authenticate challenge with the new nonce
+					throw new HTTPUnauthorizedException(challenge);	//throw an unauthorized exception with the challenge
+				}
+				return true;	//the credentials passed all the requirements
 			}
 			else	//if we don't recognize the credentials
 			{
@@ -478,6 +563,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		else	//if no credentials were given
 		{
+//TODO del Debug.trace("there were no credentials given, and principal is", principal);
 			return principal==null;	//only anonymous principals can authenticate against missing credentials
 		}
 	}
@@ -498,22 +584,25 @@ Debug.trace("path info:", request.getPathInfo());
 	}
 
 	/**Creates an authentication challenge for the given resource
-	This creates a digest authenticate challenge
-		so any subclass should first call this method.
-	This version allows authentication for all valid credentials.
+	This creates a digest authenticate challenge so any subclass should first call this method.
+	This version stores the given nonce under a nonce ID digest generated by the credentials.
 	@param resourceURI The URI of the resource requested.
 	@param method The HTTP method requested on the resource.
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
 	@param realm The realm in which the resource is located.
 	@param credentials The principal's credentials, or <code>null</code> if no credentials are available.
+	@param nonce The nonce to be used in the challenge.
+	@param stale Whether the previous request from the client was rejected because the nonce value was stale.
 	@return An authenticate challenge for the given resource URI and method.
 	@exception HTTPInternalServerErrorException if there is an error creating the authenticate challenge.
 	*/
-	protected AuthenticateChallenge createAuthenticateChallenge(final URI resourceURI, final String method, final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
+	protected AuthenticateChallenge createAuthenticateChallenge(final URI resourceURI, final String method, final Principal principal, final String realm, final AuthenticateCredentials credentials, final Nonce nonce, final boolean stale) throws HTTPInternalServerErrorException
 	{
 		try
 		{
-			return new DigestAuthenticateChallenge(realm, createNonce().toString());	//create a new digest authenticate challenge for the resource's realm, using a new nonce
+			final DigestAuthenticateChallenge challenge=new DigestAuthenticateChallenge(realm, nonce.toString(), stale);	//create a new digest authenticate challenge for the resource's realm, using the given nonce
+			storeNonce(challenge.getNonceDigest(), nonce);	//store the nonce under its digest value
+			return challenge;	//return the challenge
 		}
 		catch(final NoSuchAlgorithmException noSuchAlgorithmException)	//if the default algorithm (MD5) is not supported
 		{
@@ -521,7 +610,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 	}
 
-	/**Determines the realm applicable for the resource indicated by the given URI
+	/**Determines the realm applicable for the resource indicated by the given URI.
 	This version returns <code>null</code>.
 	@param resourceURI The URI of the resource requested.
 	@return The realm appropriate for the resource, or <code>null</code> if the given resource is not in a known realm.

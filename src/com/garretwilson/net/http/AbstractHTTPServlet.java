@@ -364,6 +364,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	protected URI getResourceURI(final URI requestedResourceURI, final String method, final URI analogousResourceURI)
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
+Debug.trace("requested URI", requestedResourceURI);
 //	TODO del Debug.trace("requested URI", requestedResourceURI);
 //G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
 //G***del Debug.trace("exists?", exists(requestURI));
@@ -390,6 +391,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 				{
 //TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
 //TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
+Debug.trace("requested resource exists:", exists(requestedResourceURI));
+Debug.trace("other resource is collection:", isCollection(collectionURI));
 					//if there is no such resource but there is a resource at the collection URI
 					if(!exists(requestedResourceURI) && isCollection(collectionURI))
 					{
@@ -403,6 +406,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 			}
 		}
 //TODO del Debug.trace("using URI", resourceURI);
+Debug.trace("using URI", resourceURI);
 		return resourceURI;	//return the resource URI we decided on
 	}
 
@@ -603,10 +607,11 @@ Debug.trace("sending redirect", redirectURI);
   */
   protected abstract boolean exists(final URI resourceURI) throws IOException;
 
-  /**Determines if the resource at a given URI is a collection.
+  /**Determines if the resource at a given URI is an existing collection.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
+	@see #exists(URI)
   */
   protected abstract boolean isCollection(final URI resourceURI) throws IOException;
 
