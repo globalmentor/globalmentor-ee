@@ -174,6 +174,7 @@ Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 */
+		Debug.log("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString());	//log the request
 		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet
 		{
 			init(request);	//initialize from this request

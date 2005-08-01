@@ -364,7 +364,6 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	protected URI getResourceURI(final URI requestedResourceURI, final String method, final URI analogousResourceURI)
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
-Debug.trace("requested URI", requestedResourceURI);
 //	TODO del Debug.trace("requested URI", requestedResourceURI);
 //G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
 //G***del Debug.trace("exists?", exists(requestURI));
@@ -391,8 +390,6 @@ Debug.trace("requested URI", requestedResourceURI);
 				{
 //TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
 //TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
-Debug.trace("requested resource exists:", exists(requestedResourceURI));
-Debug.trace("other resource is collection:", isCollection(collectionURI));
 					//if there is no such resource but there is a resource at the collection URI
 					if(!exists(requestedResourceURI) && isCollection(collectionURI))
 					{
@@ -406,7 +403,6 @@ Debug.trace("other resource is collection:", isCollection(collectionURI));
 			}
 		}
 //TODO del Debug.trace("using URI", resourceURI);
-Debug.trace("using URI", resourceURI);
 		return resourceURI;	//return the resource URI we decided on
 	}
 
