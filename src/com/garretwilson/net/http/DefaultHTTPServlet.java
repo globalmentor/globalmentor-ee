@@ -8,6 +8,7 @@ import static java.util.Collections.*;
 import static com.garretwilson.lang.ObjectUtilities.*;
 import com.garretwilson.model.DefaultResource;
 import com.garretwilson.net.URIUtilities;
+import com.garretwilson.util.CollectionUtilities;
 import com.garretwilson.util.Debug;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
@@ -140,7 +141,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	*/
 	protected List<HTTPServletResource> getChildResources(final HTTPServletResource resource) throws IOException
 	{
-		return emptyList();	//TODO implement		
+		return CollectionUtilities.emptyList();	//TODO implement		
 //	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
 	}
 
