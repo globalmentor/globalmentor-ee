@@ -261,6 +261,7 @@ Debug.trace("path info:", request.getPathInfo());
 		catch(final MissingResourceException missingResourceException)	//if there is a resource missing, the server isn't property configured
 		{
 			Debug.warn(missingResourceException);	//log the problem
+					//TODO find out why this isn't working with Tomcat 5.5.9
 			response.sendError(SC_INTERNAL_SERVER_ERROR, missingResourceException.getMessage());	//send back a 500 Internal Server Error			
 		}
   }
