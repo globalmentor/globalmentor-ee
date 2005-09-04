@@ -203,6 +203,11 @@ Debug.trace("path info:", request.getPathInfo());
 			Debug.warn(assertionError);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, assertionError.getMessage());	//send back a 500 Internal Server Error			
 		}
+		catch(final ClassCastException classCastException)	//if there was a class cast exception, that's a serious internal server error
+		{
+			Debug.warn(classCastException);	//log the problem
+			response.sendError(SC_INTERNAL_SERVER_ERROR, classCastException.getMessage());	//send back a 500 Internal Server Error			
+		}
 		catch(final IllegalArgumentException illegalArgumentException)	//if some method ran into an illegal argument, we assume the client is responsible
 		{
 			Debug.warn(illegalArgumentException);	//log the problem
