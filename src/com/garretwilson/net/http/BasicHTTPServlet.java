@@ -203,6 +203,11 @@ Debug.trace("path info:", request.getPathInfo());
 			Debug.warn(assertionError);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, assertionError.getMessage());	//send back a 500 Internal Server Error			
 		}
+		catch(final NullPointerException nullPointerException)	//if there was a null pointer exception, that's a serious internal server error
+		{
+			Debug.warn(nullPointerException);	//log the problem
+			response.sendError(SC_INTERNAL_SERVER_ERROR, nullPointerException.getMessage());	//send back a 500 Internal Server Error			
+		}
 		catch(final ClassCastException classCastException)	//if there was a class cast exception, that's a serious internal server error
 		{
 			Debug.warn(classCastException);	//log the problem
