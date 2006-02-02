@@ -6,7 +6,6 @@ import java.util.*;
 
 import com.garretwilson.io.FileResource;
 import static com.garretwilson.io.FileUtilities.*;
-import com.garretwilson.net.URIUtilities;
 import com.garretwilson.net.http.HTTPConflictException;
 
 /**A WebDAV server that accesses resources from an underlying file system. 
@@ -55,11 +54,22 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
-	@exception IOException Thrown if there is an error accessing the resource;
+	@exception IOException Thrown if there is an error accessing the resource.
 	*/
 	protected long getContentLength(final FileResource resource) throws IOException
 	{
 		return resource.getFile().length();	//return the length of the file
+	}
+
+	/**Determines the last modified date of the given resource.
+	@param resource The resource for which the last modified date should be determined.
+	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
+	@exception IOException Thrown if there is an error accessing the resource.
+	*/
+	protected Date getLastModifiedDate(final FileResource resource) throws IOException
+	{
+		final long lastModified=resource.getFile().lastModified();	//get the last modified information from the resource
+		return lastModified>0 ? new Date(lastModified) : null;	//return the last modified date, if we have that information (File returns 0 an error)
 	}
 
 	/**Retrieves an input stream to the given resource.

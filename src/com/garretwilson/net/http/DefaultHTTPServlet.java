@@ -69,11 +69,22 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
-	@exception IOException Thrown if there is an error accessing the resource;
+	@exception IOException Thrown if there is an error accessing the resource.
 	*/
 	protected long getContentLength(final HTTPServletResource resource) throws IOException
 	{
 		return resource.getContentLength();	//return the content length of the resource
+	}
+
+	/**Determines the last modified date of the given resource.
+	@param resource The resource for which the last modified date should be determined.
+	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
+	@exception IOException Thrown if there is an error accessing the resource.
+	*/
+	protected Date getLastModifiedDate(final HTTPServletResource resource) throws IOException
+	{
+		final long lastModified=resource.getLastModified();	//get the last modified information from the resource
+		return lastModified>=0 ? new Date(lastModified) : null;	//return the last modified date, if we have that information
 	}
 
 	/**Retrieves an input stream to the given resource.
@@ -181,7 +192,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			}
 
 		/**The content length of the resource, or -1 if the length has not yet been initialized.*/
-		private long contentLength=-1;
+//TODO del if not needed		private long contentLength=-1;
 
 			/**@return The content length of the resource.
 			@exception IOException if there is an error getting the length of the resource.
@@ -190,6 +201,14 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			{
 				return getURLConnection().getContentLength();	//get a connection to the resource and return the length from the connection
 			}
+
+		/**@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+		@exception IOException if there is an error getting the last modified time.
+		*/
+		public long getLastModified() throws IOException
+		{
+			return getURLConnection().getLastModified();	//get a connection to the resource and return the last modified information from the connection
+		}
 
 		/**The lazily-created input stream to the resource.*/
 		private InputStream inputStream=null;

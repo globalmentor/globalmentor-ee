@@ -228,19 +228,19 @@ Debug.trace("path info:", request.getPathInfo());
 			Debug.warn(unsupportedOperationException);	//log the problem
 			response.sendError(SC_NOT_IMPLEMENTED, unsupportedOperationException.getMessage());	//send back a 401 Not Implemented error
 		}
-		catch(final HTTPRedirectException redirectException)	//if a redirect was requested (3xx)
+		catch(final HTTPMovedPermanentlyException movedPermanentlyException)	//if a permanent redirect was requested (301)
 		{
-			switch(redirectException.getStatusCode())	//check the status code
-			{
-				case SC_MOVED_PERMANENTLY:	//301
-				case SC_MOVED_TEMPORARILY:	//302
-					setLocation(response, redirectException.getLocation());	//set the redirect location
-					response.sendError(redirectException.getStatusCode());	//send back the redirect status code as an error
-					break;
-				default:	//if we don't understand the error
-					response.sendError(redirectException.getStatusCode());	//send back the redirect status code as an error
-					break;
-			}
+			setLocation(response, movedPermanentlyException.getLocation());	//set the redirect location
+			response.sendError(movedPermanentlyException.getStatusCode());	//send back the redirect status code as an error
+		}
+		catch(final HTTPMovedTemporarilyException movedTemporarilyException)	//if a temporary redirect was requested (302)
+		{
+			setLocation(response, movedTemporarilyException.getLocation());	//set the redirect location
+			response.sendError(movedTemporarilyException.getStatusCode());	//send back the redirect status code as an error
+		}
+		catch(final HTTPRedirectException redirectException)	//if a general redirect was requested (3xx)
+		{
+			response.sendError(redirectException.getStatusCode());	//send back the redirect status code as an error
 		}
 		catch(final HTTPUnauthorizedException unauthorizedException)	//401 Unauthorized
 		{

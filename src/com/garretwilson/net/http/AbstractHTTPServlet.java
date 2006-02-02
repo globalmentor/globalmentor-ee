@@ -3,6 +3,7 @@ package com.garretwilson.net.http;
 import java.io.*;
 import java.net.*;
 import java.security.Principal;
+import java.text.DateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
 import com.garretwilson.model.Resource;
+import com.garretwilson.net.http.DefaultHTTPServlet.HTTPServletResource;
+
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
@@ -38,6 +41,8 @@ import com.garretwilson.text.xml.XMLSerializer;
 import com.garretwilson.util.*;
 
 /**The base servlet class for implementing an HTTP server that access resources.
+@see http://www.ietf.org/rfc/rfc2616.txt
+@see http://www.mnot.net/cache_docs/
 @author Garret Wilson
 */
 public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
@@ -273,7 +278,6 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
     			}
     			
 //TODO fix          contentType = "text/html;charset=UTF-8";
-    			
     		}
     		else	//if we're not allowed to list directories
     		{
@@ -283,19 +287,52 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
     	else	//if this resource is not a collection
 	    {
 //TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
-//    	TODO del Debug.trace("ready to send back a file");
+      	final Date lastModifiedDate=getLastModifiedDate(resource);	//get the last modified date of the resource
+      	if(lastModifiedDate!=null)	//if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
+      	{
+//TODO del Debug.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
+					final Date roundedLastModifiedDate=new Date((lastModifiedDate.getTime()/1000)*1000);	//round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
+					try
+					{
+		      	final Date ifModifiedSinceDate=getIfModifiedSinceDate(request);	//get the If-Modified-Since date
+/*TODO del 
+	if(ifModifiedSinceDate!=null)
+	{
+		Debug.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
+		Debug.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
+	}
+*/
+		      	if(ifModifiedSinceDate!=null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate)<=0)	//if there is an If-Modified-Since date and the resource was not modified since that date
+		      	{
+//TODO del Debug.trace("Not modified---use the value in the cache!");
+		      		throw new HTTPNotModifiedException();	//stop serving content and indicate that the resource has not been modified
+		      	}
+		      	//TODO add support for If-Unmodified-Since
+					}
+					catch(final SyntaxException syntaxException)	//TODO fix better
+					{
+						throw new IllegalArgumentException(syntaxException);
+					}
+      	}
+    		//    	TODO del Debug.trace("ready to send back a file");
     		final ContentType contentType=getContentType(resource);	//get the content type of the resource
       	if(contentType!=null)	//if we know the content type
-	      	{
+	      {
 //      	TODO del Debug.trace("setting content type to:", contentType);
+//TODO del Debug.trace("setting content type to:", contentType);	//TODO del
       		response.setContentType(contentType.toString());	//tell the response which content type we're serving
       	}
-      	final long contentLength=getContentLength(resource);	//get the content length of the resource
+
+				final long contentLength=getContentLength(resource);	//get the content length of the resource
       	if(contentLength>=0)	//if we found a content length for the resource
 	      {
 //      	TODO del Debug.trace("setting content length to:", contentLength);
       		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
       		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
+      	}
+      	if(lastModifiedDate!=null)	//if we know when the resource was last modified
+      	{
+					setLastModified(response, lastModifiedDate);	//set the last modified date header
       	}
       	if(serveContent)	//if we should serve content
       	{
@@ -637,9 +674,16 @@ Debug.trace("sending redirect", redirectURI);
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
-	@exception IOException Thrown if there is an error accessing the resource;
+	@exception IOException Thrown if there is an error accessing the resource.
 	*/
 	protected abstract long getContentLength(final R resource) throws IOException;
+
+	/**Determines the last modified date of the given resource.
+	@param resource The resource for which the last modified date should be determined.
+	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
+	@exception IOException Thrown if there is an error accessing the resource.
+	*/
+	protected abstract Date getLastModifiedDate(final R resource) throws IOException;
 
 	/**Retrieves an input stream to the given resource.
 	@param resource The resource for which an input stream should be retrieved.
