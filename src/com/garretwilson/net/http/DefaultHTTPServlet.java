@@ -233,8 +233,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public HTTPServletResource(final URI referenceURI, final String resourceContextAbsolutePath)
 		{
-			super(checkNull(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
-			this.resourceContextAbsolutePath=checkNull(resourceContextAbsolutePath, "HTTP resource context-relative absolute path cannot be null.");	//save the path
+			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
+			this.resourceContextAbsolutePath=checkInstance(resourceContextAbsolutePath, "HTTP resource context-relative absolute path cannot be null.");	//save the path
 			try
 			{
 				url=getServletContext().getResource(getResourceContextAbsolutePath());	//get the URL of the resource
