@@ -18,6 +18,8 @@ import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.DAV_HEADER;
 import com.garretwilson.security.*;
+import com.garretwilson.text.SyntaxException;
+
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.util.*;
 
