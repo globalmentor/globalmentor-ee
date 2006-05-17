@@ -665,7 +665,7 @@ Debug.trace("sending redirect", redirectURI);
 		content type could be determined.
 	@see ServletContext#getMimeType(java.lang.String)
 	*/
-	protected ContentType getContentType(final R resource)
+	protected ContentType getContentType(final R resource)	//TODO see if this is correct to go here, and if we need to override it somewhere to supplement the server's list of content types
 	{
 		final String contentTypeString=getServletContext().getMimeType(getFileName(resource.getReferenceURI()));	//ask the servlet context for the MIME type
 		return contentTypeString!=null ? createContentType(contentTypeString) : null;	//create a content type object if a content type string was returned

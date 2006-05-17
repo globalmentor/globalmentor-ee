@@ -3,10 +3,9 @@ package com.garretwilson.net.http;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import static java.util.Collections.*;
 
 import static com.garretwilson.lang.ObjectUtilities.*;
-import com.garretwilson.model.DefaultResource;
+import com.garretwilson.model.*;
 import com.garretwilson.net.URIUtilities;
 import com.garretwilson.util.CollectionUtilities;
 import com.garretwilson.util.Debug;
@@ -62,7 +61,15 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected HTTPServletResource getResource(final URI resourceURI) throws IllegalArgumentException, IOException
 	{
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
-		return new HTTPServletResource(resourceURI, resourceContextAbsolutePath);	//create a new default resource
+		try
+		{
+			final URL resourceURL=getServletContext().getResource(resourceContextAbsolutePath);	//get the URL of the resource
+			return new DefaultHTTPServletResource(resourceURI, resourceURL);	//create a new default resource
+		}
+		catch(final MalformedURLException malformedURLException)	//if the path was not well-formed
+		{
+			throw new IllegalArgumentException(malformedURLException);
+		}
 	}
 
 	/**Determines the content length of the given resource.
@@ -156,17 +163,33 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 //	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
 	}
 
-	/**A resource with associated context-relative absolute path.
+	/**A resource that can return connections and other information.
 	@author Garret Wilson
 	*/
-	protected class HTTPServletResource extends DefaultResource	//TODO create a cache of these resources with cached content lengths, etc.; but that would entail checking cache settings and such
+	protected interface HTTPServletResource extends Resource
 	{
 
-		/**The absolute path of the resource relative to the servlet context.*/
-		private final String resourceContextAbsolutePath;
+		/**@return The content length of the resource.
+		@exception IOException if there is an error getting the length of the resource.
+		*/
+		public long getContentLength() throws IOException;
 
-			/**@public The absolute path of the resource relative to the servlet context.*/
-			public String getResourceContextAbsolutePath() {return resourceContextAbsolutePath;}
+		/**@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+		@exception IOException if there is an error getting the last modified time.
+		*/
+		public long getLastModified() throws IOException;
+
+		/**@return The lazily-created input stream to the resource.
+		@exception IOException if there is an error getting an input stream to the resource.
+		*/
+		public InputStream getInputStream() throws IOException;
+	}
+
+	/**A resource that knows how to retrieve information from a URL.
+	@author Garret Wilson
+	*/
+	protected abstract static class AbstractURLHTTPServletResource extends DefaultResource implements HTTPServletResource	//TODO create a cache of these resources with cached content lengths, etc.; but that would entail checking cache settings and such
+	{
 
 		/**The URL of the resource.*/
 		private final URL url;
@@ -190,9 +213,6 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 				}
 				return urlConnection;	//return the connection we created, or the one we already had
 			}
-
-		/**The content length of the resource, or -1 if the length has not yet been initialized.*/
-//TODO del if not needed		private long contentLength=-1;
 
 			/**@return The content length of the resource.
 			@exception IOException if there is an error getting the length of the resource.
@@ -225,24 +245,39 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 				return inputStream;	//return the input stream we created, or the one we already had
 			}
 
-		/**Constructs a resource with a reference URI and a context-relative absolute path.
+		/**Constructs a resource with a reference URI and a URL to connect to.
 		@param referenceURI The reference URI for the new resource.
-		@param resourceContextAbsolutePath The absolute path of the resource relative to the servlet context.
-		@exception NullPointerException if the reference URI or path is <code>null</code>.
-		@exception IllegalArgumentException if the given path is not in the correct form.
+		@param resourceURL The URL to use for connecting to the resource.
+		@exception NullPointerException if the reference URI and/or URL <code>null</code>.
 		*/
-		public HTTPServletResource(final URI referenceURI, final String resourceContextAbsolutePath)
+		public AbstractURLHTTPServletResource(final URI referenceURI, final URL resourceURL)
 		{
 			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
-			this.resourceContextAbsolutePath=checkInstance(resourceContextAbsolutePath, "HTTP resource context-relative absolute path cannot be null.");	//save the path
-			try
-			{
-				url=getServletContext().getResource(getResourceContextAbsolutePath());	//get the URL of the resource
-			}
-			catch(final MalformedURLException malformedURLException)	//if the path was not well-formed
-			{
-				throw new IllegalArgumentException(malformedURLException);
-			}
+			this.url=checkInstance(resourceURL, "HTTP resource URL cannot be null.");
+		}
+	}
+
+	/**A resource with associated context-relative absolute path.
+	This resource knows how to retrieve information from the servlet web path.
+	@author Garret Wilson
+	*/
+	protected static class DefaultHTTPServletResource extends AbstractURLHTTPServletResource	//TODO create a cache of these resources with cached content lengths, etc.; but that would entail checking cache settings and such
+	{
+
+		/**The absolute path of the resource relative to the servlet context.*/
+//TODO del if not needed		private final String resourceContextAbsolutePath;
+
+			/**@public The absolute path of the resource relative to the servlet context.*/
+//TODO del if not needed			public String getResourceContextAbsolutePath() {return resourceContextAbsolutePath;}
+
+		/**Constructs a resource with a reference URI and a context-relative absolute path.
+		@param referenceURI The reference URI for the new resource.
+		@param resourceURL The URL to use for connecting to the resource.
+		@exception NullPointerException if the reference URI and/or URL <code>null</code>.
+		*/
+		public DefaultHTTPServletResource(final URI referenceURI, final URL resourceURL)
+		{
+			super(referenceURI, resourceURL);	//construct the parent class
 		}
 
 	}
