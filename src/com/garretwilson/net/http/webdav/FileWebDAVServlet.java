@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.garretwilson.io.FileResource;
 import static com.garretwilson.io.FileUtilities.*;
 import com.garretwilson.net.http.HTTPConflictException;
@@ -51,44 +53,48 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	}
 
 	/**Determines the content length of the given resource.
+	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected long getContentLength(final FileResource resource) throws IOException
+	protected long getContentLength(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		return resource.getFile().length();	//return the length of the file
 	}
 
 	/**Determines the last modified date of the given resource.
+	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected Date getLastModifiedDate(final FileResource resource) throws IOException
+	protected Date getLastModifiedDate(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		final long lastModified=resource.getFile().lastModified();	//get the last modified information from the resource
 		return lastModified>0 ? new Date(lastModified) : null;	//return the last modified date, if we have that information (File returns 0 an error)
 	}
 
 	/**Retrieves an input stream to the given resource.
+	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
-	protected InputStream getInputStream(final FileResource resource) throws IOException
+	protected InputStream getInputStream(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		return new FileInputStream(resource.getFile());	//return a an input stream from the file
 	}
 
 	/**Retrieves an output stream to the given resource.
+	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected OutputStream getOutputStream(final FileResource resource) throws IOException
+	protected OutputStream getOutputStream(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		return new FileOutputStream(resource.getFile());	//return an output stream to the file		
 	}

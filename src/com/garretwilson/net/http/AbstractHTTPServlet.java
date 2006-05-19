@@ -189,7 +189,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 				resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
-				{
+			{
 //			TODO del Debug.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
@@ -197,9 +197,9 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		try
 		{
 			final InputStream inputStream=request.getInputStream();	//get an input stream from the request
-			final OutputStream outputStream=getOutputStream(resource);	//get an output stream to the resource
-				try
-				{
+			final OutputStream outputStream=getOutputStream(request, resource);	//get an output stream to the resource
+			try
+			{
 //				TODO del Debug.trace("trying to write");
 				OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
 			}
@@ -288,7 +288,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
     	else	//if this resource is not a collection
 	    {
 //TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
-      	final Date lastModifiedDate=getLastModifiedDate(resource);	//get the last modified date of the resource
+      	final Date lastModifiedDate=getLastModifiedDate(request, resource);	//get the last modified date of the resource
       	if(lastModifiedDate!=null)	//if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
       	{
 //TODO del Debug.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
@@ -324,7 +324,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
       		response.setContentType(contentType.toString());	//tell the response which content type we're serving
       	}
 
-				final long contentLength=getContentLength(resource);	//get the content length of the resource
+				final long contentLength=getContentLength(request, resource);	//get the content length of the resource
       	if(contentLength>=0)	//if we found a content length for the resource
 	      {
 //      	TODO del Debug.trace("setting content length to:", contentLength);
@@ -339,7 +339,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
       	{
       		//TODO fix ranges
       		final OutputStream outputStream=response.getOutputStream();	//get the output stream TODO do we want to check for an IllegalStateException, and send back text if we can?
-      		final InputStream inputStream=new BufferedInputStream(getInputStream(resource));	//get an input stream to the resource
+      		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
       		try
       		{
       			OutputStreamUtilities.write(inputStream, outputStream);	//copy the input stream to the output stream
@@ -672,34 +672,38 @@ Debug.trace("sending redirect", redirectURI);
 	}
 
 	/**Determines the content length of the given resource.
+	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected abstract long getContentLength(final R resource) throws IOException;
+	protected abstract long getContentLength(final HttpServletRequest request, final R resource) throws IOException;
 
 	/**Determines the last modified date of the given resource.
+	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected abstract Date getLastModifiedDate(final R resource) throws IOException;
+	protected abstract Date getLastModifiedDate(final HttpServletRequest request, final R resource) throws IOException;
 
 	/**Retrieves an input stream to the given resource.
+	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
-	protected abstract InputStream getInputStream(final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract InputStream getInputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 	/**Retrieves an output stream to the given resource.
+	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected abstract OutputStream getOutputStream(final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 	/**Creates a resource.
 	For collections, <code>createCollection</code> should be used instead.

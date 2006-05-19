@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.garretwilson.lang.ObjectUtilities.*;
 import com.garretwilson.model.*;
 import com.garretwilson.net.URIUtilities;
@@ -73,44 +75,48 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	}
 
 	/**Determines the content length of the given resource.
+	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected long getContentLength(final HTTPServletResource resource) throws IOException
+	protected long getContentLength(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
-		return resource.getContentLength();	//return the content length of the resource
+		return resource.getContentLength(request);	//return the content length of the resource
 	}
 
 	/**Determines the last modified date of the given resource.
+	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected Date getLastModifiedDate(final HTTPServletResource resource) throws IOException
+	protected Date getLastModifiedDate(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
-		final long lastModified=resource.getLastModified();	//get the last modified information from the resource
+		final long lastModified=resource.getLastModified(request);	//get the last modified information from the resource
 		return lastModified>=0 ? new Date(lastModified) : null;	//return the last modified date, if we have that information
 	}
 
 	/**Retrieves an input stream to the given resource.
+	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
-	protected InputStream getInputStream(final HTTPServletResource resource) throws IOException
+	protected InputStream getInputStream(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
-		return resource.getInputStream();	//return the input stream to the resource, creating one if we haven't yet done so
+		return resource.getInputStream(request);	//return the input stream to the resource, creating one if we haven't yet done so
 	}
 
 	/**Retrieves an output stream to the given resource.
+	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected OutputStream getOutputStream(final HTTPServletResource resource) throws IOException
+	protected OutputStream getOutputStream(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
@@ -169,20 +175,26 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected interface HTTPServletResource extends Resource
 	{
 
-		/**@return The content length of the resource.
+		/**Returns the content length of the resource.
+		@param request The HTTP request in response to which the content length is being retrieved.
+		@return The content length of the resource.
 		@exception IOException if there is an error getting the length of the resource.
 		*/
-		public long getContentLength() throws IOException;
+		public long getContentLength(final HttpServletRequest request) throws IOException;
 
-		/**@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+		/**Returns the last modification time of the resource.
+		@param request The HTTP request in response to which the last modified time is being retrieved.
+		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
 		@exception IOException if there is an error getting the last modified time.
 		*/
-		public long getLastModified() throws IOException;
+		public long getLastModified(final HttpServletRequest request) throws IOException;
 
-		/**@return The lazily-created input stream to the resource.
+		/**Returns an input stream to the resource.
+		@param request The HTTP request in response to which the input stream is being retrieved.
+		@return The lazily-created input stream to the resource.
 		@exception IOException if there is an error getting an input stream to the resource.
 		*/
-		public InputStream getInputStream() throws IOException;
+		public InputStream getInputStream(final HttpServletRequest request) throws IOException;
 	}
 
 	/**A resource that knows how to retrieve information from a URL.
@@ -214,29 +226,35 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 				return urlConnection;	//return the connection we created, or the one we already had
 			}
 
-			/**@return The content length of the resource.
+			/**Returns the content length of the resource.
+			@param request The HTTP request in response to which the content length is being retrieved.
+			@return The content length of the resource.
 			@exception IOException if there is an error getting the length of the resource.
 			*/
-			public long getContentLength() throws IOException
+			public long getContentLength(final HttpServletRequest request) throws IOException
 			{
 				return getURLConnection().getContentLength();	//get a connection to the resource and return the length from the connection
 			}
 
-		/**@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
-		@exception IOException if there is an error getting the last modified time.
-		*/
-		public long getLastModified() throws IOException
-		{
-			return getURLConnection().getLastModified();	//get a connection to the resource and return the last modified information from the connection
-		}
+			/**Returns the last modification time of the resource.
+			@param request The HTTP request in response to which the last modified time is being retrieved.
+			@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+			@exception IOException if there is an error getting the last modified time.
+			*/
+			public long getLastModified(final HttpServletRequest request) throws IOException
+			{
+				return getURLConnection().getLastModified();	//get a connection to the resource and return the last modified information from the connection
+			}
 
 		/**The lazily-created input stream to the resource.*/
 		private InputStream inputStream=null;
 
-			/**@return The lazily-created input stream to the resource.
+			/**Returns an input stream to the resource.
+			@param request The HTTP request in response to which the input stream is being retrieved.
+			@return The lazily-created input stream to the resource.
 			@exception IOException if there is an error getting an input stream to the resource.
 			*/
-			public InputStream getInputStream() throws IOException	//TODO do we really want to assume there's only one input stream needed to the resource? maybe; probably not
+			public InputStream getInputStream(final HttpServletRequest request) throws IOException	//TODO do we really want to assume there's only one input stream needed to the resource? maybe; probably not
 			{
 				if(inputStream==null)	//if we don't yet have an input stream to the resource
 				{

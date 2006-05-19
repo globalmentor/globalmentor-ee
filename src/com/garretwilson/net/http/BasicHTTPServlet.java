@@ -177,9 +177,10 @@ Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 */
 		Debug.log("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString());	//log the request
-		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet
+		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet TODO fix race condition here
 		{
 			init(request);	//initialize from this request
+			isInitializedFromRequest=true;	//show that we have initialized from a request
 		}
 		else	//if we have initialized from a request, make sure the variables are still the same
 		{
