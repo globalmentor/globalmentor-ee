@@ -256,7 +256,7 @@ Debug.trace("depth requested:", depth);
 					}
 					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
 Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument));
-					setXML(response, multistatusDocument);	//put the XML in our response and send it back
+					setXML(request, response, multistatusDocument);	//put the XML in our response and send it back, compressed if possible
 				}
 				catch(final DOMException domException)	//any XML problem here is the server's fault
 				{

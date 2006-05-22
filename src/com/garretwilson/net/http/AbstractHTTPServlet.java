@@ -32,6 +32,7 @@ import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterConstants.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
+import static com.garretwilson.text.TextUtilities.*;
 
 import com.garretwilson.text.CharacterEncoding;
 import com.garretwilson.text.SyntaxException;
@@ -249,6 +250,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
   }
 
 	/**Services the GET, HEAD, and POST methods.
+  The response will be compressed if supported by the user agent.
   @param request The HTTP request.
   @param response The HTTP response.
   @param serveContent <code>true</code> if the contents of the resource should be returned.
@@ -323,13 +325,15 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 //TODO del Debug.trace("setting content type to:", contentType);	//TODO del
       		response.setContentType(contentType.toString());	//tell the response which content type we're serving
       	}
-
-				final long contentLength=getContentLength(request, resource);	//get the content length of the resource
-      	if(contentLength>=0)	//if we found a content length for the resource
-	      {
-//      	TODO del Debug.trace("setting content length to:", contentLength);
-      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
-      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
+      	if(HEAD_METHOD.equals(request.getMethod()))	//if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
+      	{
+					final long contentLength=getContentLength(request, resource);	//get the content length of the resource
+	      	if(contentLength>=0)	//if we found a content length for the resource
+		      {
+	//      	TODO del Debug.trace("setting content length to:", contentLength);
+	      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
+	      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
+	      	}
       	}
       	if(lastModifiedDate!=null)	//if we know when the resource was last modified
       	{
@@ -338,7 +342,17 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
       	if(serveContent)	//if we should serve content
       	{
       		//TODO fix ranges
-      		final OutputStream outputStream=response.getOutputStream();	//get the output stream TODO do we want to check for an IllegalStateException, and send back text if we can?
+      		final OutputStream outputStream;	//we'll determine the output stream
+      		if(contentType!=null && isText(contentType))	//if this is a text content type TODO later add other content types, if they can be compressed
+      		{
+//TODO del      			Debug.trace("compressing content type:", contentType);
+      			outputStream=getCompressedOutputStream(request, response);	//get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
+      		}
+      		else	//if we don't know the conten type, or it isn't text
+      		{
+//TODO del      			Debug.trace("not compressing content type:", contentType);
+      			outputStream=response.getOutputStream();	//get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
+      		}
       		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
       		try
       		{
@@ -348,6 +362,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
       		{
      				inputStream.close();	//always close the input stream to the resource
       		}
+      		outputStream.close();	//if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
       	}
     	}
     }
@@ -532,11 +547,13 @@ Debug.trace("sending redirect", redirectURI);
 	}
 
 	/**Places an XML document into the body of an HTTP response.
+	The XML will be sent back compressed if supported by the user agent.
+	@param request The request for which this XML represents a response.
 	@param response The response into which to place the XML document.
 	@param document The XML document to place into the response.
 	@exception IOException if there is an error writing the XML.
 	*/
-	protected void setXML(final HttpServletResponse response, final Document document) throws IOException
+	protected void setXML(final HttpServletRequest request, final HttpServletResponse response, final Document document) throws IOException
 	{
 		final ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();	//create a byte array output stream to hold our outgoing data
 		try
@@ -545,8 +562,8 @@ Debug.trace("sending redirect", redirectURI);
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
 			response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
-			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
-			final OutputStream outputStream=response.getOutputStream();	//get an output stream to the response
+//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
+			final OutputStream outputStream=getCompressedOutputStream(request, response);	//get an output stream to the response, compressing the output if possible
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 			try
 			{
@@ -556,6 +573,7 @@ Debug.trace("sending redirect", redirectURI);
 			{
 				inputStream.close();	//always close our input stream as good practice
 			}
+  		outputStream.close();	//if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
 		}
 		finally
 		{
