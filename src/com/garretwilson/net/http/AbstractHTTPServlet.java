@@ -202,7 +202,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 			try
 			{
 //				TODO del Debug.trace("trying to write");
-				OutputStreamUtilities.write(inputStream, outputStream);	//copy the file from the request to the resource
+				OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
 			}
 			finally
 			{
@@ -356,7 +356,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
       		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
       		try
       		{
-      			OutputStreamUtilities.write(inputStream, outputStream);	//copy the input stream to the output stream
+      			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
       		}
       		finally
       		{
@@ -567,7 +567,7 @@ Debug.trace("sending redirect", redirectURI);
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 			try
 			{
-				OutputStreamUtilities.write(inputStream, outputStream);	//write the bytes to the response
+				OutputStreamUtilities.copy(inputStream, outputStream);	//write the bytes to the response
 			}
 			finally
 			{
