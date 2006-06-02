@@ -516,11 +516,14 @@ Debug.trace("sending redirect", redirectURI);
 //	TODO del Debug.trace("getting XML");
 		final int contentLength=request.getContentLength();	//get the length of the request
 //	TODO del Debug.trace("content length", contentLength);
-//TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
+		//TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
 		if(contentLength>0)	//if content is present	//TODO fix chunked coding
 		{
 			final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
+			
+Debug.trace("Ready to get XML bytes of Content-Length:", contentLength);
 			final byte[] content=InputStreamUtilities.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
+Debug.trace("got bytes:", new String(content, "UTF-8"));
 			boolean hasContent=false;	//we'll start out assuming there actually is no content
 			for(final byte b:content)	//look at each byte in the content
 			{
@@ -534,6 +537,7 @@ Debug.trace("sending redirect", redirectURI);
 			{
 				final InputStream xmlInputStream=new ByteArrayInputStream(content);	//create a new input stream from the bytes we read
 				final XMLProcessor xmlProcessor=new XMLProcessor();	//create a new XML processor to process the information TODO use a generic way of getting the XML processor
+//TODO del Debug.trace("ready to parse");
 				return xmlProcessor.parseDocument(xmlInputStream, null);	//parse the document				
 			}
 		}
