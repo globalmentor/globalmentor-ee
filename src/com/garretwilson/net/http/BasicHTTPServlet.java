@@ -204,7 +204,7 @@ Debug.trace("path info:", request.getPathInfo());
 		catch(final OutOfMemoryError outOfMemoryError)	//if there was an out-of-memory error, log the info before rethrowing the error
 		{
 			final Runtime runtime=Runtime.getRuntime();	//get the runtime instance
-			Debug.traceStack("memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()-runtime.freeMemory());
+			Debug.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()-runtime.freeMemory());
 			throw outOfMemoryError;	//rethrow the error
 		}
 		catch(final AssertionError assertionError)	//if there was an assertion error, that's a serious internal server error
