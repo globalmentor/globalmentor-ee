@@ -99,7 +99,7 @@ Debug.trace("moving; checking to see if resource exists", resourceURI);
 		if(exists(resourceURI))	//if this resource exists
 	    {
 Debug.trace("resource exists; getting resource");			
-			final R resource=getResource(resourceURI);	//get the resource information
+			final R resource=getResource(request, resourceURI);	//get the resource information
 Debug.trace("getting destination");			
 			final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
 			if(requestedDestinationURI!=null)	//if a destination was given
@@ -113,7 +113,7 @@ Debug.trace("destination exists?", destinationExists);
 Debug.trace("depth requested:", depth);
 				final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
 Debug.trace("is overwrite?", overwrite);			
-				copyResource(resource, destinationURI, depth==Depth.INFINITY ? -1 : depth.ordinal(), overwrite);	//copy the resource to its new location
+				copyResource(request, resource, destinationURI, depth==Depth.INFINITY ? -1 : depth.ordinal(), overwrite);	//copy the resource to its new location
 				if(destinationExists)	//if the destination resource already existed
 				{
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
@@ -147,7 +147,7 @@ Debug.trace("moving; checking to see if resource exists", resourceURI);
 		if(exists(resourceURI))	//if this resource exists
 	    {
 Debug.trace("resource exists; getting resource");			
-			final R resource=getResource(resourceURI);	//get the resource information
+			final R resource=getResource(request, resourceURI);	//get the resource information
 Debug.trace("getting destination");			
 			final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
 			if(requestedDestinationURI!=null)	//if a destination was given
@@ -159,7 +159,7 @@ Debug.trace("requested destination", requestedDestinationURI);
 Debug.trace("destination exists?", destinationExists);			
 				final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
 Debug.trace("is overwrite?", overwrite);			
-				moveResource(resource, destinationURI, overwrite);	//move the resource to its new location
+				moveResource(request, resource, destinationURI, overwrite);	//move the resource to its new location
 				if(destinationExists)	//if the destination resource already existed
 				{
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
@@ -398,6 +398,7 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	protected abstract List<R> getResources(final URI resourceURI, final int depth) throws IllegalArgumentException, IOException;
 
 	/**Copies a resource.
+	@param request The HTTP request in response to which the resource is being copied.
 	@param resource The resource to copy.
 	@param destinationURI The destination URI to which the resource should be copied.
 	@param depth The zero-based depth of child resources which should
@@ -408,9 +409,10 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
 	*/
-	protected abstract void copyResource(final R resource, final URI destinationURI, final int depth, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
+	protected abstract void copyResource(final HttpServletRequest request, final R resource, final URI destinationURI, final int depth, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
 
 	/**Moves a resource.
+	@param request The HTTP request in response to which the resource is being moved.
 	@param resource The resource to move.
 	@param destinationURI The destination URI to which the resource should be moved.
 	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
@@ -419,6 +421,6 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
 	*/
-	protected abstract void moveResource(final R resource, final URI destinationURI, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
+	protected abstract void moveResource(final HttpServletRequest request, final R resource, final URI destinationURI, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
 
 }

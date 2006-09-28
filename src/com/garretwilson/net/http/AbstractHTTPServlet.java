@@ -180,7 +180,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
-			resource=getResource(resourceURI);	//get the resource information
+			resource=getResource(request, resourceURI);	//get the resource information
     }
 		else	//if the resource doesn't exist
 			{
@@ -240,7 +240,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
-			resource=getResource(resourceURI);	//get the resource information
+			resource=getResource(request, resourceURI);	//get the resource information
 			deleteResource(resource);	//delete the resource
     }
     else	//if the resource does not exist
@@ -265,7 +265,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
     {
 //TODO del Debug.trace("resource exists", resourceURI);
     	//TODO check if headers
-    	final R resource=getResource(resourceURI);	//get a resource description
+    	final R resource=getResource(request, resourceURI);	//get a resource description
 //G***del    	final ContentType contentType;	//determine the content type of the resource
     	if(isCollection(resource.getReferenceURI()))	//if the resource is a collection
     	{
@@ -671,13 +671,14 @@ Debug.trace("sending redirect", redirectURI);
   protected abstract boolean isCollection(final URI resourceURI) throws IOException;
 
 	/**Determines the requested resource.
+	@param request The HTTP request in response to which the resource is being retrieved.
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException if there is an error accessing the resource.
   */
-	protected abstract R getResource(final URI resourceURI) throws IllegalArgumentException, IOException;
+	protected abstract R getResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException;
 
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.

@@ -7,10 +7,19 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import static com.garretwilson.lang.ObjectUtilities.*;
+import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_NAME_MSIE;
+import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_NAME_PROPERTY;
+import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_VERSION_NUMBER_PROPERTY;
+import static com.garretwilson.servlet.http.HttpServletUtilities.getUserAgentProperties;
+import static com.garretwilson.text.CharacterEncodingConstants.UTF_8;
+
+import com.garretwilson.io.ParseReader;
 import com.garretwilson.model.*;
 import com.garretwilson.net.URIUtilities;
 import com.garretwilson.util.CollectionUtilities;
 import com.garretwilson.util.Debug;
+import com.guiseframework.platform.web.css.CSSStylesheet;
+import com.guiseframework.platform.web.css.GuiseCSSProcessor;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -54,13 +63,14 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
   }
 
 	/**Determines the requested resource.
+	@param request The HTTP request in response to which the resource is being retrieved.
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException if there is an error accessing the resource.
   */
-	protected HTTPServletResource getResource(final URI resourceURI) throws IllegalArgumentException, IOException
+	protected HTTPServletResource getResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException
 	{
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
 		try
@@ -299,5 +309,90 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		}
 
 	}
+	
+	/**A resource that decorates an existing resource, caching the resource bytes for later.
+	This class supports multithreaded resource access.
+	@author Garret Wilson
+	*/
+	protected static abstract class AbstractByteCacheDecoratorResource extends DefaultResource implements HTTPServletResource
+	{
 
+		/**The decorated resource.*/
+		private final HTTPServletResource resource;
+
+			/**@return The decorated resource.*/
+			protected HTTPServletResource getResource() {return resource;}
+
+		/**The bytes that constitute the resource, or <code>null</code> if the resource has not yet been retrieved.*/
+		private byte[] bytes=null;
+
+		/**Loads bytes from the requested resource.
+		@param request The HTTP request in response to which the bytes are being retrieved.
+		@return The bytes that constitute the resource.
+		@exception IOException if there is an error retrieving the bytes.
+		*/
+		protected abstract byte[] loadBytes(final HttpServletRequest request) throws IOException;
+
+		/**Returns a reference to the resource bytes.
+		@param request The HTTP request in response to which the bytes are being retrieved.
+		If the bytes are retrieved from the decorated resource if they haven't already been.
+		@return The bytes that constitute the resource.
+		@exception IOException if there is an error retrieving the bytes.
+		*/
+		protected byte[] getBytes(final HttpServletRequest request) throws IOException
+		{
+			synchronized(resource)
+			{
+				if(bytes==null)	//if no bytes are available
+				{
+					bytes=loadBytes(request);	//load the bytes
+				}
+				return bytes;	//return the resource bytes
+			}			
+		}
+
+		/**Returns the content length of the resource.
+		@param request The HTTP request in response to which the content length is being retrieved.
+		@return The content length of the resource.
+		@exception IOException if there is an error getting the length of the resource.
+		*/
+		public long getContentLength(final HttpServletRequest request) throws IOException
+		{
+			return getBytes(request).length;	//return the length of bytes
+		}
+
+		/**Determines the last modification time of the resource.
+		This version delegates to the decorated resource.
+		@param request The HTTP request in response to which the last modified time is being retrieved.
+		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+		@exception IOException if there is an error getting the last modified time.
+		*/
+		public synchronized long getLastModified(final HttpServletRequest request) throws IOException
+		{
+			return getResource().getLastModified(request);
+		}
+
+		/**Returns an input stream to the resource.
+		@param request The HTTP request in response to which the input stream is being retrieved.
+		@return The lazily-created input stream to the resource.
+		@exception IOException if there is an error getting an input stream to the resource.
+		*/
+		public InputStream getInputStream(final HttpServletRequest request) throws IOException
+		{
+			return new ByteArrayInputStream(getBytes(request));	//return an input stream to the bytes
+		}
+
+		/**HTTP servlet resource constructor.
+		@param resource The decorated HTTP servlet resource.
+		@exception IllegalArgumentException if the given resource is <code>null</code>.
+		*/
+		public AbstractByteCacheDecoratorResource(final HTTPServletResource resource)
+		{
+			super(checkInstance(resource, "Resource cannot be null.").getReferenceURI());	//construct the parent class
+			this.resource=resource;	//save the decorated resource
+		}
+	}
+	
+	
+	
 }
