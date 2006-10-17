@@ -11,12 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.garretwilson.io.FileResource;
 import com.garretwilson.lang.CharSequenceUtilities;
-import static com.garretwilson.lang.ClassUtilities.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
-import static com.garretwilson.net.http.webdav.WebDAVConstants.DAV_HEADER;
+import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import com.garretwilson.security.*;
 import com.garretwilson.text.SyntaxException;
 
