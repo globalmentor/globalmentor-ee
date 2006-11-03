@@ -4,28 +4,154 @@ import java.io.*;
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
+import java.text.DateFormat;
 import java.util.*;
-import static java.util.Collections.*;
 import java.util.concurrent.ConcurrentHashMap;
+import static java.util.Collections.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.garretwilson.lang.CharSequenceUtilities;
+import com.garretwilson.util.*;
+import com.garretwilson.security.*;
+import com.garretwilson.servlet.ServletUtilities;
+import com.garretwilson.text.SyntaxException;
+import com.garretwilson.text.W3CDateFormat;
+import static com.garretwilson.io.FileUtilities.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
-import com.garretwilson.security.*;
-import com.garretwilson.text.SyntaxException;
-
+import static com.garretwilson.servlet.ServletConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import com.garretwilson.util.*;
 
-/**An HTTP servlet with extended functionality. 
+/**An HTTP servlet with extended functionality.
+This servlet supports the following initialization parameters:
+<dl>
+	<dt>{@value ServletConstants#DATA_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing data.</dd>
+	<dt>{@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
+	<dt>{@value #DEBUG_REPORT_LEVEL_INIT_PARAMETER}</dt> <dd>The level of debug reporting for the JVM of type {@link Debug.ReportLevel}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
+ </dl>
 @author Garret Wilson
 */
 public class BasicHTTPServlet extends HttpServlet
 {
+
+	/**The init parameter, "debugReportLevel", used to specify the level of debug reporting for the JVM of type {@link Debug.ReportLevel}.*/
+	public final static String DEBUG_REPORT_LEVEL_INIT_PARAMETER="debugReportLevel";
+
+	/**The cached data directory, or <code>null</code> if it has not yet been initialized.*/
+//TODO del if not needed	private File dataDirectory=null;
+
+		/**Determines the data directory.
+		After the first retrieval, this directory is cached.
+		@param context The servlet context from which to retrieve init parameters.
+		@return A file representing the preferred data directory.
+		@exception ServletException if the {@value ServletConstants#DATA_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@see ServletUtilities#getDataDirectory(ServletContext)
+		*/
+/*TODO del if not needed
+		public File getDataDirectory(final ServletContext context) throws ServletException
+		{
+			if(dataDirectory==null)	//if the data directory has not been determined (there is a benign race condition here)
+			{
+				dataDirectory=ServletUtilities.getDataDirectory(context);	//get the data directory from the init parameter if possible
+				if(dataDirectory==null)	//if we can't get the WEB-INF directory
+				{
+					throw new ServletException(DATA_DIRECTORY_INIT_PARAMETER+" init parameter not specified and real path to WEB-INF directory not available.");
+				}
+			}
+			return dataDirectory;	//return the data directory
+		}
+*/
+
+	/**The cached log directory, or <code>null</code> if it has not yet been initialized.*/
+//TODO del if not needed	private File logDirectory=null;
+
+		/**Determines the log directory.
+		After the first retrieval, this directory is cached.
+		@param context The servlet context from which to retrieve init parameters.
+		@return A file representing the preferred log directory.
+		@exception ServletException if the {@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@see ServletUtilities#getLogDirectory(ServletContext)
+		*/
+/*TODO del if not needed
+		public File getLogDirectory(final ServletContext context) throws ServletException
+		{
+			if(logDirectory==null)	//if the log directory has not been determined (there is a benign race condition here)
+			{
+				logDirectory=ServletUtilities.getLogDirectory(context);	//get the log directory from the init parameter if possible
+				if(logDirectory==null)	//if we can't get the WEB-INF directory
+				{
+					throw new ServletException(LOG_DIRECTORY_INIT_PARAMETER+" init parameter not specified and real path to WEB-INF directory not available.");
+				}
+			}
+			return logDirectory;	//return the data directory
+		}
+*/
+
+	/**The cached shared debug log file, or <code>null</code> if it has not yet been initialized.*/
+	private static File debugLogFile=null;
+
+		/**Determines the debug log file for the entire JVM.
+		After the first retrieval, this file is cached.
+		The first servlet to request this file gets priority.
+		@param context The servlet context from which to retrieve init parameters.
+		@return The file for debug logging.
+		@exception ServletException if the {@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@see ServletUtilities#getLogDirectory(ServletContext)
+		*/
+		protected static File getDebugLogFile(final ServletContext context)
+		{
+			if(debugLogFile==null)	//if no log file has been determined (there is a benign race condition here)
+			{
+				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
+				final String logFilename=logFilenameDateFormat.format(new Date())+" debug.log";	//create a filename in the form "date debug.log" TODO use a constant
+				debugLogFile=new File(ServletUtilities.getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
+			}
+			return debugLogFile;	//return the log file
+		}
+
+	/**Initializes the servlet.
+	This version ensures the log directory exists.
+	This version configures debugging.
+	@param servletConfig The servlet configuration.
+	@exception ServletException if there is a problem initializing.
+	*/
+	public void init(final ServletConfig servletConfig) throws ServletException
+	{
+		super.init(servletConfig);	//do the default initialization
+		try	//configure the debug level before we do anything else
+		{
+			final String debugReportLevelString=servletConfig.getInitParameter(DEBUG_REPORT_LEVEL_INIT_PARAMETER);	//get the debug level from the init parameters
+			if(debugReportLevelString!=null)	//if there is a debug report level specified
+			{
+				Debug.setMinimumReportLevel(Debug.ReportLevel.valueOf(debugReportLevelString));	//change the debug to the specified level
+			}
+		}
+		catch(final IllegalArgumentException illegalArgumentException)	//if an illegal debug report level was reported
+		{
+			throw new ServletException(illegalArgumentException);
+		}
+		try	//make sure the log directory exists
+		{
+			ensureDirectoryExists(getLogDirectory(getServletContext()));	//make sure the log directory exists
+		}
+		catch(final IOException ioException)	//if we can't create the log directory
+		{
+			throw new ServletException(ioException);
+		}
+		try	//configure the debug output
+		{
+			Debug.setOutput(getDebugLogFile(getServletContext()));	//set the log file
+		}
+		catch(final FileNotFoundException fileNotFoundException)	//if we can't find the debug file
+		{
+			throw new ServletException(fileNotFoundException);
+		}
+		
+Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
+	}
 
 	/**A thread-safe map of nonces, keyed to nonce ID strings.*/
 	private final Map<String, Nonce> nonceMap=new ConcurrentHashMap<String, Nonce>();
@@ -77,8 +203,7 @@ public class BasicHTTPServlet extends HttpServlet
 		protected String getNoncePrincipalID(final Nonce nonce)
 		{
 			return noncePrincipalIDMap.get(nonce);	//return the ID of the principal associated with this nonce, if there is one
-		}
-	
+		}	
 
 	/**Whether this servlet has been initialized from an incoming request.*/
 	private boolean isInitializedFromRequest=false;
