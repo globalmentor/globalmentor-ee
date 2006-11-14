@@ -145,9 +145,9 @@ public class BasicHTTPServlet extends HttpServlet
 		{
 			Debug.setOutput(getDebugLogFile(getServletContext()));	//set the log file
 		}
-		catch(final FileNotFoundException fileNotFoundException)	//if we can't find the debug file
+		catch(final IOException ioException)	//if we can't access the debug file
 		{
-			throw new ServletException(fileNotFoundException);
+			throw new ServletException(ioException);
 		}
 		
 Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
