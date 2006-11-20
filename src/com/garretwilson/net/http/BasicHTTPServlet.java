@@ -106,7 +106,7 @@ public class BasicHTTPServlet extends HttpServlet
 			if(debugLogFile==null)	//if no log file has been determined (there is a benign race condition here)
 			{
 				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
-				final String logFilename=logFilenameDateFormat.format(new Date())+" debug.log";	//create a filename in the form "date debug.log" TODO use a constant
+				final String logFilename="debug "+logFilenameDateFormat.format(new Date())+".log";	//create a filename in the form "date debug.log" TODO use a constant
 				debugLogFile=new File(ServletUtilities.getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
 			}
 			return debugLogFile;	//return the log file

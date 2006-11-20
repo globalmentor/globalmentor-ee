@@ -218,7 +218,7 @@ Debug.trace("is overwrite?", overwrite);
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("doing propfind for URI", resourceURI);
-		if(LIST_DIRECTORIES)	//if we allow directory listing
+		if(true/*TODO fix---is this valid for WebDAV? LIST_DIRECTORIES*/)	//if we allow directory listing
 		{
 			if(exists(resourceURI))	//if the resource exists
 			{
@@ -318,9 +318,10 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 			allowedMethods.add(COPY_METHOD);
 //  	TODO implement  		methodSet.add(WebDAVMethod.LOCK);
 			allowedMethods.add(MOVE_METHOD);
-			if(LIST_DIRECTORIES)	//if we allow directory listings
+
+			if(true/*TODO fix---is this valid for WebDAV? LIST_DIRECTORIES*/)	//if we allow directory listings
 			{
-//  		TODO implement  			methodSet.add(PROPFIND);
+				allowedMethods.add(PROPFIND_METHOD);
 			}
 //  	TODO implement  		methodSet.add(PROPPATCH);
 //  	TODO implement  		methodSet.add(UNLOCK);
