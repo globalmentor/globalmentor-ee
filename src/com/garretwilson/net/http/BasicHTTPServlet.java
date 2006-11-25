@@ -30,12 +30,16 @@ This servlet supports the following initialization parameters:
 <dl>
 	<dt>{@value ServletConstants#DATA_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing data.</dd>
 	<dt>{@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
+	<dt>{@value #DEBUG_INIT_PARAMETER}</dt> <dd>Whether debugging is turned on.</dd> 
 	<dt>{@value #DEBUG_REPORT_LEVEL_INIT_PARAMETER}</dt> <dd>The level of debug reporting for the JVM of type {@link Debug.ReportLevel}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
  </dl>
 @author Garret Wilson
 */
 public class BasicHTTPServlet extends HttpServlet
 {
+
+	/**The init parameter, "debug", used to specify whether debugging is turned on; should be "true" or "false".*/
+	public final static String DEBUG_INIT_PARAMETER="debug";
 
 	/**The init parameter, "debugReportLevel", used to specify the level of debug reporting for the JVM of type {@link Debug.ReportLevel}.*/
 	public final static String DEBUG_REPORT_LEVEL_INIT_PARAMETER="debugReportLevel";
@@ -123,6 +127,19 @@ public class BasicHTTPServlet extends HttpServlet
 		super.init(servletConfig);	//do the default initialization
 		try	//configure the debug level before we do anything else
 		{
+			final String debugString=servletConfig.getInitParameter(DEBUG_INIT_PARAMETER);	//get the debug setting from the init parameters
+			if(debugString!=null)	//if there is a debug setting specified
+			{
+				final Boolean debugBoolean=Boolean.valueOf(debugString);	//convert the string to a boolean object
+				try
+				{
+					Debug.setDebug(debugBoolean.booleanValue());	//change the debug to the specified level
+				}
+				catch(final IOException ioException)	//if we have a problem turning on debugging
+				{
+					throw new ServletException(ioException);
+				}					
+			}
 			final String debugReportLevelString=servletConfig.getInitParameter(DEBUG_REPORT_LEVEL_INIT_PARAMETER);	//get the debug level from the init parameters
 			if(debugReportLevelString!=null)	//if there is a debug report level specified
 			{

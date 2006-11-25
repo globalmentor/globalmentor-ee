@@ -175,15 +175,17 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 //	TODO del Debug.trace("getting resource URI");
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //	TODO del Debug.trace("checking destination existence");
+Debug.trace("checking destination existence");
 		final boolean exists=exists(resourceURI);	//see whether the resource already exists
 //	TODO del Debug.trace("exists", exists);
+Debug.trace("exists", exists);
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
 			resource=getResource(request, resourceURI);	//get the resource information
     }
 		else	//if the resource doesn't exist
-			{
+		{
 //		TODO del Debug.trace("trying to create resource");
 			try
 			{
@@ -217,13 +219,18 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 			}
 			throw ioException;	//rethrow the exception
 		}
+Debug.trace("done PUT; determining response");
 		if(exists)	//if the resource already existed
 		{
+Debug.trace("PUT already existed; returning SC_NO_CONTENT");
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+			response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		}
 		else	//if the resource did not exist already
 		{
+Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 			response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+			response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		}
   }
 
@@ -728,7 +735,7 @@ Debug.trace("sending redirect", redirectURI);
 	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 	/**Creates a resource.
-	For collections, <code>createCollection</code> should be used instead.
+	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.

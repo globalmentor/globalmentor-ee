@@ -117,10 +117,12 @@ Debug.trace("is overwrite?", overwrite);
 				if(destinationExists)	//if the destination resource already existed
 				{
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+					response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 				}
 				else	//if the destination resource did not exist already
 				{
 					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 				}
 			}
 			else	//if there is no destination header
@@ -163,10 +165,12 @@ Debug.trace("is overwrite?", overwrite);
 				if(destinationExists)	//if the destination resource already existed
 				{
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
+					response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 				}
 				else	//if the destination resource did not exist already
 				{
 					response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
+					response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 				}
 			}
 			else	//if there is no destination header

@@ -100,7 +100,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	}
 
 	/**Creates a resource.
-	For collections, <code>createCollection</code> should be used instead.
+	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
