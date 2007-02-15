@@ -3,15 +3,16 @@ package com.garretwilson.net.http;
 import java.io.*;
 import java.net.*;
 import java.security.Principal;
-import java.text.DateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.mail.internet.ContentType;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.xml.parsers.DocumentBuilder;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import static com.garretwilson.io.ContentTypeConstants.*;
 import com.garretwilson.io.ContentTypeUtilities;
@@ -23,7 +24,6 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
 import com.garretwilson.model.Resource;
-import com.garretwilson.net.http.DefaultHTTPServlet.HTTPServletResource;
 
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
@@ -36,15 +36,13 @@ import static com.garretwilson.text.TextUtilities.*;
 
 import com.garretwilson.text.CharacterEncoding;
 import com.garretwilson.text.SyntaxException;
-import com.garretwilson.text.xml.XMLDOMImplementation;
-import com.garretwilson.text.xml.XMLProcessor;
 import com.garretwilson.text.xml.XMLSerializer;
 
 import com.garretwilson.util.*;
 
 /**The base servlet class for implementing an HTTP server that access resources.
-@see http://www.ietf.org/rfc/rfc2616.txt
-@see http://www.mnot.net/cache_docs/
+@see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
+@see <a href="http://www.mnot.net/cache_docs/">Caching Tutorial</a>
 @author Garret Wilson
 */
 public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
@@ -62,12 +60,6 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		@param readOnly The new read-only status.
 		*/
 		protected void setReadOnly(final boolean readOnly) {this.readOnly=readOnly;}
-
-	/**The DOM implementation used as a document factory.*/
-	private final DOMImplementation domImplementation=new XMLDOMImplementation();	//TODO get this in a general way
-
-		/**@return The DOM implementation used as a document factory.*/
-		protected DOMImplementation getDOMImplementation() {return domImplementation;}
 
 	/**An array of regular expressions matching user agents not correctly supporting redirects.
 	@see http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
@@ -514,11 +506,13 @@ Debug.trace("sending redirect", redirectURI);
 
 	/**Retrieves an XML document from the body of an HTTP request.
 	@param request The request from which to get the XML document.
-	@return A document representing the XML information, or <code>null</code>
-		if nothing but whitespace was included in the request.
+	@param documentBuilder The document builder to use for parsing the XML.
+	@return A document representing the XML information, or <code>null</code> if nothing but whitespace was included in the request.
 	@exception IOException if there is an error reading the XML.
+	@exception DOMException if there is an error creating the document.
+	@exception SAXException if there is an error parsing the document.
 	*/
-	protected Document getXML(final HttpServletRequest request) throws IOException
+	protected Document getXML(final HttpServletRequest request, final DocumentBuilder documentBuilder) throws IOException, DOMException, SAXException
 	{
 //	TODO del Debug.trace("getting XML");
 		final int contentLength=request.getContentLength();	//get the length of the request
@@ -542,9 +536,8 @@ Debug.trace("sending redirect", redirectURI);
 			if(hasContent)	//if we have content
 			{
 				final InputStream xmlInputStream=new ByteArrayInputStream(content);	//create a new input stream from the bytes we read
-				final XMLProcessor xmlProcessor=new XMLProcessor();	//create a new XML processor to process the information TODO use a generic way of getting the XML processor
 //TODO del Debug.trace("ready to parse");
-				return xmlProcessor.parseDocument(xmlInputStream, null);	//parse the document				
+				return documentBuilder.parse(xmlInputStream);	//parse the bytes we read
 			}
 		}
 /*TODO del; we accept no content as no XML

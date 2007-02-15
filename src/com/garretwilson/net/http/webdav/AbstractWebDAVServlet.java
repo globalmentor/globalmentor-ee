@@ -7,6 +7,7 @@ import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.garretwilson.model.Resource;
 import com.garretwilson.net.http.*;
@@ -15,11 +16,12 @@ import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVUtilities.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.text.xml.QualifiedName;
-import com.garretwilson.text.xml.XMLDOMImplementation;
 import com.garretwilson.text.xml.XMLUtilities;
+
 import com.garretwilson.util.*;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**The base servlet class for implementing a WebDAV server as defined by
 <a href="http://www.ietf.org/rfc/rfc2518.txt">RFC 2518</a>,	"HTTP Extensions for Distributed Authoring -- WEBDAV". 
@@ -27,13 +29,7 @@ import org.w3c.dom.*;
 */
 public abstract class AbstractWebDAVServlet<R extends Resource> extends AbstractHTTPServlet<R>	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
-	
-	/**The DOM implementation used as a document factory.*/
-	private final DOMImplementation domImplementation=new XMLDOMImplementation();	//TODO get this in a general way
-
-		/**@return The DOM implementation used as a document factory.*/
-		protected DOMImplementation getDOMImplementation() {return domImplementation;}
-
+		
 	/**Services an HTTP request based upon its method.
 	This version provides support for WebDAV methods.
   @param method The HTTP method being serviced. 
@@ -231,7 +227,7 @@ Debug.trace("depth requested:", depth);
 				IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
 				try
 				{
-					final Document document=getXML(request);	//get the XML from the request body
+					final Document document=getXML(request, createWebDAVDocumentBuilder());	//get the XML from the request body
 					if(document!=null)	//if there was an XML document in the request
 					{
 	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
@@ -244,10 +240,14 @@ Debug.trace("depth requested:", depth);
 				{
 		      throw new HTTPBadRequestException(domException);	//show that the XML wasn't correct				
 				}
+				catch(final SAXException saxException)	//any XML problem here is the client's fault
+				{
+		      throw new HTTPBadRequestException(saxException);	//show that the XML wasn't correct				
+				}
 				try
 				{
 					final List<R> resourceList=getResources(resourceURI, depth==Depth.INFINITY ? -1 : depth.ordinal());	//get a list of resources
-					final Document multistatusDocument=createMultistatusDocument(getDOMImplementation());	//create a multistatus document
+					final Document multistatusDocument=createMultistatusDocument(createWebDAVDocumentBuilder().getDOMImplementation());	//create a multistatus document
 					for(final R resource:resourceList)	//for each resource
 					{
 						final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
