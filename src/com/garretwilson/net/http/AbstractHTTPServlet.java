@@ -171,6 +171,53 @@ Debug.trace("checking destination existence");
 		final boolean exists=exists(resourceURI);	//see whether the resource already exists
 //	TODO del Debug.trace("exists", exists);
 Debug.trace("exists", exists);
+		final InputStream inputStream=request.getInputStream();	//get an input stream from the request
+		final OutputStream outputStream;	//we'll determine the output stream to use
+		if(exists)	//if this resource exists
+    {
+			final R resource=getResource(request, resourceURI);	//get the resource information
+			outputStream=getOutputStream(request, resource);	//get an output stream to the resource
+    }
+		else	//if the resource doesn't exist
+		{
+			try
+			{
+				outputStream=createResource(resourceURI);	//create a new resource
+			}
+			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
+			{
+//			TODO del Debug.warn(illegalArgumentException);
+					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
+			}
+		}
+		try
+		{
+Debug.trace("trying to write");
+			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
+Debug.trace("written");
+		}
+		finally
+		{
+/*TODO del; doesn't work
+			if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
+			{
+Debug.trace("syncing file output stream", resource.getReferenceURI());
+				((FileOutputStream)outputStream).getFD().sync();
+			}
+*/
+/*TODO test
+			if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
+			{
+Debug.trace("forcing file output stream", resourceURI);
+				((FileOutputStream)outputStream).getChannel().force(true);
+			}
+*/
+Debug.trace("closing output stream for resource URI", resourceURI);
+			outputStream.close();	//always close the output stream
+Debug.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
+		}
+
+/*TODO del when works
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
@@ -195,14 +242,38 @@ Debug.trace("exists", exists);
 			final OutputStream outputStream=getOutputStream(request, resource);	//get an output stream to the resource
 			try
 			{
-//				TODO del Debug.trace("trying to write");
+Debug.trace("trying to write");
 				OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
+			}
+			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
+			{
+//			TODO del Debug.warn(illegalArgumentException);
+					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
 			finally
 			{
+*/
+/*TODO del; doesn't work
+				if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
+				{
+Debug.trace("syncing file output stream", resource.getReferenceURI());
+					((FileOutputStream)outputStream).getFD().sync();
+				}
+*/
+/*TODO del when works
+				if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
+				{
+Debug.trace("forcing file output stream", resource.getReferenceURI());
+					((FileOutputStream)outputStream).getChannel().force(true);
+				}
+
+Debug.trace("closing output stream of resource type", resource.getClass());
 				outputStream.close();	//always close the output stream
+Debug.trace("closed output stream; now content of resource is", getContentLength(request, resource));
 			}
 		}
+*/
+		/*TODO fix if needed
 		catch(final IOException ioException)	//if we have any problems saving the resource contents
 		{
 			if(!exists)	//if the resource didn't exist before
@@ -211,6 +282,7 @@ Debug.trace("exists", exists);
 			}
 			throw ioException;	//rethrow the exception
 		}
+*/
 Debug.trace("done PUT; determining response");
 		if(exists)	//if the resource already existed
 		{
@@ -727,6 +799,18 @@ Debug.trace("sending redirect", redirectURI);
 	*/
 	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
+	/**Creates a resource and returns an output stream for storing content.
+	If the resource already exists, it will be replaced.
+	For collections, {@link #createCollection(URI)} should be used instead.
+	@param resourceURI The URI of the resource to create.
+	@return An output stream for storing content in the resource.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@exception IOException Thrown if there is an error creating the resource.
+	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@see #createCollection(URI)
+	*/
+	protected abstract OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
+
 	/**Creates a resource.
 	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
@@ -737,13 +821,13 @@ Debug.trace("sending redirect", redirectURI);
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
+//TODO del when works	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**Creates a collection resource.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException Thrown if there is an error creating the resource.
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)

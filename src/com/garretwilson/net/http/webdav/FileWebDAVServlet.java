@@ -99,27 +99,32 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 		return new FileOutputStream(resource.getFile());	//return an output stream to the file		
 	}
 
-	/**Creates a resource.
+	/**Creates a resource and returns an output stream for storing content.
+	If the resource already exists, it will be replaced.
 	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
-	@return The description of a newly created resource, or <code>null</code> if
-		the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@return An output stream for storing content in the resource.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException Thrown if there is an error creating the resource.
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected FileResource createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		final FileResource fileResource=getResource(resourceURI);	//get the resource associated with this URI
-		createNewFile(fileResource.getFile());	//create a new file
-		return fileResource;	//return the file resource
+//TODO del if not needed		createNewFile(fileResource.getFile());	//create a new file
+		final File file=fileResource.getFile();	//get the associated file
+		if(!file.getParentFile().isDirectory())	//if the file's parent is not an existing directory
+		{
+			throw new HTTPConflictException();	//indicate the conflict with the parent resource TODO report the URI at some point, which is not the same as the URI of the parent file
+		}
+		return new FileOutputStream(file);	//return a new file output stream to the file
 	}
 
 	/**Creates a collection resource.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException Thrown if there is an error creating the resource.
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)

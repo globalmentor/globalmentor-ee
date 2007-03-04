@@ -3,23 +3,14 @@ package com.garretwilson.net.http;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import static java.util.Collections.*;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static com.garretwilson.lang.ObjectUtilities.*;
-import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_NAME_MSIE;
-import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_NAME_PROPERTY;
-import static com.garretwilson.servlet.http.HttpServletUtilities.USER_AGENT_VERSION_NUMBER_PROPERTY;
-import static com.garretwilson.servlet.http.HttpServletUtilities.getUserAgentProperties;
-import static com.garretwilson.text.CharacterEncodingConstants.UTF_8;
 
-import com.garretwilson.io.ParseReader;
 import com.garretwilson.model.*;
 import com.garretwilson.net.URIUtilities;
-import com.garretwilson.util.CollectionUtilities;
-import com.garretwilson.util.Debug;
-import com.guiseframework.platform.web.css.CSSStylesheet;
-import com.guiseframework.platform.web.css.GuiseCSSProcessor;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -131,17 +122,17 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
-	/**Creates a resource.
-	For collections, <code>createCollection</code> should be used instead.
+	/**Creates a resource and returns an output stream for storing content.
+	If the resource already exists, it will be replaced.
+	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
-	@return The description of a newly created resource, or <code>null</code> if
-		the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@return An output stream for storing content in the resource.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException Thrown if there is an error creating the resource.
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected HTTPServletResource createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
@@ -149,7 +140,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**Creates a collection resource.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
 	@exception IOException Thrown if there is an error creating the resource.
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
@@ -175,7 +166,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	*/
 	protected List<HTTPServletResource> getChildResources(final HTTPServletResource resource) throws IOException
 	{
-		return CollectionUtilities.emptyList();	//TODO implement		
+		return emptyList();	//TODO implement		
 //	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
 	}
 
