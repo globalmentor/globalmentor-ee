@@ -31,26 +31,28 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	}
 
   /**Determines if the resource at a given URI exists.
+	@param request The HTTP request in response to which which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
   */
-  protected boolean exists(final URI resourceURI) throws IOException
+  protected boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
   	return getServletContext().getResource(resourceContextAbsolutePath)!=null;	//return whether the servlet has mapped a resource to this path
   }
 
   /**Determines if the resource at a given URI is an existing collection.
+	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
-  protected boolean isCollection(final URI resourceURI) throws IOException
+  protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
-		return URIUtilities.isContainerPath(resourceContextAbsolutePath) && exists(resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
+		return URIUtilities.isContainerPath(resourceContextAbsolutePath) && exists(request, resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
   }
 
 	/**Determines the requested resource.
@@ -125,6 +127,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**Creates a resource and returns an output stream for storing content.
 	If the resource already exists, it will be replaced.
 	For collections, {@link #createCollection(URI)} should be used instead.
+	@param request The HTTP request in response to which a resource is being created.
 	@param resourceURI The URI of the resource to create.
 	@return An output stream for storing content in the resource.
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
@@ -132,12 +135,13 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
 	/**Creates a collection resource.
+	@param request The HTTP request in response to which a collection is being created.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
@@ -145,26 +149,28 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
-	protected HTTPServletResource createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected HTTPServletResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
 	/**Deletes a resource.
+	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
 	@exception IOException Thrown if the resource could not be deleted.
 	*/
-	protected void deleteResource(final HTTPServletResource resource) throws IOException
+	protected void deleteResource(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");		
 	}
 
 	/**Retrieves an list of child resources of the given resource.
+	@param request The HTTP request in response to which child resources are being retrieved.
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
 	@exception IOException Thrown if there is an error retrieving the list of child resources.
 	*/
-	protected List<HTTPServletResource> getChildResources(final HTTPServletResource resource) throws IOException
+	protected List<HTTPServletResource> getChildResources(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
 		return emptyList();	//TODO implement		
 //	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path

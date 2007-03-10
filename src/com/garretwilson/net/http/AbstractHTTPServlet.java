@@ -115,7 +115,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //TODO del Debug.trace("doing options for URI", resourceURI);
-		final Set<String> allowedMethodSet=getAllowedMethods(resourceURI);	//get the allowed methods
+		final Set<String> allowedMethodSet=getAllowedMethods(request, resourceURI);	//get the allowed methods
 		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
 		response.setContentLength(0);	//set the content length to zero, according to the HTTP specification for OPTIONS
 	}
@@ -168,7 +168,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //	TODO del Debug.trace("checking destination existence");
 Debug.trace("checking destination existence");
-		final boolean exists=exists(resourceURI);	//see whether the resource already exists
+		final boolean exists=exists(request, resourceURI);	//see whether the resource already exists
 //	TODO del Debug.trace("exists", exists);
 Debug.trace("exists", exists);
 		final InputStream inputStream=request.getInputStream();	//get an input stream from the request
@@ -182,7 +182,7 @@ Debug.trace("exists", exists);
 		{
 			try
 			{
-				outputStream=createResource(resourceURI);	//create a new resource
+				outputStream=createResource(request, resourceURI);	//create a new resource
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 			{
@@ -307,12 +307,12 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	public void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-		final boolean exists=exists(resourceURI);	//see whether the resource already exists
+		final boolean exists=exists(request, resourceURI);	//see whether the resource already exists
 		final R resource;	//we'll get the existing resource, if there is one 
 		if(exists)	//if this resource exists
     {
 			resource=getResource(request, resourceURI);	//get the resource information
-			deleteResource(resource);	//delete the resource
+			deleteResource(request, resource);	//delete the resource
     }
     else	//if the resource does not exist
     {
@@ -332,20 +332,20 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //	TODO del Debug.trace("serving resource", resourceURI);
-		if(exists(resourceURI))	//if this resource exists
+		if(exists(request, resourceURI))	//if this resource exists
     {
 //TODO del Debug.trace("resource exists", resourceURI);
     	//TODO check if headers
     	final R resource=getResource(request, resourceURI);	//get a resource description
 //G***del    	final ContentType contentType;	//determine the content type of the resource
-    	if(isCollection(resource.getReferenceURI()))	//if the resource is a collection
+    	if(isCollection(request, resource.getReferenceURI()))	//if the resource is a collection
     	{
 //TODO del Debug.trace("is collection", resourceURI);
     		if(LIST_DIRECTORIES)	//if we should list directories
     		{
     			final Writer writer=response.getWriter();
     			response.setContentType("text/plain");
-    			final List<R> resourceList=getChildResources(resource);
+    			final List<R> resourceList=getChildResources(request, resource);
     			for(final R childResource:resourceList)
     			{
     				writer.append(childResource.toString()).append('\n');
@@ -457,7 +457,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
 	{
 		final URI requestedResourceURI=super.getResourceURI(request);	//get the default resource URI for this request
-		final URI resourceURI=getResourceURI(requestedResourceURI, request.getMethod(), null);	//get the correct URI for the resource
+		final URI resourceURI=getResourceURI(request, requestedResourceURI, request.getMethod(), null);	//get the correct URI for the resource
 		if(!resourceURI.equals(requestedResourceURI))	//if the real resource URI is different from the one requested
 		{
 			if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
@@ -478,6 +478,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 			at the location of the URI with an appended '/'.</li>
 		<li>The analogous resource, if present, is a collection.</li>
 	</ul>
+  @param request The HTTP request indicating the requested resource.
   @param requestedResourceURI The requested absolute URI of the resource.
   @param method The HTTP request method.
   @param analogousResourceURI The URI of a resource to use by analogy, or <code>null</code> if
@@ -485,7 +486,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   @return The canonical URI of the requested resource, which may be different
   	than the requested resource URI.
   */
-	protected URI getResourceURI(final URI requestedResourceURI, final String method, final URI analogousResourceURI)
+	protected URI getResourceURI(final HttpServletRequest request, final URI requestedResourceURI, final String method, final URI analogousResourceURI)	//TODO now that we pass the request, remove the method parameter because it is redundance
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
 //	TODO del Debug.trace("requested URI", requestedResourceURI);
@@ -515,7 +516,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 //TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
 //TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
 					//if there is no such resource but there is a resource at the collection URI
-					if(!exists(requestedResourceURI) && isCollection(collectionURI))
+					if(!exists(request, requestedResourceURI) && isCollection(request, collectionURI))
 					{
 						resourceURI=collectionURI;	//use the collection URI				
 					}
@@ -657,15 +658,16 @@ Debug.trace("sending redirect", redirectURI);
 	}
 
   /**Determines the HTTP methods allowed for the requested resource.
+  @param request The HTTP request indicating the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
 	@exception IOException if there is an error accessing the resource.
   */
-	protected Set<String> getAllowedMethods(final URI resourceURI) throws IOException
+	protected Set<String> getAllowedMethods(final HttpServletRequest request, final URI resourceURI) throws IOException
 	{
 		final Set<String> allowedMethods=new HashSet<String>();	//create a new set of method strings
 		allowedMethods.add(OPTIONS_METHOD);	//we always allow options
-		if(exists(resourceURI))	//if the resource exists
+		if(exists(request, resourceURI))	//if the resource exists
 		{
 			allowedMethods.add(GET_METHOD);
 			allowedMethods.add(HEAD_METHOD);
@@ -674,7 +676,7 @@ Debug.trace("sending redirect", redirectURI);
 			{
 	//		TODO implement  			methodSet.add(PROPFIND);
 			}
-			if(!isCollection(resourceURI))	//if the resource is not a collection
+			if(!isCollection(request, resourceURI))	//if the resource is not a collection
 			{
 				allowedMethods.add(PUT_METHOD);	//allow saving a resource to this location  			
 			}
@@ -728,19 +730,21 @@ Debug.trace("sending redirect", redirectURI);
 	}
 
   /**Determines if the resource at a given URI exists.
+	@param request The HTTP request in response to which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
   */
-  protected abstract boolean exists(final URI resourceURI) throws IOException;
+  protected abstract boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException;
 
   /**Determines if the resource at a given URI is an existing collection.
+	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
-  protected abstract boolean isCollection(final URI resourceURI) throws IOException;
+  protected abstract boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException;
 
 	/**Determines the requested resource.
 	@param request The HTTP request in response to which the resource is being retrieved.
@@ -800,6 +804,7 @@ Debug.trace("sending redirect", redirectURI);
 	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 	/**Creates a resource and returns an output stream for storing content.
+	@param request The HTTP request in response to which a resource is being created.
 	If the resource already exists, it will be replaced.
 	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
@@ -809,7 +814,7 @@ Debug.trace("sending redirect", redirectURI);
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected abstract OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
+	protected abstract OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**Creates a resource.
 	For collections, {@link #createCollection(URI)} should be used instead.
@@ -824,6 +829,7 @@ Debug.trace("sending redirect", redirectURI);
 //TODO del when works	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**Creates a collection resource.
+	@param request The HTTP request in response to which a collection is being created.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
@@ -832,19 +838,21 @@ Debug.trace("sending redirect", redirectURI);
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
-	protected abstract R createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
+	protected abstract R createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**Deletes a resource.
+	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
 	@exception IOException Thrown if the resource could not be deleted.
 	*/
-	protected abstract void deleteResource(final R resource) throws IOException;
+	protected abstract void deleteResource(final HttpServletRequest request, final R resource) throws IOException;
 
 	/**Retrieves an list of child resources of the given resource.
+	@param request The HTTP request in response to which child resources are being retrieved..
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
 	@exception IOException Thrown if there is an error retrieving the list of child resources.
 	*/
-	protected abstract List<R> getChildResources(final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract List<R> getChildResources(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
 }

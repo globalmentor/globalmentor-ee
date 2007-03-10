@@ -92,7 +92,7 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("moving; checking to see if resource exists", resourceURI);			
-		if(exists(resourceURI))	//if this resource exists
+		if(exists(request, resourceURI))	//if this resource exists
 	    {
 Debug.trace("resource exists; getting resource");			
 			final R resource=getResource(request, resourceURI);	//get the resource information
@@ -102,8 +102,8 @@ Debug.trace("getting destination");
 				{
 Debug.trace("requested destination", requestedDestinationURI);
 					//get the canonical destination URI
-				final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
-				final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+				final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
+				final boolean destinationExists=exists(request, destinationURI);	//see whether the destination resource already exists
 Debug.trace("destination exists?", destinationExists);			
 				final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
@@ -142,7 +142,7 @@ Debug.trace("is overwrite?", overwrite);
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 Debug.trace("moving; checking to see if resource exists", resourceURI);			
-		if(exists(resourceURI))	//if this resource exists
+		if(exists(request, resourceURI))	//if this resource exists
 	    {
 Debug.trace("resource exists; getting resource");			
 			final R resource=getResource(request, resourceURI);	//get the resource information
@@ -152,8 +152,8 @@ Debug.trace("getting destination");
 				{
 Debug.trace("requested destination", requestedDestinationURI);
 					//get the canonical destination URI
-				final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
-				final boolean destinationExists=exists(destinationURI);	//see whether the destination resource already exists
+				final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
+				final boolean destinationExists=exists(request, destinationURI);	//see whether the destination resource already exists
 Debug.trace("destination exists?", destinationExists);			
 				final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
 Debug.trace("is overwrite?", overwrite);			
@@ -189,13 +189,13 @@ Debug.trace("is overwrite?", overwrite);
 	public void doMkCol(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-		final boolean exists=exists(resourceURI);	//see whether the resource already exists
+		final boolean exists=exists(request, resourceURI);	//see whether the resource already exists
 		final R resource;	//we'll get the existing resource, if there is one
-		if(!exists(resourceURI))	//if the resource doesn't exist
+		if(!exists)	//if the resource doesn't exist
 		{
 			try
 			{
-				resource=createCollection(resourceURI);	//create the resource
+				resource=createCollection(request, resourceURI);	//create the resource
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 			{
@@ -204,7 +204,7 @@ Debug.trace("is overwrite?", overwrite);
 		}
 		else	//if the resource doesn't exist
 		{
-			throw new HTTPMethodNotAllowedException(getAllowedMethods(resourceURI));	//report that we don't allow creating collections that already exist, indicating the methods we do allow for this resource				
+			throw new HTTPMethodNotAllowedException(getAllowedMethods(request, resourceURI));	//report that we don't allow creating collections that already exist, indicating the methods we do allow for this resource				
 		}
   }
 
@@ -220,7 +220,7 @@ Debug.trace("is overwrite?", overwrite);
 Debug.trace("doing propfind for URI", resourceURI);
 		if(true/*TODO fix---is this valid for WebDAV? LIST_DIRECTORIES*/)	//if we allow directory listing
 		{
-			if(exists(resourceURI))	//if the resource exists
+			if(exists(request, resourceURI))	//if the resource exists
 			{
 				final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
@@ -233,7 +233,7 @@ Debug.trace("depth requested:", depth);
 	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
-						propertyList=getPropfindProperties(documentElement);	//get the property list from the XML document
+						propertyList=getPropfindProperties(request, documentElement);	//get the property list from the XML document
 					}
 				}
 				catch(final DOMException domException)	//any XML problem here is the client's fault
@@ -254,7 +254,7 @@ Debug.trace("depth requested:", depth);
 						addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
 						final Element propstatElement=addPropstat(responseElement);	//add a property container
 						final Element propElement=addProp(propstatElement);	//add a property element
-						findProperties(resource, propElement, propertyList);	//find the properties for this resource
+						findProperties(request, resource, propElement, propertyList);	//find the properties for this resource
 						addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
 						//TODO add a response description here
 					}
@@ -275,7 +275,7 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 		}
 		else	//if directory listing is not allowed
 		{
-			throw new HTTPMethodNotAllowedException(getAllowedMethods(resourceURI));	//report that we don't allow this method, indicating the methods we do allow for this resource
+			throw new HTTPMethodNotAllowedException(getAllowedMethods(request, resourceURI));	//report that we don't allow this method, indicating the methods we do allow for this resource
 		}
   }
 
@@ -310,14 +310,15 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 	
   /**Determines the HTTP methods allowed for the requested resource.
   This version adds support for WebDAV methods.
+  @param request The HTTP request indicating the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
 	@exception IOException if there is an error accessing the resource.
   */
-	protected Set<String> getAllowedMethods(final URI resourceURI) throws IOException
+	protected Set<String> getAllowedMethods(final HttpServletRequest request, final URI resourceURI) throws IOException
 	{
-		final Set<String> allowedMethods=new HashSet<String>(super.getAllowedMethods(resourceURI));	//create a new set of method strings, initializing them with the default allowed methods
-		if(exists(resourceURI))	//if the resource exists
+		final Set<String> allowedMethods=new HashSet<String>(super.getAllowedMethods(request, resourceURI));	//create a new set of method strings, initializing them with the default allowed methods
+		if(exists(request, resourceURI))	//if the resource exists
 		{
 			allowedMethods.add(COPY_METHOD);
 //  	TODO implement  		methodSet.add(WebDAVMethod.LOCK);
@@ -370,7 +371,7 @@ Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument
 				{
 Debug.trace("checking authorization for requested destination", requestedDestinationURI);
 						//get the canonical destination URI
-					final URI destinationURI=getResourceURI(requestedDestinationURI, request.getMethod(), resourceURI);
+					final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 						//for COPY and MOVE, make sure the principal is authorized to do a PUT on the destination
 					isAuthorized=isAuthorized(request, destinationURI, PUT_METHOD, principal, realm);
 				}
@@ -380,6 +381,7 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	}
 
 	/**Copies all the requested resource properties to the given property XML element.
+	@param request The HTTP request in response to which properties are being retrieved.
 	@param resource The resource the properties of which should be found.
 	@param propertyElement The XML element which will receive a representation of the resource properties.
 	@param properties A list of all requested properties, or <code>ALL_PROPERTIES</code> or
@@ -390,7 +392,7 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@exception DOMException if there is an error updating the properties element.
 	@exception IOException if there is an error accessing the resource.
 	*/
-	protected abstract void findProperties(final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException, IOException;
+	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException, IOException;
 
 	/**Retrieves a list of resources and child resources to the given depth.
 	@param resourceURI The URI of the requested resource.

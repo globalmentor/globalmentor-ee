@@ -19,22 +19,24 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	//TODO fix checks for WEB-INF
 	
   /**Determines if the resource at a given URI exists.
+	@param request The HTTP request in response to which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
   */
-  protected boolean exists(final URI resourceURI) throws IOException
+  protected boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
   	return getResource(resourceURI).getFile().exists();	//return whether the file exists
   }
 
   /**Determines if the resource at a given URI is an existing collection.
+	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	@exception IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
-  protected boolean isCollection(final URI resourceURI) throws IOException
+  protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
   	return getResource(resourceURI).getFile().isDirectory();	//return whether the file is a directory
   }
@@ -102,6 +104,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	/**Creates a resource and returns an output stream for storing content.
 	If the resource already exists, it will be replaced.
 	For collections, {@link #createCollection(URI)} should be used instead.
+	@param request The HTTP request in response to which a resource is being created.
 	@param resourceURI The URI of the resource to create.
 	@return An output stream for storing content in the resource.
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
@@ -109,7 +112,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
-	protected OutputStream createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		final FileResource fileResource=getResource(resourceURI);	//get the resource associated with this URI
 //TODO del if not needed		createNewFile(fileResource.getFile());	//create a new file
@@ -122,6 +125,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	}
 
 	/**Creates a collection resource.
+	@param request The HTTP request in response to which a collection is being created.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
 	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
@@ -129,7 +133,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
-	protected FileResource createCollection(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
+	protected FileResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
 	{
 		final FileResource fileResource=getResource(resourceURI);	//get the resource associated with this URI
 		final File file=fileResource.getFile();	//get the associated file
@@ -142,20 +146,22 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	}
 
 	/**Deletes a resource.
+	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
 	@exception IOException Thrown if the resource could not be deleted.
 	*/
-	protected void deleteResource(final FileResource resource) throws IOException
+	protected void deleteResource(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		delete(resource.getFile(), true);	//recursively delete the resource
 	}
 
 	/**Retrieves an list of child resources of the given resource.
+	@param request The HTTP request in response to which a resource is being created.
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
 	@exception IOException Thrown if there is an error retrieving the list of child resources.
 	*/
-	protected List<FileResource> getChildResources(final FileResource resource) throws IOException
+	protected List<FileResource> getChildResources(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
 		return resource.getChildResources();	//return the child resources of this file resource
 	}
