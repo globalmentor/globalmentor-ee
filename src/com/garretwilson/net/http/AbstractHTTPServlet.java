@@ -212,9 +212,9 @@ Debug.trace("forcing file output stream", resourceURI);
 				((FileOutputStream)outputStream).getChannel().force(true);
 			}
 */
-Debug.trace("closing output stream for resource URI", resourceURI);
+//TODO del Debug.trace("closing output stream for resource URI", resourceURI);
 			outputStream.close();	//always close the output stream
-Debug.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
+//TODO del Debug.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
 		}
 
 /*TODO del when works
@@ -468,6 +468,23 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 		return resourceURI;	//return the resource URI
 	}
 
+	/**Determines if the request can be redirected to another URI.
+	This usually occurs when a request for "path/to/collection" should really be to "path/to/collection/", the former doesn't exist yet the latter is a collection,
+	and the server wishes to automatically redirect to the latter. Some clients (notably Microsoft WebDAV support) may not redirect correctly, or the server may not want
+	to redirect for some other reason. This method determines whether a redirect should occur.
+	This version ensures that the user agent sending the request can property follow redirects.
+  @param request The HTTP request indicating the requested resource.
+  @param requestedResourceURI The requested absolute URI of the resource.
+	@param redirectResourceURI The URI to which a redirect may occur.
+	@return <code>true</code> if a redirect can be sent to redirect the client from the requested URI to the new URI.
+	*/
+/*TODO del
+	protected boolean canRedirect(final HttpServletRequest request, final URI requestedResourceURI, final URI redirectResourceURI)
+	{
+		return isRedirectSupported(request);	//see if redirection is supported by the user agent sending the request
+	}
+*/
+
 	/**Determines the URI of a requested resource, using an optional resource
 	 	as an analogy.
 	This method determines if a non-collection resource (i.e. one not ending in '/')
@@ -515,8 +532,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 				{
 //TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
 //TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
-					//if there is no such resource but there is a resource at the collection URI
-					if(!exists(request, requestedResourceURI) && isCollection(request, collectionURI))
+					if(canSubstitute(request, requestedResourceURI, collectionURI))	//if we can substitute the collection URI for the requested URI
 					{
 						resourceURI=collectionURI;	//use the collection URI				
 					}
@@ -529,6 +545,22 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 		}
 //TODO del Debug.trace("using URI", resourceURI);
 		return resourceURI;	//return the resource URI we decided on
+	}
+
+	/**Determines if another URI can be substituted for the requested URI.
+	This usually occurs when a request for "path/to/collection" should really be to "path/to/collection/", the former doesn't exist yet the latter is a collection,
+	and the server wishes to automatically redirect to the latter.
+	Note that it may later be determined that redirect should not occur for whatever reason, and the resource at the substitute URI maybe used anyway in the background.
+	This version allows substitution if the requested URI does not exist, but the substitute URI is a collection.
+  @param request The HTTP request indicating the requested resource.
+  @param requestedResourceURI The requested absolute URI of the resource.
+	@param substituteResourceURI The URI to the URI which may be substited for the first URI.
+	@return <code>true</code> if the provided URI may be substitued for the requested URI.
+	@exception IOException if there is an error checking whether URI substitution can occur.
+	*/
+	protected boolean canSubstitute(final HttpServletRequest request, final URI requestedResourceURI, final URI substituteResourceURI) throws IOException
+	{
+		return !exists(request, requestedResourceURI) && isCollection(request, substituteResourceURI);	//if the resource doesn't exist, but the substitute resource is a collection, we can substitute
 	}
 
 	/**Determines the URI of a requested resource from its requested URI.
@@ -759,8 +791,7 @@ Debug.trace("sending redirect", redirectURI);
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.
 	@param resource The resource for which the content type should be determined.
-	@return The content type of the given resource, or <code>null</code> if no
-		content type could be determined.
+	@return The content type of the given resource, or <code>null</code> if no content type could be determined.
 	@see ServletContext#getMimeType(java.lang.String)
 	*/
 	protected ContentType getContentType(final R resource)	//TODO see if this is correct to go here, and if we need to override it somewhere to supplement the server's list of content types
@@ -772,8 +803,7 @@ Debug.trace("sending redirect", redirectURI);
 	/**Determines the content length of the given resource.
 	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
-	@return The content length of the given resource, or <code>-1</code> if no
-		content type could be determined.
+	@return The content length of the given resource, or <code>-1</code> if no content length could be determined.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
 	protected abstract long getContentLength(final HttpServletRequest request, final R resource) throws IOException;

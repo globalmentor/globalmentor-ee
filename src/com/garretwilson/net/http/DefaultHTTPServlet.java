@@ -11,6 +11,8 @@ import static com.garretwilson.lang.ObjectUtilities.*;
 
 import com.garretwilson.model.*;
 import com.garretwilson.net.URIUtilities;
+import com.garretwilson.rdf.RDFResource;
+import static com.garretwilson.rdf.xpackage.FileOntologyUtilities.*;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -80,8 +82,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**Determines the content length of the given resource.
 	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
-	@return The content length of the given resource, or <code>-1</code> if no
-		content type could be determined.
+	@return The content length of the given resource, or <code>-1</code> if no content length could be determined.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
 	protected long getContentLength(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
@@ -184,14 +185,14 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
-		@return The content length of the resource.
+		@return The content length of the resource, or <code>-1</code> if the content length could not be determined.
 		@exception IOException if there is an error getting the length of the resource.
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException;
 
 		/**Returns the last modification time of the resource.
 		@param request The HTTP request in response to which the last modified time is being retrieved.
-		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
+		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT, or <code>-1</code> if the last modified date could not be determined.
 		@exception IOException if there is an error getting the last modified time.
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException;
@@ -202,6 +203,58 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		@exception IOException if there is an error getting an input stream to the resource.
 		*/
 		public InputStream getInputStream(final HttpServletRequest request) throws IOException;
+	}
+
+	/**A resource that has retrieves its properties, if possible, from a given RDF description.
+	Recognized properties are:
+	<ul>
+		<li><code>mime:contentType</code> (TODO)</li>
+		<li><code>file:size</code></li>
+		<li><code>file:modifiedTime</code></li>
+	</ul>
+	@author Garret Wilson
+	*/
+	protected abstract static class AbstractDescriptionResource extends DefaultResource implements HTTPServletResource
+	{
+
+		/**The description of the resource.*/
+		private final RDFResource resourceDescription;
+
+			/**@return The description of the resource.*/
+			public RDFResource getResourceDescription() {return resourceDescription;}
+
+		/**Returns the content length of the resource.
+		@param request The HTTP request in response to which the content length is being retrieved.
+		@return The content length of the resource, or <code>-1</code> if the content length could not be determined.
+		@exception IOException if there is an error getting the length of the resource.
+		*/
+		public long getContentLength(final HttpServletRequest request) throws IOException
+		{
+			return getSize(getResourceDescription());	//return the content length from the description, if possible
+		}
+
+		/**Returns the last modification time of the resource.
+		@param request The HTTP request in response to which the last modified time is being retrieved.
+		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT, or <code>-1</code> if the last modified date could not be determined.
+		@exception IOException if there is an error getting the last modified time.
+		*/
+		public long getLastModified(final HttpServletRequest request) throws IOException
+		{
+			final Date modifiedTime=getModifiedTime(getResourceDescription());	//get the last modified time from the description, if that property exists
+			return modifiedTime!=null ? modifiedTime.getTime() : -1;	//return the milliseconds of the time, if the time is available
+		}
+
+		/**Constructs a resource with a reference URI and resource description.
+		@param referenceURI The reference URI for the new resource.
+		@param resourceDescription The description of the resource.
+		@exception NullPointerException if the reference URI and/or resource description is <code>null</code>.
+		*/
+		public AbstractDescriptionResource(final URI referenceURI, final RDFResource resourceDescription)
+		{
+			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
+			this.resourceDescription=checkInstance(resourceDescription, "Resource description cannot be null.");	//save the description
+		}
+	
 	}
 
 	/**A resource that knows how to retrieve information from a URL.
