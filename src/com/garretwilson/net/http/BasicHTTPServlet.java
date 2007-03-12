@@ -22,7 +22,6 @@ import static com.garretwilson.io.FileUtilities.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
-import static com.garretwilson.servlet.ServletConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 
 /**An HTTP servlet with extended functionality.
@@ -32,6 +31,7 @@ This servlet supports the following initialization parameters:
 	<dt>{@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
 	<dt>{@value #DEBUG_INIT_PARAMETER}</dt> <dd>Whether debugging is turned on.</dd> 
 	<dt>{@value #DEBUG_REPORT_LEVEL_INIT_PARAMETER}</dt> <dd>The level of debug reporting for the JVM of type {@link Debug.ReportLevel}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
+	<dt>{@value #LOG_HTTP_INIT_PARAMETER}</dt> <dd>Whether HTTP communication is logged.</dd> 
  </dl>
 @author Garret Wilson
 */
@@ -43,6 +43,9 @@ public class BasicHTTPServlet extends HttpServlet
 
 	/**The init parameter, "debugReportLevel", used to specify the level of debug reporting for the JVM of type {@link Debug.ReportLevel}.*/
 	public final static String DEBUG_REPORT_LEVEL_INIT_PARAMETER="debugReportLevel";
+
+	/**The init parameter, "logHTTP", used to specify whether HTTP communication should be logged; should be "true" or "false".*/
+	public final static String LOG_HTTP_INIT_PARAMETER="logHTTP";
 
 	/**The cached data directory, or <code>null</code> if it has not yet been initialized.*/
 //TODO del if not needed	private File dataDirectory=null;
@@ -119,6 +122,7 @@ public class BasicHTTPServlet extends HttpServlet
 	/**Initializes the servlet.
 	This version ensures the log directory exists.
 	This version configures debugging.
+	This version configures HTTP logging.
 	@param servletConfig The servlet configuration.
 	@exception ServletException if there is a problem initializing.
 	*/
@@ -166,8 +170,14 @@ public class BasicHTTPServlet extends HttpServlet
 		{
 			throw new ServletException(ioException);
 		}
-		
-Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
+			//configure HTTP logging
+		final String logHTTPString=servletConfig.getInitParameter(LOG_HTTP_INIT_PARAMETER);	//get the HTTP log setting from the init parameters
+		if(logHTTPString!=null)	//if there is an HTTP log setting specified
+		{
+			final Boolean logHTTPBoolean=Boolean.valueOf(logHTTPString);	//convert the string to a boolean object
+			HTTPClient.getInstance().setLogged(logHTTPBoolean.booleanValue());	//turn HTTP logging on or off
+		}		
+//TODO del Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
 	}
 
 	/**A thread-safe map of nonces, keyed to nonce ID strings.*/
