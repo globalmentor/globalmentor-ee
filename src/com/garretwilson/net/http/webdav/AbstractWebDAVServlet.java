@@ -7,17 +7,13 @@ import java.util.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.xml.parsers.ParserConfigurationException;
 
 import com.garretwilson.model.Resource;
 import com.garretwilson.net.http.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
-import static com.garretwilson.net.http.webdav.WebDAVUtilities.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import com.garretwilson.text.xml.QualifiedName;
 import com.garretwilson.text.xml.XMLUtilities;
-
 import com.garretwilson.util.*;
 
 import org.w3c.dom.*;
@@ -224,16 +220,17 @@ Debug.trace("doing propfind for URI", resourceURI);
 			{
 				final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
-				IDMappedList<URI, QualifiedName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+				IDMappedList<URI, WebDAVPropertyName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+				final WebDAVXMLGenerator webdavXMLGenerator=new WebDAVXMLGenerator();	//create a WebDAV XML generator
 				try
 				{
-					final Document document=getXML(request, createWebDAVDocumentBuilder());	//get the XML from the request body
+					final Document document=getXML(request, webdavXMLGenerator.getDocumentBuilder());	//get the XML from the request body
 					if(document!=null)	//if there was an XML document in the request
 					{
 	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
-						propertyList=getPropfindProperties(request, documentElement);	//get the property list from the XML document
+						propertyList=WebDAVXMLProcessor.getPropfindProperties(request, documentElement);	//get the property list from the XML document
 					}
 				}
 				catch(final DOMException domException)	//any XML problem here is the client's fault
@@ -247,15 +244,15 @@ Debug.trace("depth requested:", depth);
 				try
 				{
 					final List<R> resourceList=getResources(resourceURI, depth==Depth.INFINITY ? -1 : depth.ordinal());	//get a list of resources
-					final Document multistatusDocument=createMultistatusDocument(createWebDAVDocumentBuilder().getDOMImplementation());	//create a multistatus document
+					final Document multistatusDocument=webdavXMLGenerator.createMultistatusDocument();	//create a multistatus document
 					for(final R resource:resourceList)	//for each resource
 					{
-						final Element responseElement=addResponse(multistatusDocument.getDocumentElement());	//add a response
-						addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
-						final Element propstatElement=addPropstat(responseElement);	//add a property container
-						final Element propElement=addProp(propstatElement);	//add a property element
-						findProperties(request, resource, propElement, propertyList);	//find the properties for this resource
-						addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
+						final Element responseElement=webdavXMLGenerator.addResponse(multistatusDocument.getDocumentElement());	//add a response
+						webdavXMLGenerator.addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
+						final Element propstatElement=webdavXMLGenerator.addPropstat(responseElement);	//add a property container
+						final Element propElement=webdavXMLGenerator.addProp(propstatElement);	//add a property element
+						findProperties(request, resource, propElement, propertyList, webdavXMLGenerator);	//find the properties for this resource
+						webdavXMLGenerator.addStatus(propstatElement, "HTTP/1.1 200 OK");	//TODO use a real status here; use constants
 						//TODO add a response description here
 					}
 					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
@@ -384,15 +381,14 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@param request The HTTP request in response to which properties are being retrieved.
 	@param resource The resource the properties of which should be found.
 	@param propertyElement The XML element which will receive a representation of the resource properties.
-	@param properties A list of all requested properties, or <code>ALL_PROPERTIES</code> or
-		<code>PROPERTY_NAMES</code> indicating all properties or all property names,
-		respectively.
-	@see #ALL_PROPERTIES
-	@see #PROPERTY_NAMES
+	@param properties A list of all requested properties, or {@link WebDAVConstants#ALL_PROPERTIES} or {@link WebDAVConstants#PROPERTY_NAMES} indicating all properties or all property names, respectively.
+	@param webdavXMLGenerator The generator for constructing XML to represent WebDAV information.
+	@see WebDAVConstants#ALL_PROPERTIES
+	@see WebDAVConstants#PROPERTY_NAMES
 	@exception DOMException if there is an error updating the properties element.
 	@exception IOException if there is an error accessing the resource.
 	*/
-	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final IDMappedList<URI, QualifiedName> properties) throws DOMException, IOException;
+	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final IDMappedList<URI, WebDAVPropertyName> properties, final WebDAVXMLGenerator webdavXMLGenerator) throws DOMException, IOException;
 
 	/**Retrieves a list of resources and child resources to the given depth.
 	@param resourceURI The URI of the requested resource.
