@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import static com.garretwilson.lang.ObjectUtilities.*;
 
 import com.garretwilson.model.*;
+import com.garretwilson.net.DefaultResource;
+import com.garretwilson.net.Resource;
 import com.garretwilson.net.URIUtilities;
 import com.garretwilson.rdf.RDFResource;
 import static com.garretwilson.rdf.xpackage.FileOntologyUtilities.*;

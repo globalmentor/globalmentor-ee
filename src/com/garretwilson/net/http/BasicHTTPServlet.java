@@ -389,12 +389,20 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final HTTPMovedPermanentlyException movedPermanentlyException)	//if a permanent redirect was requested (301)
 		{
-			setLocation(response, movedPermanentlyException.getLocation());	//set the redirect location
+			final URI locationURI=movedPermanentlyException.getLocation();	//get the redirect location
+			if(locationURI!=null)	//if a location was given
+			{
+				setLocation(response, locationURI);	//set the redirect location
+			}
 			response.sendError(movedPermanentlyException.getStatusCode());	//send back the redirect status code as an error
 		}
 		catch(final HTTPMovedTemporarilyException movedTemporarilyException)	//if a temporary redirect was requested (302)
 		{
-			setLocation(response, movedTemporarilyException.getLocation());	//set the redirect location
+			final URI locationURI=movedTemporarilyException.getLocation();	//get the redirect location
+			if(locationURI!=null)	//if a location was given
+			{
+				setLocation(response, locationURI);	//set the redirect location
+			}
 			response.sendError(movedTemporarilyException.getStatusCode());	//send back the redirect status code as an error
 		}
 		catch(final HTTPRedirectException redirectException)	//if a general redirect was requested (3xx)

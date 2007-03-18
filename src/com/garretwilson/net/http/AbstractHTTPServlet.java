@@ -23,7 +23,7 @@ import com.garretwilson.lang.CharacterUtilities;
 import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
-import com.garretwilson.model.Resource;
+import com.garretwilson.net.Resource;
 
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
