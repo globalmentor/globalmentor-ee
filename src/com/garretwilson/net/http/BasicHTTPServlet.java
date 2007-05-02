@@ -422,7 +422,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final HTTPNotFoundException httpNotFoundException)	//404 Not Found
 		{
-			response.sendError(httpNotFoundException.getStatusCode(), httpNotFoundException.getMessage());	//send back the status code as an error, but don't both logging the error
+			response.sendError(httpNotFoundException.getStatusCode(), httpNotFoundException.getMessage());	//send back the status code as an error, but don't bother logging the error
 		}
 		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
 		{
