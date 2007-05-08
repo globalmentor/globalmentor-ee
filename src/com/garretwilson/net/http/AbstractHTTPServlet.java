@@ -530,8 +530,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 			{
 				try
 				{
-//TODO del	Debug.trace("requested resource exists:", exists(requestedResourceURI));
-//TODO del	Debug.trace("other resource is collection:", isCollection(collectionURI));
+//Debug.trace("can we subsitutue", collectionURI, "for", requestedResourceURI);
 					if(canSubstitute(request, requestedResourceURI, collectionURI))	//if we can substitute the collection URI for the requested URI
 					{
 						resourceURI=collectionURI;	//use the collection URI				
@@ -560,6 +559,8 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	*/
 	protected boolean canSubstitute(final HttpServletRequest request, final URI requestedResourceURI, final URI substituteResourceURI) throws IOException
 	{
+//Debug.trace("requested resource exists:", exists(request, requestedResourceURI));
+//Debug.trace("substitute resource is collection:", isCollection(request, substituteResourceURI));
 		return !exists(request, requestedResourceURI) && isCollection(request, substituteResourceURI);	//if the resource doesn't exist, but the substitute resource is a collection, we can substitute
 	}
 
