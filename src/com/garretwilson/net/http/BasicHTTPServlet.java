@@ -241,7 +241,7 @@ public class BasicHTTPServlet extends HttpServlet
 		/**@return The context path of the servlet: either a string starting with '/' or the empty string.
 		@exception IllegalStateException if this servlet has not yet received any requests.
 		*/
-		protected String getContextPath()
+		protected String getContextPath()	//TODO determine if this is encoded or not
 		{
 			if(contextPath==null)	//if the context path has not been set
 			{
