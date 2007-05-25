@@ -441,6 +441,11 @@ Debug.trace("path info:", request.getPathInfo());
 					//TODO find out why this isn't working with Tomcat 5.5.9
 			response.sendError(SC_INTERNAL_SERVER_ERROR, missingResourceException.getMessage());	//send back a 500 Internal Server Error			
 		}
+		catch(final RuntimeException runtimeException)	//if there are any other runtime errors
+		{
+			Debug.error(runtimeException);	//log the error
+			throw runtimeException;	//let the container take care of the error
+		}
   }
 
 	/**Services an HTTP request based upon its method.
