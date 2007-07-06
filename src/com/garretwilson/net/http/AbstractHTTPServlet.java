@@ -24,6 +24,7 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
 import com.garretwilson.net.Resource;
+import com.garretwilson.net.mime.ContentDispositionType;
 
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIUtilities.*;
@@ -322,6 +323,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 
 	/**Services the GET, HEAD, and POST methods.
   The response will be compressed if supported by the user agent.
+  This method delegates to {@link #serveResource(HttpServletRequest, HttpServletResponse, Resource, boolean)} after verifying that the resource exists.
   @param request The HTTP request.
   @param response The HTTP response.
   @param serveContent <code>true</code> if the contents of the resource should be returned.
@@ -337,105 +339,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 //TODO del Debug.trace("resource exists", resourceURI);
     	//TODO check if headers
     	final R resource=getResource(request, resourceURI);	//get a resource description
-//G***del    	final ContentType contentType;	//determine the content type of the resource
-    	if(isCollection(request, resource.getReferenceURI()))	//if the resource is a collection
-    	{
-//TODO del Debug.trace("is collection", resourceURI);
-    		if(LIST_DIRECTORIES)	//if we should list directories
-    		{
-    			final Writer writer=response.getWriter();
-    			response.setContentType("text/plain");
-    			final List<R> resourceList=getChildResources(request, resource);
-    			for(final R childResource:resourceList)
-    			{
-    				writer.append(childResource.toString()).append('\n');
-    			}
-    			
-//TODO fix          contentType = "text/html;charset=UTF-8";
-    		}
-    		else	//if we're not allowed to list directories
-    		{
-    			throw new HTTPNotFoundException(resourceURI.toString());	//show that we didn't find a resource to return				
-    		}    		
-    	}
-    	else	//if this resource is not a collection
-	    {
-//TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
-      	final Date lastModifiedDate=getLastModifiedDate(request, resource);	//get the last modified date of the resource
-      	if(lastModifiedDate!=null)	//if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
-      	{
-//TODO del Debug.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
-					final Date roundedLastModifiedDate=new Date((lastModifiedDate.getTime()/1000)*1000);	//round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
-					try
-					{
-		      	final Date ifModifiedSinceDate=getIfModifiedSinceDate(request);	//get the If-Modified-Since date
-/*TODO del 
-	if(ifModifiedSinceDate!=null)
-	{
-		Debug.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
-		Debug.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
-	}
-*/
-		      	if(ifModifiedSinceDate!=null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate)<=0)	//if there is an If-Modified-Since date and the resource was not modified since that date
-		      	{
-//TODO del Debug.trace("Not modified---use the value in the cache!");
-		      		throw new HTTPNotModifiedException();	//stop serving content and indicate that the resource has not been modified
-		      	}
-		      	//TODO add support for If-Unmodified-Since
-					}
-					catch(final SyntaxException syntaxException)	//TODO fix better
-					{
-						throw new IllegalArgumentException(syntaxException);
-					}
-      	}
-    		//    	TODO del Debug.trace("ready to send back a file");
-    		final ContentType contentType=getContentType(resource);	//get the content type of the resource
-      	if(contentType!=null)	//if we know the content type
-	      {
-//      	TODO del Debug.trace("setting content type to:", contentType);
-//TODO del Debug.trace("setting content type to:", contentType);	//TODO del
-      		response.setContentType(contentType.toString());	//tell the response which content type we're serving
-      	}
-      	if(HEAD_METHOD.equals(request.getMethod()))	//if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
-      	{
-					final long contentLength=getContentLength(request, resource);	//get the content length of the resource
-	      	if(contentLength>=0)	//if we found a content length for the resource
-		      {
-	//      	TODO del Debug.trace("setting content length to:", contentLength);
-	      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
-	      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
-	      	}
-      	}
-      	if(lastModifiedDate!=null)	//if we know when the resource was last modified
-      	{
-					setLastModified(response, lastModifiedDate);	//set the last modified date header
-      	}
-      	if(serveContent)	//if we should serve content
-      	{
-      		//TODO fix ranges
-      		final OutputStream outputStream;	//we'll determine the output stream
-      		if(contentType!=null && isText(contentType))	//if this is a text content type TODO later add other content types, if they can be compressed
-      		{
-//TODO del      			Debug.trace("compressing content type:", contentType);
-      			outputStream=getCompressedOutputStream(request, response);	//get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
-      		}
-      		else	//if we don't know the conten type, or it isn't text
-      		{
-//TODO del      			Debug.trace("not compressing content type:", contentType);
-      			outputStream=response.getOutputStream();	//get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
-      		}
-      		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
-      		try
-      		{
-      			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
-      		}
-      		finally
-      		{
-     				inputStream.close();	//always close the input stream to the resource
-      		}
-      		outputStream.close();	//if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
-      	}
-    	}
+    	serveResource(request, response, resource, serveContent);	//serve the resource
     }
     else	//if the resource does not exist
     {
@@ -443,6 +347,117 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
     }
 	}
 
+	/**Serves a resource that has been verified to exist
+  The response will be compressed if supported by the user agent.
+  @param request The HTTP request.
+  @param response The HTTP response.
+	@param resource The resource being served.
+  @param serveContent <code>true</code> if the contents of the resource should be returned.
+  @exception ServletException if there is a problem servicing the request.
+  @exception IOException if there is an error reading or writing data.
+  */
+	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final R resource, final boolean serveContent) throws ServletException, IOException
+	{
+  	if(isCollection(request, resource.getReferenceURI()))	//if the resource is a collection
+  	{
+//TODO del Debug.trace("is collection", resourceURI);
+  		if(LIST_DIRECTORIES)	//if we should list directories
+  		{
+  			final Writer writer=response.getWriter();
+  			response.setContentType("text/plain");
+  			final List<R> resourceList=getChildResources(request, resource);
+  			for(final R childResource:resourceList)
+  			{
+  				writer.append(childResource.toString()).append('\n');
+  			}
+  			
+//TODO fix          contentType = "text/html;charset=UTF-8";
+  		}
+  		else	//if we're not allowed to list directories
+  		{
+  			throw new HTTPNotFoundException(resource.getReferenceURI().toString());	//show that we didn't find a resource to return				
+  		}
+  	}
+  	else	//if this resource is not a collection
+    {
+//TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
+    	final Date lastModifiedDate=getLastModifiedDate(request, resource);	//get the last modified date of the resource
+    	if(lastModifiedDate!=null)	//if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
+    	{
+//TODO del Debug.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
+				final Date roundedLastModifiedDate=new Date((lastModifiedDate.getTime()/1000)*1000);	//round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
+				try
+				{
+	      	final Date ifModifiedSinceDate=getIfModifiedSinceDate(request);	//get the If-Modified-Since date
+/*TODO del 
+	if(ifModifiedSinceDate!=null)
+	{
+		Debug.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
+		Debug.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
+	}
+*/
+	      	if(ifModifiedSinceDate!=null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate)<=0)	//if there is an If-Modified-Since date and the resource was not modified since that date
+	      	{
+//TODO del Debug.trace("Not modified---use the value in the cache!");
+	      		throw new HTTPNotModifiedException();	//stop serving content and indicate that the resource has not been modified
+	      	}
+	      	//TODO add support for If-Unmodified-Since
+				}
+				catch(final SyntaxException syntaxException)	//TODO fix better
+				{
+					throw new IllegalArgumentException(syntaxException);
+				}
+    	}
+  		//    	TODO del Debug.trace("ready to send back a file");
+  		final ContentType contentType=getContentType(resource);	//get the content type of the resource
+    	if(contentType!=null)	//if we know the content type
+      {
+//      	TODO del Debug.trace("setting content type to:", contentType);
+//TODO del Debug.trace("setting content type to:", contentType);	//TODO del
+    		response.setContentType(contentType.toString());	//tell the response which content type we're serving
+    	}
+    	if(HEAD_METHOD.equals(request.getMethod()))	//if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
+    	{
+				final long contentLength=getContentLength(request, resource);	//get the content length of the resource
+      	if(contentLength>=0)	//if we found a content length for the resource
+	      {
+//      	TODO del Debug.trace("setting content length to:", contentLength);
+      		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
+      		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
+      	}
+    	}
+    	if(lastModifiedDate!=null)	//if we know when the resource was last modified
+    	{
+				setLastModified(response, lastModifiedDate);	//set the last modified date header
+    	}
+    	if(serveContent)	//if we should serve content
+    	{
+    		//TODO fix ranges
+    		final OutputStream outputStream;	//we'll determine the output stream
+    		if(contentType!=null && isText(contentType))	//if this is a text content type TODO later add other content types, if they can be compressed
+    		{
+//TODO del      			Debug.trace("compressing content type:", contentType);
+    			outputStream=getCompressedOutputStream(request, response);	//get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
+    		}
+    		else	//if we don't know the conten type, or it isn't text
+    		{
+//TODO del      			Debug.trace("not compressing content type:", contentType);
+    			outputStream=response.getOutputStream();	//get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
+    		}
+    		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
+    		try
+    		{
+    			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
+    		}
+    		finally
+    		{
+   				inputStream.close();	//always close the input stream to the resource
+    		}
+    		outputStream.close();	//if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
+    	}
+  	}
+	}	
+	
 	/**Determines the URI of the requested resource.
 	<p>If it is determined that the requested resource is located in another location,
 	this method may throw an <code>HTTPRedirectException</code> with the new location.
@@ -821,8 +836,7 @@ Debug.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource,
-		such as a missing file or a resource that has no contents.
+	@exception IOException Thrown if there is an error accessing the resource, such as a missing file or a resource that has no contents.
 	*/
 	protected abstract InputStream getInputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
 
