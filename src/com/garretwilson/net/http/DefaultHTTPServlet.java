@@ -56,7 +56,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
   protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
-		return URIUtilities.isContainerPath(resourceContextAbsolutePath) && exists(request, resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
+		return URIUtilities.isCollectionPath(resourceContextAbsolutePath) && exists(request, resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
   }
 
 	/**Determines the requested resource.
