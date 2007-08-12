@@ -14,7 +14,7 @@ import com.garretwilson.net.DefaultResource;
 import com.garretwilson.net.Resource;
 import com.garretwilson.net.URIUtilities;
 import com.garretwilson.rdf.RDFResource;
-import static com.garretwilson.rdf.xpackage.FileOntologyUtilities.*;
+import com.globalmentor.marmot.Marmot;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -232,7 +232,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException
 		{
-			return getSize(getResourceDescription());	//return the content length from the description, if possible
+			return Marmot.getSize(getResourceDescription());	//return the content length from the description, if possible
 		}
 
 		/**Returns the last modification time of the resource.
@@ -242,7 +242,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException
 		{
-			final Date modifiedTime=getModifiedTime(getResourceDescription());	//get the last modified time from the description, if that property exists
+			final Date modifiedTime=Marmot.getModifiedTime(getResourceDescription());	//get the last modified time from the description, if that property exists
 			return modifiedTime!=null ? modifiedTime.getTime() : -1;	//return the milliseconds of the time, if the time is available
 		}
 
