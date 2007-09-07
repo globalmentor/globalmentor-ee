@@ -248,7 +248,7 @@ Debug.trace("depth requested:", depth);
 					for(final R resource:resourceList)	//for each resource
 					{
 						final Element responseElement=webdavXMLGenerator.addResponse(multistatusDocument.getDocumentElement());	//add a response
-						webdavXMLGenerator.addHref(responseElement, resource.getReferenceURI());	//show this resource's URI
+						webdavXMLGenerator.addHref(responseElement, resource.getURI());	//show this resource's URI
 						final Element propstatElement=webdavXMLGenerator.addPropstat(responseElement);	//add a property container
 						final Element propElement=webdavXMLGenerator.addProp(propstatElement);	//add a property element
 						findProperties(request, resource, propElement, propertyList, webdavXMLGenerator);	//find the properties for this resource

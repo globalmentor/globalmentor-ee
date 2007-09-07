@@ -358,7 +358,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   */
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final R resource, final boolean serveContent) throws ServletException, IOException
 	{
-  	if(isCollection(request, resource.getReferenceURI()))	//if the resource is a collection
+  	if(isCollection(request, resource.getURI()))	//if the resource is a collection
   	{
 //TODO del Debug.trace("is collection", resourceURI);
   		if(LIST_DIRECTORIES)	//if we should list directories
@@ -375,7 +375,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   		}
   		else	//if we're not allowed to list directories
   		{
-  			throw new HTTPNotFoundException(resource.getReferenceURI().toString());	//show that we didn't find a resource to return				
+  			throw new HTTPNotFoundException(resource.getURI().toString());	//show that we didn't find a resource to return				
   		}
   	}
   	else	//if this resource is not a collection
@@ -812,7 +812,7 @@ Debug.trace("sending redirect", redirectURI);
 	*/
 	protected ContentType getContentType(final R resource)	//TODO see if this is correct to go here, and if we need to override it somewhere to supplement the server's list of content types
 	{
-		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getReferenceURI()));	//ask the servlet context for the MIME type
+		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getURI()));	//ask the servlet context for the MIME type
 		return contentTypeString!=null ? createContentType(contentTypeString) : null;	//create a content type object if a content type string was returned
 	}
 

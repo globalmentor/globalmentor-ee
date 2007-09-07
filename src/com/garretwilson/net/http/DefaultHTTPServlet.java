@@ -440,7 +440,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public AbstractByteCacheDecoratorResource(final HTTPServletResource resource)
 		{
-			super(checkInstance(resource, "Resource cannot be null.").getReferenceURI());	//construct the parent class
+			super(checkInstance(resource, "Resource cannot be null.").getURI());	//construct the parent class
 			this.resource=resource;	//save the decorated resource
 		}
 	}
