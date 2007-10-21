@@ -9,12 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.garretwilson.lang.ObjectUtilities.*;
 
-import com.garretwilson.model.*;
 import com.garretwilson.net.DefaultResource;
 import com.garretwilson.net.Resource;
 import com.garretwilson.net.URIUtilities;
-import com.garretwilson.rdf.RDFResource;
-import com.globalmentor.marmot.Marmot;
+import com.garretwilson.urf.*;
+import com.garretwilson.urf.content.Content;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -210,9 +209,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**A resource that has retrieves its properties, if possible, from a given RDF description.
 	Recognized properties are:
 	<ul>
-		<li><code>mime:contentType</code> (TODO)</li>
-		<li><code>file:size</code></li>
-		<li><code>file:modifiedTime</code></li>
+		<li>{@value Content#TYPE_PROPERTY_URI} TODO implement</li>
+		<li>{@value Content#LENGTH_PROPERTY_URI}</li>
+		<li>{@value Content#MODIFIED_PROPERTY_URI}</li>
 	</ul>
 	@author Garret Wilson
 	*/
@@ -220,10 +219,10 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	{
 
 		/**The description of the resource.*/
-		private final RDFResource resourceDescription;
+		private final URFResource resourceDescription;
 
 			/**@return The description of the resource.*/
-			public RDFResource getResourceDescription() {return resourceDescription;}
+			public URFResource getResourceDescription() {return resourceDescription;}
 
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
@@ -232,7 +231,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException
 		{
-			return Marmot.getSize(getResourceDescription());	//return the content length from the description, if possible
+			return Content.getContentLength(getResourceDescription());	//return the content length from the description, if possible
 		}
 
 		/**Returns the last modification time of the resource.
@@ -242,8 +241,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException
 		{
-			final Date modifiedTime=Marmot.getModifiedTime(getResourceDescription());	//get the last modified time from the description, if that property exists
-			return modifiedTime!=null ? modifiedTime.getTime() : -1;	//return the milliseconds of the time, if the time is available
+			final URFDateTime modifiedDateTime=Content.getModified(getResourceDescription());	//get the last modified date time from the description, if that property exists
+			return modifiedDateTime!=null ? modifiedDateTime.getTime() : -1;	//return the milliseconds of the time, if the time is available
 		}
 
 		/**Constructs a resource with a reference URI and resource description.
@@ -251,7 +250,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		@param resourceDescription The description of the resource.
 		@exception NullPointerException if the reference URI and/or resource description is <code>null</code>.
 		*/
-		public AbstractDescriptionResource(final URI referenceURI, final RDFResource resourceDescription)
+		public AbstractDescriptionResource(final URI referenceURI, final URFResource resourceDescription)
 		{
 			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null."));	//construct the parent class
 			this.resourceDescription=checkInstance(resourceDescription, "Resource description cannot be null.");	//save the description
