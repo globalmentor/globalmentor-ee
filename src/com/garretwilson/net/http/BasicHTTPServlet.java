@@ -18,7 +18,7 @@ import com.garretwilson.security.*;
 import com.garretwilson.servlet.ServletUtilities;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.W3CDateFormat;
-import static com.garretwilson.io.FileUtilities.*;
+import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIUtilities.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;

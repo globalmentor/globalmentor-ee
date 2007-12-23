@@ -7,7 +7,7 @@ import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.FileResource;
-import static com.garretwilson.io.FileUtilities.*;
+import static com.garretwilson.io.Files.*;
 import com.garretwilson.net.http.HTTPConflictException;
 
 /**A WebDAV server that accesses resources from an underlying file system. 

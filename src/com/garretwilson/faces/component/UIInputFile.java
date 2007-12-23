@@ -16,7 +16,7 @@ import com.garretwilson.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
-import static com.garretwilson.io.FileUtilities.*;
+import static com.garretwilson.io.Files.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
 import static com.garretwilson.text.TextUtilities.*;
 
