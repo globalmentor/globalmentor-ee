@@ -27,7 +27,7 @@ import com.garretwilson.net.Resource;
 import com.garretwilson.net.mime.ContentDispositionType;
 
 import static com.garretwilson.net.URIConstants.*;
-import static com.garretwilson.net.URIUtilities.*;
+import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;

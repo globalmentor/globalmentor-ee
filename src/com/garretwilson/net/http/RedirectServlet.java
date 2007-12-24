@@ -6,7 +6,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import static com.garretwilson.net.URIConstants.*;
-import static com.garretwilson.net.URIUtilities.*;
+import static com.garretwilson.net.URIs.*;
 
 /**An HTTP servlet that unconditionally redirects to a configured URI.
 <p>The redirect URI, specified in the "redirectURI" initialization parameter,

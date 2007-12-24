@@ -11,7 +11,7 @@ import static com.garretwilson.lang.ObjectUtilities.*;
 
 import com.garretwilson.net.DefaultResource;
 import com.garretwilson.net.Resource;
-import com.garretwilson.net.URIUtilities;
+import com.garretwilson.net.URIs;
 import com.garretwilson.urf.*;
 import com.garretwilson.urf.content.Content;
 
@@ -55,7 +55,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
   protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
 		final String resourceContextAbsolutePath=getResourceContextAbsolutePath(resourceURI.getPath());	//get the absolute path relative to the context
-		return URIUtilities.isCollectionPath(resourceContextAbsolutePath) && exists(request, resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
+		return URIs.isCollectionPath(resourceContextAbsolutePath) && exists(request, resourceURI);	//return whether the context absolute path ends in a slash and the resource exists
   }
 
 	/**Determines the requested resource.
