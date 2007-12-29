@@ -31,7 +31,7 @@ import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.garretwilson.text.CharacterConstants.*;
+import static com.garretwilson.text.Characters.*;
 import static com.garretwilson.text.CharacterEncodingConstants.*;
 import static com.garretwilson.text.TextUtilities.*;
 

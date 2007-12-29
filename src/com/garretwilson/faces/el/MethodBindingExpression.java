@@ -10,7 +10,7 @@ import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.el.ExpressionConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
-import static com.garretwilson.text.CharacterConstants.*;
+import static com.garretwilson.text.Characters.*;
 
 /**The representation of a value bound to a method.
 The actual method binding that is used to get method type and value is only

@@ -9,7 +9,7 @@ import com.garretwilson.io.*;
 import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.el.ExpressionConstants.*;
-import static com.garretwilson.text.CharacterConstants.*;
+import static com.garretwilson.text.Characters.*;
 
 /**Utilities for working with the extended JSF expression language.
 @author Garret Wilson
