@@ -5,8 +5,10 @@ import java.net.*;
 import java.util.*;
 import static java.util.Collections.*;
 
+import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
+import static com.garretwilson.io.ContentTypeUtilities.createContentType;
 import static com.garretwilson.lang.ObjectUtilities.*;
 
 import com.garretwilson.net.DefaultResource;
@@ -78,6 +80,17 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		{
 			throw new IllegalArgumentException(malformedURLException);
 		}
+	}
+
+	/**Determines the content type of the given resource.
+	@param request The HTTP request in response to which the content type is being retrieved.
+	@param resource The resource for which the content type should be determined.
+	@return The content type of the given resource, or <code>null</code> if no content type could be determined.
+	*/
+	protected ContentType getContentType(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
+	{
+		final ContentType contentType=resource.getContentType(request);	//see if the resource indicates its content type
+		return contentType!=null ? contentType : super.getContentType(request, resource);	//if no content type is specified, return the default content type, if one can be determined
 	}
 
 	/**Determines the content length of the given resource.
@@ -184,6 +197,13 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected interface HTTPServletResource extends Resource
 	{
 
+		/**Returns the content type of the resource.
+		@param request The HTTP request in response to which the content type is being retrieved.
+		@return The content type of the resource, or <code>null</code> if the content type could not be determined.
+		@exception IOException if there is an error getting the type of the resource.
+		*/
+		public ContentType getContentType(final HttpServletRequest request) throws IOException;
+
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
 		@return The content length of the resource, or <code>-1</code> if the content length could not be determined.
@@ -223,6 +243,16 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 
 			/**@return The description of the resource.*/
 			public URFResource getResourceDescription() {return resourceDescription;}
+
+		/**Returns the content type of the resource.
+		@param request The HTTP request in response to which the content type is being retrieved.
+		@return The content type of the resource, or <code>null</code> if the content type could not be determined.
+		@exception IOException if there is an error getting the type of the resource.
+		*/
+		public ContentType getContentType(final HttpServletRequest request) throws IOException
+		{
+			return Content.getContentType(getResourceDescription());	//return the content type from the description, if possible
+		}
 
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
@@ -285,6 +315,17 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 					urlConnection=url.openConnection();	//open a connection to the resource
 				}
 				return urlConnection;	//return the connection we created, or the one we already had
+			}
+
+			/**Returns the content type of the resource.
+			@param request The HTTP request in response to which the content type is being retrieved.
+			@return The content type of the resource, or <code>null</code> if the content type could not be determined.
+			@exception IOException if there is an error getting the type of the resource.
+			*/
+			public ContentType getContentType(final HttpServletRequest request) throws IOException
+			{
+				final String contentType=getURLConnection().getContentType();	//get the content type of the URL connection
+				return contentType!=null ? createContentType(contentType) : null;	//return a new content type if a content type is known
 			}
 
 			/**Returns the content length of the resource.
@@ -400,6 +441,16 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 				}
 				return bytes;	//return the resource bytes
 			}			
+		}
+
+		/**Returns the content type of the resource.
+		@param request The HTTP request in response to which the content type is being retrieved.
+		@return The content type of the resource, or <code>null</code> if the content type could not be determined.
+		@exception IOException if there is an error getting the type of the resource.
+		*/
+		public ContentType getContentType(final HttpServletRequest request) throws IOException
+		{
+			return getResource().getContentType(request);	//delegate to the decorated resource
 		}
 
 		/**Returns the content length of the resource.

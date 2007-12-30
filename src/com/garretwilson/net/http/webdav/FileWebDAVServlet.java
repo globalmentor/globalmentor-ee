@@ -4,10 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.FileResource;
+
+import static com.garretwilson.io.ContentTypeUtilities.createContentType;
 import static com.garretwilson.io.Files.*;
+import static com.garretwilson.net.URIs.getRawName;
+
 import com.garretwilson.net.http.HTTPConflictException;
 
 /**A WebDAV server that accesses resources from an underlying file system. 

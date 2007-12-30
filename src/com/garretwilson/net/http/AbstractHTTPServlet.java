@@ -373,12 +373,14 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   			
 //TODO fix          contentType = "text/html;charset=UTF-8";
   		}
+/*TODO determine what to do here; if we throw a not-found exception, we prevent default resources from being returned for a collection.
   		else	//if we're not allowed to list directories
   		{
   			throw new HTTPNotFoundException(resource.getURI().toString());	//show that we didn't find a resource to return				
   		}
+*/
   	}
-  	else	//if this resource is not a collection
+//TODO del check; prevents default resources being returned; maybe throw not found exception somewhere here if it's clear there's nothing there  	else	//if this resource is not a collection
     {
 //TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
     	final Date lastModifiedDate=getLastModifiedDate(request, resource);	//get the last modified date of the resource
@@ -409,7 +411,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 				}
     	}
   		//    	TODO del Debug.trace("ready to send back a file");
-  		final ContentType contentType=getContentType(resource);	//get the content type of the resource
+  		final ContentType contentType=getContentType(request, resource);	//get the content type of the resource
     	if(contentType!=null)	//if we know the content type
       {
 //      	TODO del Debug.trace("setting content type to:", contentType);
@@ -439,7 +441,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 //TODO del      			Debug.trace("compressing content type:", contentType);
     			outputStream=getCompressedOutputStream(request, response);	//get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
     		}
-    		else	//if we don't know the conten type, or it isn't text
+    		else	//if we don't know the content type, or it isn't text
     		{
 //TODO del      			Debug.trace("not compressing content type:", contentType);
     			outputStream=response.getOutputStream();	//get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
@@ -806,11 +808,12 @@ Debug.trace("sending redirect", redirectURI);
 
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.
+	@param request The HTTP request in response to which the content type is being retrieved.
 	@param resource The resource for which the content type should be determined.
 	@return The content type of the given resource, or <code>null</code> if no content type could be determined.
 	@see ServletContext#getMimeType(java.lang.String)
 	*/
-	protected ContentType getContentType(final R resource)	//TODO see if this is correct to go here, and if we need to override it somewhere to supplement the server's list of content types
+	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException
 	{
 		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getURI()));	//ask the servlet context for the MIME type
 		return contentTypeString!=null ? createContentType(contentTypeString) : null;	//create a content type object if a content type string was returned
