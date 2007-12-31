@@ -6,18 +6,17 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 import javax.faces.convert.*;
 import javax.faces.el.*;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.ParseException;
+import javax.mail.internet.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.garretwilson.lang.ClassUtilities;
+import static com.garretwilson.text.CharacterEncoding.*;
 import com.garretwilson.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
 import static com.garretwilson.io.Files.*;
-import static com.garretwilson.text.CharacterEncodingConstants.*;
 import static com.garretwilson.text.TextUtilities.*;
 
 /**Input component for uploading files.

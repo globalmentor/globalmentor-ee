@@ -6,7 +6,7 @@ import java.util.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
 
-import com.garretwilson.io.ContentTypeUtilities;
+import com.garretwilson.io.ContentTypes;
 
 import static com.garretwilson.io.ContentTypeConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
@@ -49,7 +49,7 @@ public class RenderUtilities
 	{
 
 		writer.startElement(ELEMENT_SCRIPT, component);	//<script>
-		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, ContentTypeUtilities.toString(TEXT, JAVASCRIPT_SUBTYPE), ELEMENT_SCRIPT_ATTRIBUTE_TYPE);	//type="text/javascript"
+		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, ContentTypes.toString(TEXT, JAVASCRIPT_SUBTYPE), ELEMENT_SCRIPT_ATTRIBUTE_TYPE);	//type="text/javascript"
 		writer.writeText("<!--", null);	//<!--
 		writer.writeText(javascript, null);	//write the JavaScript code
 		writer.writeText("-->", null);	//-->

@@ -12,7 +12,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.garretwilson.faces.el.*;
-import com.garretwilson.lang.ObjectUtilities;
+import com.garretwilson.lang.Objects;
 import com.garretwilson.util.Debug;
 import com.garretwilson.util.NameValuePair;
 
@@ -172,7 +172,7 @@ public class ComponentUtilities
 			if(child instanceof UIParameter)	//if this child is a parameter
 			{
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
-				if(ObjectUtilities.equals(name, parameter.getName()))	//if this parameter has the correct name
+				if(Objects.equals(name, parameter.getName()))	//if this parameter has the correct name
 				{
 					return parameter.getValue();	//return the parameter value
 				}
@@ -261,7 +261,7 @@ public class ComponentUtilities
 			{
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
 				final String parameterName=parameter.getName();	//get the parameter name
-				if(ALL_NAMES==name || ObjectUtilities.equals(name, parameterName))	//if all names should be included, or if the name matches
+				if(ALL_NAMES==name || Objects.equals(name, parameterName))	//if all names should be included, or if the name matches
 				{
 					valueList.add(parameter.getValue());	//add the value to our list
 				}

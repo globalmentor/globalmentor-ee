@@ -15,10 +15,10 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import static com.garretwilson.io.ContentTypeConstants.*;
-import com.garretwilson.io.ContentTypeUtilities;
+import com.garretwilson.io.ContentTypes;
 import com.garretwilson.io.InputStreamUtilities;
 import com.garretwilson.io.OutputStreamUtilities;
-import static com.garretwilson.io.ContentTypeUtilities.*;
+import static com.garretwilson.io.ContentTypes.*;
 import com.garretwilson.lang.CharacterUtilities;
 import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
@@ -31,11 +31,10 @@ import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.garretwilson.text.Characters.*;
-import static com.garretwilson.text.CharacterEncodingConstants.*;
-import static com.garretwilson.text.TextUtilities.*;
-
 import com.garretwilson.text.CharacterEncoding;
+import static com.garretwilson.text.CharacterEncoding.*;
+import static com.garretwilson.text.Characters.*;
+import static com.garretwilson.text.TextUtilities.*;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;
 
@@ -687,7 +686,7 @@ Debug.trace("sending redirect", redirectURI);
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, new CharacterEncoding(UTF_8, null, NO_BOM));	//serialize the document to the byte array with no byte order mark
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentTypeUtilities.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
+			response.setContentType(ContentTypes.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
 //TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream=getCompressedOutputStream(request, response);	//get an output stream to the response, compressing the output if possible
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes

@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.FileResource;
 
-import static com.garretwilson.io.ContentTypeUtilities.createContentType;
+import static com.garretwilson.io.ContentTypes.createContentType;
 import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIs.getRawName;
 

@@ -7,7 +7,7 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.garretwilson.io.ContentTypeUtilities;
+import com.garretwilson.io.ContentTypes;
 import com.garretwilson.text.xml.XMLUtilities;
 
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
@@ -69,7 +69,7 @@ public class DeclareXMLTag extends TagSupport
 			ContentType mediaType=null;	//we'll determine the media type if we can
 			if(contentType!=null)	//if there is a content type string
 			{
-				mediaType=ContentTypeUtilities.createContentType(contentType);	//create a new media type
+				mediaType=ContentTypes.createContentType(contentType);	//create a new media type
 			}
 			else	//if there is no content type string
 			{
