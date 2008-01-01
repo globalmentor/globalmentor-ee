@@ -24,7 +24,6 @@ import static com.garretwilson.lang.CharSequenceUtilities.*;
 import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
 import com.garretwilson.net.Resource;
-import com.garretwilson.net.mime.ContentDispositionType;
 
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIs.*;
@@ -804,6 +803,7 @@ Debug.trace("sending redirect", redirectURI);
 	@exception IOException if there is an error accessing the resource.
   */
 	protected abstract R getResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException;
+
 
 	/**Determines the content type of the given resource.
 	This default version returns the MIME content type servlet known by the servlet context.

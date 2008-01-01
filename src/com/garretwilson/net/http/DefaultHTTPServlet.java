@@ -8,12 +8,15 @@ import static java.util.Collections.*;
 import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
-import static com.garretwilson.io.ContentTypes.createContentType;
+import static com.garretwilson.io.ContentTypes.*;
+import static com.garretwilson.io.ContentTypeConstants.*;
 import static com.garretwilson.lang.Objects.*;
 
+import com.garretwilson.io.ContentTypes;
 import com.garretwilson.net.DefaultResource;
 import com.garretwilson.net.Resource;
 import com.garretwilson.net.URIs;
+import com.garretwilson.util.Debug;
 import com.globalmentor.urf.*;
 import com.globalmentor.urf.content.Content;
 
@@ -294,6 +297,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected abstract static class AbstractURLHTTPServletResource extends DefaultResource implements HTTPServletResource	//TODO create a cache of these resources with cached content lengths, etc.; but that would entail checking cache settings and such
 	{
 
+		/**The non-standard "content/unknown" string returned by {@link URLConnection} when the content is unknown.*/
+		private final static String CONTENT_UNKNOWN_CONTENT_TYPE_STRING=ContentTypes.toString(CONTENT, UNKNOWN_SUBTYPE);
+
 		/**The URL of the resource.*/
 		private final URL url;
 
@@ -324,8 +330,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			*/
 			public ContentType getContentType(final HttpServletRequest request) throws IOException
 			{
-				final String contentType=getURLConnection().getContentType();	//get the content type of the URL connection
-				return contentType!=null ? createContentType(contentType) : null;	//return a new content type if a content type is known
+				final String contentTypeString=getURLConnection().getContentType();	//get the content type of the URL connection
+				//URLConnection returns a non-standard "content/unknown" type if the content is unknown rather than returning null as the API claims; convert this value to null
+				return contentTypeString!=null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? createContentType(contentTypeString) : null;	//return a new content type if a content type is known
 			}
 
 			/**Returns the content length of the resource.
