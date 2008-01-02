@@ -31,8 +31,8 @@ import com.garretwilson.text.CharacterEncoding;
 import static com.garretwilson.text.CharacterEncoding.*;
 import static com.garretwilson.text.Characters.*;
 import static com.garretwilson.text.TextUtilities.*;
-import static com.globalmentor.java.CharSequenceUtilities.*;
-import static com.globalmentor.java.ClassUtilities.getLocalName;
+import static com.globalmentor.java.CharSequences.*;
+import static com.globalmentor.java.Classes.getLocalName;
 
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;

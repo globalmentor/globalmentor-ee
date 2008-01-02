@@ -17,7 +17,7 @@ import com.garretwilson.security.*;
 import com.garretwilson.servlet.ServletUtilities;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.W3CDateFormat;
-import com.globalmentor.java.CharSequenceUtilities;
+import com.globalmentor.java.CharSequences;
 
 import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIs.*;
@@ -632,7 +632,7 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			final String principalID=credentials.getPrincipalID();	//get the ID of the principal
 //TODO delDebug.trace("checking credentials with ID", principalID);
-			final int separatorIndex=CharSequenceUtilities.indexOf(principalID, '\\');	//G***testing
+			final int separatorIndex=CharSequences.indexOf(principalID, '\\');	//G***testing
 			if(separatorIndex>=0)
 			{
 //TODO del Debug.trace("using real ID", principalID.substring(separatorIndex+1));

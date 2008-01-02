@@ -12,7 +12,7 @@ import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
 import static com.garretwilson.text.CharacterEncoding.*;
 import com.garretwilson.util.Debug;
-import com.globalmentor.java.ClassUtilities;
+import com.globalmentor.java.Classes;
 
 import org.apache.commons.fileupload.*;
 
@@ -25,7 +25,7 @@ import static com.garretwilson.text.TextUtilities.*;
 public class UIInputFile extends UIInput
 {
 
-	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIInputFile.class, "InputFile");
+	public static final String COMPONENT_TYPE=Classes.getFullName(UIInputFile.class, "InputFile");
 
 	/**The directory value binding variable name.*/
 	public static String DIRECTORY_VAR="directory";

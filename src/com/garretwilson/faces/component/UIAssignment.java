@@ -7,7 +7,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.garretwilson.util.Debug;
-import com.globalmentor.java.ClassUtilities;
+import com.globalmentor.java.Classes;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 
@@ -20,7 +20,7 @@ public class UIAssignment extends UIComponentBase
 {
 
 	/**The component type.*/
-	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIAssignment.class, "Assignment");
+	public static final String COMPONENT_TYPE=Classes.getFullName(UIAssignment.class, "Assignment");
 
 	/**The component family.*/
 	public static final String COMPONENT_FAMILY=COMPONENT_TYPE;

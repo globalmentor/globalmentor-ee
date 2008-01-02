@@ -3,14 +3,14 @@ package com.garretwilson.faces.component;
 import javax.faces.component.UIData;
 
 import com.garretwilson.faces.component.renderkit.xhtml.ListRenderer;
-import com.globalmentor.java.ClassUtilities;
+import com.globalmentor.java.Classes;
 
 /**A component containing an ordered list.
 @author Garret Wilson
 */
 public class UIList extends UIBasicData
 {
-	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIList.class, "List");	//TODO we probably don't even need a special list type
+	public static final String COMPONENT_TYPE=Classes.getFullName(UIList.class, "List");	//TODO we probably don't even need a special list type
 
 	/**Constructor.*/
 	public UIList()

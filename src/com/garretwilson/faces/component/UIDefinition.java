@@ -2,7 +2,7 @@ package com.garretwilson.faces.component;
 
 import javax.faces.component.UIColumn;
 
-import com.globalmentor.java.ClassUtilities;
+import com.globalmentor.java.Classes;
 
 /**A component representing a definition in a list of definitions.
 @author Garret Wilson
@@ -12,6 +12,6 @@ import com.globalmentor.java.ClassUtilities;
 public class UIDefinition extends UIColumn
 {
 	/**The identifier for this component type.*/
-	public static final String COMPONENT_TYPE=ClassUtilities.getFullName(UIDefinition.class, "Definition");
+	public static final String COMPONENT_TYPE=Classes.getFullName(UIDefinition.class, "Definition");
 
 }

@@ -20,8 +20,7 @@ import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.application.FacesMessageUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
-import static com.globalmentor.java.JavaConstants.*;
-import static com.globalmentor.java.JavaUtilities.*;
+import static com.globalmentor.java.Java.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
