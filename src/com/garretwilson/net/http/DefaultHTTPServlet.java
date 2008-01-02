@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static com.garretwilson.io.ContentTypes.*;
 import static com.garretwilson.io.ContentTypeConstants.*;
-import static com.garretwilson.lang.Objects.*;
+import static com.globalmentor.java.Objects.*;
 
 import com.garretwilson.io.ContentTypes;
 import com.garretwilson.net.DefaultResource;

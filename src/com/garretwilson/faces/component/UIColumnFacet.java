@@ -2,7 +2,7 @@ package com.garretwilson.faces.component;
 
 import javax.faces.component.*;
 
-import static com.garretwilson.lang.ClassUtilities.*;
+import static com.globalmentor.java.ClassUtilities.*;
 
 /**A component which signifies that the child components should be rendered as distinct header or footer cells.  
 @author Garret Wilson

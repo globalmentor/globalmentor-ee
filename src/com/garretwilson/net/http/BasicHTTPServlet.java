@@ -12,12 +12,13 @@ import static java.util.Collections.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.garretwilson.lang.CharSequenceUtilities;
 import com.garretwilson.util.*;
 import com.garretwilson.security.*;
 import com.garretwilson.servlet.ServletUtilities;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.W3CDateFormat;
+import com.globalmentor.java.CharSequenceUtilities;
+
 import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;

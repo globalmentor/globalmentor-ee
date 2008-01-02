@@ -3,7 +3,8 @@ package com.garretwilson.faces.component;
 import java.io.File;
 import java.net.URI;
 import javax.faces.component.UIColumn;
-import com.garretwilson.lang.ClassUtilities;
+
+import com.globalmentor.java.ClassUtilities;
 
 /**A component representing a term in a list of definitions.
 @author Garret Wilson

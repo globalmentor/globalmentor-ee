@@ -6,7 +6,7 @@ import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.lang.ClassUtilities.*;
+import static com.globalmentor.java.ClassUtilities.*;
 
 /**A parameter component with a formatted value.
 	The format template syntax is identical to that of <code>MessageFormat</code>,

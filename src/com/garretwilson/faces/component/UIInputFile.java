@@ -10,9 +10,9 @@ import javax.mail.internet.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
-import com.garretwilson.lang.ClassUtilities;
 import static com.garretwilson.text.CharacterEncoding.*;
 import com.garretwilson.util.Debug;
+import com.globalmentor.java.ClassUtilities;
 
 import org.apache.commons.fileupload.*;
 

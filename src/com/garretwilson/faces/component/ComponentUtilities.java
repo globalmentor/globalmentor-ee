@@ -12,16 +12,16 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.garretwilson.faces.el.*;
-import com.garretwilson.lang.Objects;
 import com.garretwilson.util.Debug;
 import com.garretwilson.util.NameValuePair;
+import com.globalmentor.java.Objects;
 
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.application.FacesMessageUtilities.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
-import static com.garretwilson.lang.JavaConstants.*;
-import static com.garretwilson.lang.JavaUtilities.*;
+import static com.globalmentor.java.JavaConstants.*;
+import static com.globalmentor.java.JavaUtilities.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson

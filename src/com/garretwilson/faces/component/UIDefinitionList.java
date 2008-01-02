@@ -1,7 +1,7 @@
 package com.garretwilson.faces.component;
 
 import com.garretwilson.faces.component.renderkit.xhtml.DefinitionListRenderer;
-import com.garretwilson.lang.ClassUtilities;
+import com.globalmentor.java.ClassUtilities;
 
 /**A component containing a list of definitions.
 @author Garret Wilson

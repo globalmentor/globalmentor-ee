@@ -19,9 +19,6 @@ import com.garretwilson.io.ContentTypes;
 import com.garretwilson.io.InputStreamUtilities;
 import com.garretwilson.io.OutputStreamUtilities;
 import static com.garretwilson.io.ContentTypes.*;
-import com.garretwilson.lang.CharacterUtilities;
-import static com.garretwilson.lang.CharSequenceUtilities.*;
-import static com.garretwilson.lang.ClassUtilities.getLocalName;
 
 import com.garretwilson.net.Resource;
 
@@ -34,10 +31,14 @@ import com.garretwilson.text.CharacterEncoding;
 import static com.garretwilson.text.CharacterEncoding.*;
 import static com.garretwilson.text.Characters.*;
 import static com.garretwilson.text.TextUtilities.*;
+import static com.globalmentor.java.CharSequenceUtilities.*;
+import static com.globalmentor.java.ClassUtilities.getLocalName;
+
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;
 
 import com.garretwilson.util.*;
+import com.globalmentor.java.CharacterUtilities;
 
 /**The base servlet class for implementing an HTTP server that access resources.
 @see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>

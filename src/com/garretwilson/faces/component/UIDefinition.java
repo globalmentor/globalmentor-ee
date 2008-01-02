@@ -2,7 +2,7 @@ package com.garretwilson.faces.component;
 
 import javax.faces.component.UIColumn;
 
-import com.garretwilson.lang.ClassUtilities;
+import com.globalmentor.java.ClassUtilities;
 
 /**A component representing a definition in a list of definitions.
 @author Garret Wilson
