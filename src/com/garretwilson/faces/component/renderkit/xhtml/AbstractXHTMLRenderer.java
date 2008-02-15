@@ -12,7 +12,7 @@ import javax.faces.render.Renderer;
 
 import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Encapsulates basic XHTML rendering functionality.
 <p>Inspired by <code>com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.java</code>.</p>

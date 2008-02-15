@@ -10,7 +10,7 @@ import com.garretwilson.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element.
 @author Garret Wilson

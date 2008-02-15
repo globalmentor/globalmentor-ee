@@ -9,7 +9,7 @@ import javax.faces.context.*;
 import com.garretwilson.faces.component.*;
 
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Renders XHTML definition lists.
 @author Garret Wilson

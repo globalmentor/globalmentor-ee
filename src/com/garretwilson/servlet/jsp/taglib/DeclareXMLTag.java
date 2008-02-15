@@ -13,7 +13,7 @@ import com.garretwilson.text.xml.XMLUtilities;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.xml.XMLConstants.*;
 import static com.garretwilson.text.xml.XMLUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**A tag for declaring a JSP to be XML.
 <p>For XHTML media types, this tag sets the content type to

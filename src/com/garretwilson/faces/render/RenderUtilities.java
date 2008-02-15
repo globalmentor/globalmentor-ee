@@ -9,7 +9,7 @@ import javax.faces.context.*;
 import com.garretwilson.io.ContentTypes;
 
 import static com.garretwilson.io.ContentTypeConstants.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Utilities for rendering components.
 @author Garret Wilson

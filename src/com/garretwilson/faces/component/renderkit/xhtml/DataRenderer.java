@@ -7,7 +7,7 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Renders a sequence of objects contained in a <code>UIData</code> component.
 This class can function on its own or provide base functionality for more

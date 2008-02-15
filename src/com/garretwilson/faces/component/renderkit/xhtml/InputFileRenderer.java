@@ -4,7 +4,7 @@ import javax.faces.component.*;
 
 import com.garretwilson.faces.component.*;
 
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>file</code>.
 @author Garret Wilson

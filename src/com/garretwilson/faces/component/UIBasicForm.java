@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.garretwilson.io.*;
 import com.garretwilson.faces.context.RequestParametersFacesContextDecorator;
-import com.garretwilson.text.xml.xhtml.XHTMLConstants;
+import com.garretwilson.text.xml.xhtml.XHTML;
 import com.garretwilson.util.*;
 
 import org.apache.commons.fileupload.*;
 
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Basic form component with enhanced functionality to process multipart form
 	submissions.
@@ -111,7 +111,7 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 */
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype=(String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE);	//get the enctype
-		if(enctype!=null && XHTMLConstants.MULTIPART_FORM_DATA_CONTENT_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
+		if(enctype!=null && XHTML.MULTIPART_FORM_DATA_CONTENT_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
 		{
 			if(context.getExternalContext().getRequest() instanceof HttpServletRequest)	//if this is an HTTP request
 			{

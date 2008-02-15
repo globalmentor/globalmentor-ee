@@ -18,7 +18,7 @@ import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
 import static com.garretwilson.javascript.JavaScriptUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTMLConstants.*;
+import static com.garretwilson.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UICommand</code> as a button.
 Microsoft Internet Explorer does not correctly return values for the HTML button
