@@ -29,16 +29,16 @@ import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.text.CharacterEncoding;
 import static com.garretwilson.text.CharacterEncoding.*;
-import static com.garretwilson.text.Characters.*;
 import static com.garretwilson.text.TextUtilities.*;
 import static com.globalmentor.java.CharSequences.*;
+import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
 
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;
 
 import com.garretwilson.util.*;
-import com.globalmentor.java.CharacterUtilities;
+import com.globalmentor.java.Characters;
 
 /**The base servlet class for implementing an HTTP server that access resources.
 @see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
@@ -649,7 +649,7 @@ Debug.trace("sending redirect", redirectURI);
 			boolean hasContent=false;	//we'll start out assuming there actually is no content
 			for(final byte b:content)	//look at each byte in the content
 			{
-				if(!CharacterUtilities.isWhitespace((char)b))	//if this byte doesn't represent whitespace (ignoring the encoding is fine, because another encoding would require content, so if we find non-whitespace it means there is some content)
+				if(!Characters.isWhitespace((char)b))	//if this byte doesn't represent whitespace (ignoring the encoding is fine, because another encoding would require content, so if we find non-whitespace it means there is some content)
 				{
 					hasContent=true;	//we have content
 					break;	//stop looking for content
