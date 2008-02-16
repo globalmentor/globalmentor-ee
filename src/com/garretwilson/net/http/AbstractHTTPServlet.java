@@ -14,20 +14,16 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import static com.garretwilson.io.ContentTypeConstants.*;
-import com.garretwilson.io.ContentTypes;
-import com.garretwilson.io.InputStreamUtilities;
-import com.garretwilson.io.OutputStreamUtilities;
+import com.garretwilson.io.*;
+import static com.garretwilson.io.Charsets.*;
 import static com.garretwilson.io.ContentTypes.*;
-
+import static com.garretwilson.io.ContentTypeConstants.*;
 import com.garretwilson.net.Resource;
-
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import com.garretwilson.text.CharacterEncoding;
 import static com.garretwilson.text.CharacterEncoding.*;
 import static com.garretwilson.text.TextUtilities.*;
 import static com.globalmentor.java.CharSequences.*;
@@ -683,7 +679,7 @@ Debug.trace("sending redirect", redirectURI);
 		final ByteArrayOutputStream byteArrayOutputStream=new ByteArrayOutputStream();	//create a byte array output stream to hold our outgoing data
 		try
 		{
-			new XMLSerializer(true).serialize(document, byteArrayOutputStream, new CharacterEncoding(UTF_8, null, NO_BOM));	//serialize the document to the byte array with no byte order mark
+			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET);	//serialize the document to the byte array with no byte order mark
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
 			response.setContentType(ContentTypes.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
