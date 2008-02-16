@@ -49,7 +49,7 @@ public class RenderUtilities
 	{
 
 		writer.startElement(ELEMENT_SCRIPT, component);	//<script>
-		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, ContentTypes.toString(TEXT, JAVASCRIPT_SUBTYPE), ELEMENT_SCRIPT_ATTRIBUTE_TYPE);	//type="text/javascript"
+		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, ContentTypes.toString(ContentTypes.TEXT_PRIMARY_TYPE, JAVASCRIPT_SUBTYPE), ELEMENT_SCRIPT_ATTRIBUTE_TYPE);	//type="text/javascript"
 		writer.writeText("<!--", null);	//<!--
 		writer.writeText(javascript, null);	//write the JavaScript code
 		writer.writeText("-->", null);	//-->

@@ -15,6 +15,7 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import com.garretwilson.io.*;
+
 import static com.garretwilson.io.Charsets.*;
 import static com.garretwilson.io.ContentTypes.*;
 import static com.garretwilson.io.ContentTypeConstants.*;
@@ -682,7 +683,7 @@ Debug.trace("sending redirect", redirectURI);
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET);	//serialize the document to the byte array with no byte order mark
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentTypes.toString(TEXT, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
+			response.setContentType(ContentTypes.toString(TEXT_PRIMARY_TYPE, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
 //TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream=getCompressedOutputStream(request, response);	//get an output stream to the response, compressing the output if possible
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
