@@ -6,8 +6,8 @@ import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
-import com.garretwilson.util.Debug;
 import com.globalmentor.java.Classes;
+import com.globalmentor.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 

@@ -7,7 +7,7 @@ import javax.faces.event.*;
 import com.garretwilson.faces.*;
 import com.garretwilson.faces.component.*;
 import com.garretwilson.faces.el.*;
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;

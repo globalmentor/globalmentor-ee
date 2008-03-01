@@ -14,7 +14,7 @@ import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import com.garretwilson.text.xml.XMLUtilities;
-import com.garretwilson.util.*;
+import com.globalmentor.util.*;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -220,7 +220,7 @@ Debug.trace("doing propfind for URI", resourceURI);
 			{
 				final Depth depth=getDepth(request);	//determine the requested depth
 Debug.trace("depth requested:", depth);
-				IDMappedList<URI, WebDAVPropertyName> propertyList=ALL_PROPERTIES;	//default to listing all properties
+				DecoratorIDedMappedList<URI, WebDAVPropertyName> propertyList=ALL_PROPERTIES;	//default to listing all properties
 				final WebDAVXMLGenerator webdavXMLGenerator=new WebDAVXMLGenerator();	//create a WebDAV XML generator
 				try
 				{
@@ -388,7 +388,7 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@exception DOMException if there is an error updating the properties element.
 	@exception IOException if there is an error accessing the resource.
 	*/
-	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final IDMappedList<URI, WebDAVPropertyName> properties, final WebDAVXMLGenerator webdavXMLGenerator) throws DOMException, IOException;
+	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final DecoratorIDedMappedList<URI, WebDAVPropertyName> properties, final WebDAVXMLGenerator webdavXMLGenerator) throws DOMException, IOException;
 
 	/**Retrieves a list of resources and child resources to the given depth.
 	@param resourceURI The URI of the requested resource.

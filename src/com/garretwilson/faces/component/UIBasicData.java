@@ -16,7 +16,7 @@ import javax.faces.model.ScalarDataModel;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import com.garretwilson.faces.el.*;
-import com.garretwilson.util.*;
+import com.globalmentor.util.*;
 
 /**Basic data component with enhanced functionality.
 This class also creates a work-around for the JSF RI bug that erroneously

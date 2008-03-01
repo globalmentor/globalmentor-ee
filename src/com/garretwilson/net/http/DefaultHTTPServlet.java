@@ -16,9 +16,9 @@ import com.garretwilson.io.ContentTypes;
 import com.garretwilson.net.DefaultResource;
 import com.garretwilson.net.Resource;
 import com.garretwilson.net.URIs;
-import com.garretwilson.util.Debug;
 import com.globalmentor.urf.*;
 import com.globalmentor.urf.content.Content;
+import com.globalmentor.util.Debug;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.

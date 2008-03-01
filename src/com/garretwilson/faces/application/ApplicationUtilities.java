@@ -11,7 +11,8 @@ import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.el.ExpressionUtilities.*;
-import com.garretwilson.util.Debug;
+
+import com.globalmentor.util.Debug;
 
 /**Utilities for working with JSF applications.
 @author Garret Wilson

@@ -12,9 +12,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.garretwilson.faces.el.*;
-import com.garretwilson.util.Debug;
-import com.garretwilson.util.NameValuePair;
 import com.globalmentor.java.Objects;
+import com.globalmentor.util.Debug;
+import com.globalmentor.util.NameValuePair;
 
 import static com.garretwilson.faces.ValueUtilities.*;
 import static com.garretwilson.faces.application.FacesMessageUtilities.*;

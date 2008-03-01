@@ -6,7 +6,7 @@ import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 import com.garretwilson.io.*;
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 import static com.garretwilson.faces.el.ExpressionConstants.*;
 import static com.globalmentor.java.Characters.*;

@@ -3,7 +3,7 @@ package com.garretwilson.faces.el;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 /**A <code>ValueBinding</code> subclass that allows a general
 	<code>Expression</code> to be used wherever a <code>ValueBinding</code>

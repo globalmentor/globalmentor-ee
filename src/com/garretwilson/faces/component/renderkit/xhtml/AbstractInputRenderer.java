@@ -6,7 +6,7 @@ import java.util.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
 
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;

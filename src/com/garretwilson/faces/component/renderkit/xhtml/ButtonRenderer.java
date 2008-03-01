@@ -12,7 +12,7 @@ import javax.faces.event.*;
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.UIBasicCommand;
 import com.garretwilson.faces.component.UIBasicForm;
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.render.RenderUtilities.*;

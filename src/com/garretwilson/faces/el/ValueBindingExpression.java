@@ -2,7 +2,8 @@ package com.garretwilson.faces.el;
 
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
-import com.garretwilson.util.Debug;
+
+import com.globalmentor.util.Debug;
 
 /**The representation of a value bound to a property.
 @author Garret Wilson

@@ -34,8 +34,9 @@ import static com.globalmentor.java.Classes.getLocalName;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;
 
-import com.garretwilson.util.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.util.*;
+import com.globalmentor.util.Collections;
 
 /**The base servlet class for implementing an HTTP server that access resources.
 @see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
@@ -113,7 +114,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
 //TODO del Debug.trace("doing options for URI", resourceURI);
 		final Set<String> allowedMethodSet=getAllowedMethods(request, resourceURI);	//get the allowed methods
-		response.addHeader(ALLOW_HEADER, CollectionUtilities.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
+		response.addHeader(ALLOW_HEADER, Collections.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
 		response.setContentLength(0);	//set the content length to zero, according to the HTTP specification for OPTIONS
 	}
 

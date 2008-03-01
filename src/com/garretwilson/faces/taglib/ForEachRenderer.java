@@ -22,7 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 // Renderer for the UITabbedPane component
 

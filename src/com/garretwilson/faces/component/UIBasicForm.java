@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.garretwilson.io.*;
 import com.garretwilson.faces.context.RequestParametersFacesContextDecorator;
 import com.garretwilson.text.xml.xhtml.XHTML;
-import com.garretwilson.util.*;
+import com.globalmentor.util.*;
 
 import org.apache.commons.fileupload.*;
 

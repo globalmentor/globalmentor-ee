@@ -2,7 +2,7 @@ package com.garretwilson.faces.application;
 
 import javax.faces.application.FacesMessage;
 
-import com.garretwilson.util.Debug;
+import com.globalmentor.util.Debug;
 
 /**Utilities for working with the JavaServer Faces messages.
 @author Garret Wilson
