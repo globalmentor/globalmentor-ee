@@ -6,10 +6,10 @@ import java.util.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
 
-import com.garretwilson.io.ContentTypes;
+import com.globalmentor.io.ContentTypes;
 
-import static com.garretwilson.io.ContentTypeConstants.*;
 import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.io.ContentTypeConstants.*;
 
 /**Utilities for rendering components.
 @author Garret Wilson

@@ -7,13 +7,13 @@ import java.util.*;
 import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
-import com.garretwilson.io.FileResource;
 
-import static com.garretwilson.io.ContentTypes.createContentType;
-import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIs.getRawName;
+import static com.globalmentor.io.ContentTypes.createContentType;
+import static com.globalmentor.io.Files.*;
 
 import com.garretwilson.net.http.HTTPConflictException;
+import com.globalmentor.io.FileResource;
 
 /**A WebDAV server that accesses resources from an underlying file system. 
 @author Garret Wilson

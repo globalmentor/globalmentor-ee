@@ -19,11 +19,11 @@ import com.garretwilson.text.W3CDateFormat;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.util.*;
 
-import static com.garretwilson.io.Files.*;
 import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
+import static com.globalmentor.io.Files.*;
 
 /**An HTTP servlet with extended functionality.
 This servlet supports the following initialization parameters:

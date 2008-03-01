@@ -16,8 +16,8 @@ import com.globalmentor.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
-import static com.garretwilson.io.Files.*;
 import static com.garretwilson.text.TextUtilities.*;
+import static com.globalmentor.io.Files.*;
 
 /**Input component for uploading files.
 @author Garret Wilson

@@ -14,11 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import com.garretwilson.io.*;
 
-import static com.garretwilson.io.Charsets.*;
-import static com.garretwilson.io.ContentTypes.*;
-import static com.garretwilson.io.ContentTypeConstants.*;
 import com.garretwilson.net.Resource;
 import static com.garretwilson.net.URIConstants.*;
 import static com.garretwilson.net.URIs.*;
@@ -27,6 +23,9 @@ import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.garretwilson.text.CharacterEncoding.*;
 import static com.garretwilson.text.TextUtilities.*;
+import static com.globalmentor.io.Charsets.*;
+import static com.globalmentor.io.ContentTypeConstants.*;
+import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
@@ -34,6 +33,7 @@ import static com.globalmentor.java.Classes.getLocalName;
 import com.garretwilson.text.SyntaxException;
 import com.garretwilson.text.xml.XMLSerializer;
 
+import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
 import com.globalmentor.util.*;
 import com.globalmentor.util.Collections;
@@ -191,7 +191,7 @@ Debug.trace("exists", exists);
 		try
 		{
 Debug.trace("trying to write");
-			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
+			InputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
 Debug.trace("written");
 		}
 		finally
@@ -446,7 +446,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
     		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
     		try
     		{
-    			OutputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
+    			InputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
     		}
     		finally
     		{
@@ -690,7 +690,7 @@ Debug.trace("sending redirect", redirectURI);
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 			try
 			{
-				OutputStreamUtilities.copy(inputStream, outputStream);	//write the bytes to the response
+				InputStreamUtilities.copy(inputStream, outputStream);	//write the bytes to the response
 			}
 			finally
 			{
