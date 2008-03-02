@@ -191,7 +191,7 @@ Debug.trace("exists", exists);
 		try
 		{
 Debug.trace("trying to write");
-			InputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
+			InputStreams.copy(inputStream, outputStream);	//copy the file from the request to the resource
 Debug.trace("written");
 		}
 		finally
@@ -446,7 +446,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
     		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
     		try
     		{
-    			InputStreamUtilities.copy(inputStream, outputStream);	//copy the input stream to the output stream
+    			InputStreams.copy(inputStream, outputStream);	//copy the input stream to the output stream
     		}
     		finally
     		{
@@ -642,7 +642,7 @@ Debug.trace("sending redirect", redirectURI);
 		{
 			final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
 //TODO del Debug.trace("Ready to get XML bytes of Content-Length:", contentLength);
-			final byte[] content=InputStreamUtilities.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
+			final byte[] content=InputStreams.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
 //TODO del Debug.trace("got bytes:", new String(content, "UTF-8"));
 			boolean hasContent=false;	//we'll start out assuming there actually is no content
 			for(final byte b:content)	//look at each byte in the content
@@ -690,7 +690,7 @@ Debug.trace("sending redirect", redirectURI);
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 			try
 			{
-				InputStreamUtilities.copy(inputStream, outputStream);	//write the bytes to the response
+				InputStreams.copy(inputStream, outputStream);	//write the bytes to the response
 			}
 			finally
 			{
