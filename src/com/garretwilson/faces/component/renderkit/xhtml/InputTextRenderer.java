@@ -1,6 +1,6 @@
 package com.garretwilson.faces.component.renderkit.xhtml;
 
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>text</code>.
 @author Garret Wilson

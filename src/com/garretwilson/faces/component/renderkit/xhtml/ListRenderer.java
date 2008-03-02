@@ -3,7 +3,7 @@ package com.garretwilson.faces.component.renderkit.xhtml;
 import javax.faces.component.*;
 import com.garretwilson.faces.component.UIList;
 
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**The default renderer for an XHTML ordered list
 @author Garret Wilson

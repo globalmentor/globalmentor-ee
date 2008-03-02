@@ -13,10 +13,10 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.garretwilson.servlet.ServletUtilities;
-import com.garretwilson.text.SyntaxException;
-import com.garretwilson.text.W3CDateFormat;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.security.*;
+import com.globalmentor.text.SyntaxException;
+import com.globalmentor.text.W3CDateFormat;
 import com.globalmentor.util.*;
 
 import static com.garretwilson.net.URIs.*;

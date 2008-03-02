@@ -13,7 +13,7 @@ import com.garretwilson.faces.component.ComponentUtilities;
 import static com.garretwilson.faces.FacesConstants.*;
 import static com.garretwilson.faces.component.ComponentConstants.*;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**A tag representing a form component.
 @author Garret Wilson

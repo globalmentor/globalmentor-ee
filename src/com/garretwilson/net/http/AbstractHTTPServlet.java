@@ -21,20 +21,20 @@ import static com.garretwilson.net.URIs.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.garretwilson.text.CharacterEncoding.*;
-import static com.garretwilson.text.TextUtilities.*;
 import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.io.ContentTypeConstants.*;
 import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
+import static com.globalmentor.text.CharacterEncoding.*;
+import static com.globalmentor.text.TextUtilities.*;
 
-import com.garretwilson.text.SyntaxException;
-import com.garretwilson.text.xml.XMLSerializer;
 
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.text.SyntaxException;
+import com.globalmentor.text.xml.XMLSerializer;
 import com.globalmentor.util.*;
 import com.globalmentor.util.Collections;
 

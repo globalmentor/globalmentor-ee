@@ -8,7 +8,7 @@ import javax.faces.context.ResponseWriter;
 
 import com.garretwilson.faces.component.UIColumnFacet;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**The renderer for an XHTML table based upon a <code>UIData</code> component.
 @author Garret Wilson

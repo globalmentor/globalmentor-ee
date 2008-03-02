@@ -13,7 +13,8 @@ import com.garretwilson.net.http.*;
 import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import com.garretwilson.text.xml.XMLUtilities;
+
+import com.globalmentor.text.xml.XMLUtilities;
 import com.globalmentor.util.*;
 
 import org.w3c.dom.*;

@@ -7,13 +7,13 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.garretwilson.text.xml.XMLUtilities;
 import com.globalmentor.io.ContentTypes;
+import com.globalmentor.text.xml.XMLUtilities;
 
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.garretwilson.text.xml.XML.*;
-import static com.garretwilson.text.xml.XMLUtilities.*;
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.text.xml.XML.*;
+import static com.globalmentor.text.xml.XMLUtilities.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**A tag for declaring a JSP to be XML.
 <p>For XHTML media types, this tag sets the content type to

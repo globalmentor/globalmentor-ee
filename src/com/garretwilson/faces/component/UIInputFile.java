@@ -10,14 +10,14 @@ import javax.mail.internet.*;
 
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
-import static com.garretwilson.text.CharacterEncoding.*;
 import com.globalmentor.java.Classes;
 import com.globalmentor.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
-import static com.garretwilson.text.TextUtilities.*;
 import static com.globalmentor.io.Files.*;
+import static com.globalmentor.text.CharacterEncoding.*;
+import static com.globalmentor.text.TextUtilities.*;
 
 /**Input component for uploading files.
 @author Garret Wilson

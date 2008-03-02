@@ -8,8 +8,8 @@ import javax.faces.context.*;
 
 import com.globalmentor.io.ContentTypes;
 
-import static com.garretwilson.text.xml.xhtml.XHTML.*;
 import static com.globalmentor.io.ContentTypeConstants.*;
+import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**Utilities for rendering components.
 @author Garret Wilson
