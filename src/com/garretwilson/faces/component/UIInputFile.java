@@ -17,7 +17,7 @@ import org.apache.commons.fileupload.*;
 
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.text.CharacterEncoding.*;
-import static com.globalmentor.text.TextUtilities.*;
+import static com.globalmentor.text.Text.*;
 
 /**Input component for uploading files.
 @author Garret Wilson

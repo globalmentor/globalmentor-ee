@@ -28,7 +28,7 @@ import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
 import static com.globalmentor.text.CharacterEncoding.*;
-import static com.globalmentor.text.TextUtilities.*;
+import static com.globalmentor.text.Text.*;
 
 
 import com.globalmentor.io.*;

@@ -11,7 +11,6 @@ import com.globalmentor.io.ContentTypes;
 import com.globalmentor.text.xml.XMLUtilities;
 
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.globalmentor.text.xml.XML.*;
 import static com.globalmentor.text.xml.XMLUtilities.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
