@@ -7,7 +7,7 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 
 import com.globalmentor.io.ContentTypes;
-import static com.globalmentor.javascript.JavaScriptConstants.*;
+import static com.globalmentor.javascript.JavaScript.*;
 
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 

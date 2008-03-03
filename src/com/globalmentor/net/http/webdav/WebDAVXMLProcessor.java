@@ -1,11 +1,11 @@
-package com.garretwilson.net.http.webdav;
+package com.globalmentor.net.http.webdav;
 
 import java.net.*;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
+import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
 import static com.globalmentor.text.xml.XML.*;
 
 import com.globalmentor.util.*;

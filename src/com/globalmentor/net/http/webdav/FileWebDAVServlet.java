@@ -1,4 +1,4 @@
-package com.garretwilson.net.http.webdav;
+package com.globalmentor.net.http.webdav;
 
 import java.io.*;
 import java.net.*;
@@ -8,12 +8,12 @@ import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
 
-import static com.garretwilson.net.URIs.getRawName;
 import static com.globalmentor.io.ContentTypes.createContentType;
 import static com.globalmentor.io.Files.*;
+import static com.globalmentor.net.URIs.getRawName;
 
-import com.garretwilson.net.http.HTTPConflictException;
 import com.globalmentor.io.FileResource;
+import com.globalmentor.net.http.HTTPConflictException;
 
 /**A WebDAV server that accesses resources from an underlying file system. 
 @author Garret Wilson

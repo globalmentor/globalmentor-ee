@@ -1,4 +1,4 @@
-package com.garretwilson.net.http;
+package com.globalmentor.net.http;
 
 import java.io.*;
 import java.net.*;
@@ -12,10 +12,10 @@ import static com.globalmentor.io.ContentTypeConstants.*;
 import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.Objects.*;
 
-import com.garretwilson.net.DefaultResource;
-import com.garretwilson.net.Resource;
-import com.garretwilson.net.URIs;
 import com.globalmentor.io.ContentTypes;
+import com.globalmentor.net.DefaultResource;
+import com.globalmentor.net.Resource;
+import com.globalmentor.net.URIs;
 import com.globalmentor.urf.*;
 import com.globalmentor.urf.content.Content;
 import com.globalmentor.util.Debug;

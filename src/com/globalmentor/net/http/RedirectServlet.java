@@ -1,12 +1,11 @@
-package com.garretwilson.net.http;
+package com.globalmentor.net.http;
 
 import java.io.*;
 import java.net.URI;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import static com.garretwilson.net.URIConstants.*;
-import static com.garretwilson.net.URIs.*;
+import static com.globalmentor.net.URIs.*;
 
 /**An HTTP servlet that unconditionally redirects to a configured URI.
 <p>The redirect URI, specified in the "redirectURI" initialization parameter,

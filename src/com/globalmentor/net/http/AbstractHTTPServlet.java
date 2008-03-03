@@ -1,4 +1,4 @@
-package com.garretwilson.net.http;
+package com.globalmentor.net.http;
 
 import java.io.*;
 import java.net.*;
@@ -14,12 +14,6 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-
-import com.garretwilson.net.Resource;
-import static com.garretwilson.net.URIConstants.*;
-import static com.garretwilson.net.URIs.*;
-import static com.garretwilson.net.http.HTTPConstants.*;
-import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.io.ContentTypeConstants.*;
@@ -27,12 +21,15 @@ import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
+import static com.globalmentor.net.URIs.*;
+import static com.globalmentor.net.http.HTTPConstants.*;
+import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
-
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.net.Resource;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.xml.XMLSerializer;
 import com.globalmentor.util.*;

@@ -1,4 +1,4 @@
-package com.garretwilson.net.http;
+package com.globalmentor.net.http;
 
 import java.io.*;
 import java.net.URI;
@@ -19,11 +19,11 @@ import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
 import com.globalmentor.util.*;
 
-import static com.garretwilson.net.URIs.*;
-import static com.garretwilson.net.http.HTTPConstants.*;
-import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.globalmentor.io.Files.*;
+import static com.globalmentor.net.URIs.*;
+import static com.globalmentor.net.http.HTTPConstants.*;
+import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
 
 /**An HTTP servlet with extended functionality.
 This servlet supports the following initialization parameters:

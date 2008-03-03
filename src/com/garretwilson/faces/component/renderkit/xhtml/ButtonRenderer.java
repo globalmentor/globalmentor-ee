@@ -17,7 +17,7 @@ import com.globalmentor.util.Debug;
 import static com.garretwilson.faces.component.ComponentUtilities.*;
 import static com.garretwilson.faces.render.RenderUtilities.*;
 import static com.garretwilson.faces.taglib.xhtml.XHTMLTagConstants.*;
-import static com.globalmentor.javascript.JavaScriptConstants.*;
+import static com.globalmentor.javascript.JavaScript.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UICommand</code> as a button.
