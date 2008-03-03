@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.net.http;
 
 import java.io.*;
@@ -8,17 +24,12 @@ import static java.util.Collections.*;
 import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
-import static com.globalmentor.io.ContentTypeConstants.*;
+import com.globalmentor.io.ContentTypes;
 import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.Objects.*;
-
-import com.globalmentor.io.ContentTypes;
-import com.globalmentor.net.DefaultResource;
-import com.globalmentor.net.Resource;
-import com.globalmentor.net.URIs;
+import com.globalmentor.net.*;
 import com.globalmentor.urf.*;
 import com.globalmentor.urf.content.Content;
-import com.globalmentor.util.Debug;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
@@ -191,7 +202,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	protected List<HTTPServletResource> getChildResources(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
 		return emptyList();	//TODO implement		
-//	TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
+//TODO del when works  	return false;	//TODO fix, noting that getResourcePaths() seems to take a web application-relative path rather than a context-relative path
 	}
 
 	/**A resource that can return connections and other information.
@@ -501,7 +512,5 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			this.resource=resource;	//save the decorated resource
 		}
 	}
-	
-	
-	
+
 }

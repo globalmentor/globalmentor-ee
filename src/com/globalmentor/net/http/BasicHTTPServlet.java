@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.net.http;
 
 import java.io.*;
@@ -12,24 +28,24 @@ import static java.util.Collections.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import com.garretwilson.servlet.ServletUtilities;
 import com.globalmentor.java.CharSequences;
+import static com.globalmentor.net.Servlets.*;
 import com.globalmentor.security.*;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
 import com.globalmentor.util.*;
 
-import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.net.URIs.*;
-import static com.globalmentor.net.http.HTTPConstants.*;
-import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
+import static com.globalmentor.net.http.HTTP.*;
+import static com.globalmentor.net.http.HTTPServlets.*;
+import static com.globalmentor.net.http.webdav.WebDAV.*;
 
 /**An HTTP servlet with extended functionality.
 This servlet supports the following initialization parameters:
 <dl>
-	<dt>{@value ServletConstants#DATA_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing data.</dd>
-	<dt>{@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
+	<dt>{@value Servlets#DATA_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing data.</dd>
+	<dt>{@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
 	<dt>{@value #DEBUG_INIT_PARAMETER}</dt> <dd>Whether debugging is turned on.</dd> 
 	<dt>{@value #DEBUG_REPORT_LEVEL_INIT_PARAMETER}</dt> <dd>The level of debug reporting for the JVM of type {@link Debug.ReportLevel}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
 	<dt>{@value #LOG_HTTP_INIT_PARAMETER}</dt> <dd>Whether HTTP communication is logged.</dd> 
@@ -55,7 +71,7 @@ public class BasicHTTPServlet extends HttpServlet
 		After the first retrieval, this directory is cached.
 		@param context The servlet context from which to retrieve init parameters.
 		@return A file representing the preferred data directory.
-		@exception ServletException if the {@value ServletConstants#DATA_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@exception ServletException if the {@value ServletUtilities#DATA_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
 		@see ServletUtilities#getDataDirectory(ServletContext)
 		*/
 /*TODO del if not needed
@@ -80,7 +96,7 @@ public class BasicHTTPServlet extends HttpServlet
 		After the first retrieval, this directory is cached.
 		@param context The servlet context from which to retrieve init parameters.
 		@return A file representing the preferred log directory.
-		@exception ServletException if the {@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@exception ServletException if the {@value ServletUtilities#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
 		@see ServletUtilities#getLogDirectory(ServletContext)
 		*/
 /*TODO del if not needed
@@ -106,8 +122,8 @@ public class BasicHTTPServlet extends HttpServlet
 		The first servlet to request this file gets priority.
 		@param context The servlet context from which to retrieve init parameters.
 		@return The file for debug logging.
-		@exception ServletException if the {@value ServletConstants#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
-		@see ServletUtilities#getLogDirectory(ServletContext)
+		@exception ServletException if the {@value Servlets#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
+		@see Servlets#getLogDirectory(ServletContext)
 		*/
 		protected static File getDebugLogFile(final ServletContext context)
 		{
@@ -115,7 +131,7 @@ public class BasicHTTPServlet extends HttpServlet
 			{
 				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
 				final String logFilename="debug "+logFilenameDateFormat.format(new Date())+".log";	//create a filename in the form "date debug.log" TODO use a constant
-				debugLogFile=new File(ServletUtilities.getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
+				debugLogFile=new File(getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
 			}
 			return debugLogFile;	//return the log file
 		}
@@ -316,7 +332,7 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*G***fix
+/*TODO fix
 Debug.setDebug(true);
 Debug.setVisible(true);
 */
@@ -348,7 +364,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		try
 		{
-			if(!OPTIONS_METHOD.equals(request.getMethod()))	//G***testing
+			if(!OPTIONS_METHOD.equals(request.getMethod()))	//TODO testing
 				checkAuthorization(request);	//check to see if the request is authorized
 			doMethod(request.getMethod(), request, response);	//allow the subclass to do special processing if needed
 		}
@@ -412,10 +428,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final HTTPUnauthorizedException unauthorizedException)	//401 Unauthorized
 		{
-//G***del Debug.trace("unauthorized; ready to issue challenge:", unauthorizedException.getAuthenticateChallenge());
-			
-			
-			//G***testing
+			//TODO testing
 			response.setHeader(DAV_HEADER, "1,2");	//we support WebDAV levels 1 and 2
 				//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
@@ -636,12 +649,10 @@ Debug.trace("path info:", request.getPathInfo());
 		if(credentials!=null)	//if we have credentials
 		{
 			final String principalID=credentials.getPrincipalID();	//get the ID of the principal
-//TODO delDebug.trace("checking credentials with ID", principalID);
-			final int separatorIndex=CharSequences.indexOf(principalID, '\\');	//G***testing
+			final int separatorIndex=CharSequences.indexOf(principalID, '\\');	//TODO testing
 			if(separatorIndex>=0)
 			{
-//TODO del Debug.trace("using real ID", principalID.substring(separatorIndex+1));
-				return getPrincipal(principalID.substring(separatorIndex+1));	//G***testing
+				return getPrincipal(principalID.substring(separatorIndex+1));	//TODO testing
 			}
 			else
 			{
@@ -652,7 +663,7 @@ Debug.trace("path info:", request.getPathInfo());
 		{
 			return null;	//there is no principal
 		}
-//G***del		return credentials!=null ? getPrincipal(credentials.getPrincipalID()) : null;	//get the principal providing credentials, if there are credentials
+//TODO del		return credentials!=null ? getPrincipal(credentials.getPrincipalID()) : null;	//get the principal providing credentials, if there are credentials
 	}
 
 	/**Looks up a principal from the given ID.

@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.net.http;
 
 import java.io.*;
@@ -11,10 +27,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.DocumentBuilder;
 
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
-
-import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.io.ContentTypeConstants.*;
 import static com.globalmentor.io.ContentTypes.*;
@@ -22,8 +34,9 @@ import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
 import static com.globalmentor.net.URIs.*;
-import static com.globalmentor.net.http.HTTPConstants.*;
-import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
+import static com.globalmentor.net.http.HTTP.*;
+import static com.globalmentor.net.http.HTTPServlets.*;
+import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
@@ -34,6 +47,9 @@ import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.xml.XMLSerializer;
 import com.globalmentor.util.*;
 import com.globalmentor.util.Collections;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 /**The base servlet class for implementing an HTTP server that access resources.
 @see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
@@ -64,14 +80,14 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	private final static Pattern[] REDIRECT_UNSUPPORTED_AGENTS=new Pattern[]
 		  {
 				Pattern.compile("^gnome-vfs.*"),	//Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
-//G***del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
+//TODO del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
 				Pattern.compile("Microsoft Data Access Internet Publishing Provider.*"),	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 				Pattern.compile("Microsoft-WebDAV-MiniRedir/5\\.1\\.2600.*"),	//http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html
 				Pattern.compile("^DAVAccess/1\\.[01234]\\.[1234].*"),	//iCal; see http://macintouch.com/panreader02.html
 				Pattern.compile("^Dreamweaver-WebDAV-SCM1\\.0[23].*"),	//Dreamweaver MX, 2003; see http://archive.webct.com/docs/mail/nov03/0018.html
 				Pattern.compile("^neon.*"),	//neon; see http://archive.webct.com/docs/mail/nov03/0018.html ; http://www.mail-archive.com/tomcat-dev@jakarta.apache.org/msg53373.html
 				Pattern.compile("^WebDAVFS.*"),	//Macintosh OS X Jaquar; see http://www.askbjoernhansen.com/archives/2002/08/27/000115.html
-//G***del				"^WebDAVFS/1.[012]",	//Macintosh; see http://www.macosxhints.com/article.php?story=20021114063433862
+//TODO del				"^WebDAVFS/1.[012]",	//Macintosh; see http://www.macosxhints.com/article.php?story=20021114063433862
 				Pattern.compile("^WebDrive.*")	//http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 		  };
 
@@ -87,17 +103,14 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	protected static boolean isRedirectSupported(final HttpServletRequest request)	//TODO maybe transfer this to BasicServlet
 	{
 		final String userAgent=getUserAgent(request);	//get the user agent sending this request
-//G***del Debug.trace("checking user agent for redirect support", userAgent);
 		for(final Pattern pattern:REDIRECT_UNSUPPORTED_AGENTS)	//look at each agent not supporting redirects
 		{
-//G***del Debug.trace("checking pattern", pattern);
 			if(pattern.matcher(userAgent).matches())	//if this is a buggy user agent
 			{
 				return false;	//show that we recognize this user agent as one not correctly supporting redirects
 			}
 		}
 		return true;	//if we didn't recognize the user agent, we assume it supports redirects
-//G***del		return false;	//TODO fix
 	}
 	
 	/**Services the OPTIONS method.
@@ -518,8 +531,6 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
 //	TODO del Debug.trace("requested URI", requestedResourceURI);
-//G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
-//G***del Debug.trace("exists?", exists(requestURI));
 		final String requestResourceURIString=requestedResourceURI.toString();	//get the string version of the request URI
 		if(!endsWith(requestResourceURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
 		{
@@ -584,12 +595,10 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   @exception IllegalArgumentException if the given URI is not absolute with an absolute path.
   @see HttpServletRequest#getRequestURL()
   */
-/*G***fix
+/*TODO fix
 	protected URI getResourceURI(final URI requestURI)
 	{
 Debug.trace("request URI", requestURI);
-//G***del Debug.trace("ends with slash?", endsWith(requestURIString, PATH_SEPARATOR));
-//G***del Debug.trace("exists?", exists(requestURI));
 		final String requestURIString=requestURI.toString();	//get the string version of the request URI
 		if(!endsWith(requestURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
 		{
@@ -836,7 +845,7 @@ Debug.trace("sending redirect", redirectURI);
 	@return An input stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource, such as a missing file or a resource that has no contents.
 	*/
-	protected abstract InputStream getInputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract InputStream getInputStream(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 
 	/**Retrieves an output stream to the given resource.
 	@param request The HTTP request in response to which the output stream is being retrieved.
@@ -844,7 +853,7 @@ Debug.trace("sending redirect", redirectURI);
 	@return An output stream to the given resource.
 	@exception IOException Thrown if there is an error accessing the resource.
 	*/
-	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 
 	/**Creates a resource and returns an output stream for storing content.
 	@param request The HTTP request in response to which a resource is being created.
@@ -896,6 +905,6 @@ Debug.trace("sending redirect", redirectURI);
 	@return A list of child resources.
 	@exception IOException Thrown if there is an error retrieving the list of child resources.
 	*/
-	protected abstract List<R> getChildResources(final HttpServletRequest request, final R resource) throws IOException;	//G***do we want to pass the resource or just the URI here?
+	protected abstract List<R> getChildResources(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 
 }

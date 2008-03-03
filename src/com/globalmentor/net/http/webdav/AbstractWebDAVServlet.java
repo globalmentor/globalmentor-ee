@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.net.http.webdav;
 
 import java.io.*;
@@ -8,12 +24,11 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.globalmentor.net.http.HTTPConstants.*;
-import static com.globalmentor.net.http.webdav.WebDAVConstants.*;
-
 import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
+import static com.globalmentor.net.http.HTTP.*;
+import static com.globalmentor.net.http.HTTPServlets.*;
+import static com.globalmentor.net.http.webdav.WebDAV.*;
 import com.globalmentor.text.xml.XML;
 import com.globalmentor.util.*;
 
@@ -214,13 +229,11 @@ Debug.trace("is overwrite?", overwrite);
 	protected void doPropFind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("doing propfind for URI", resourceURI);
 		if(true/*TODO fix---is this valid for WebDAV? LIST_DIRECTORIES*/)	//if we allow directory listing
 		{
 			if(exists(request, resourceURI))	//if the resource exists
 			{
 				final Depth depth=getDepth(request);	//determine the requested depth
-Debug.trace("depth requested:", depth);
 				DecoratorIDedMappedList<URI, WebDAVPropertyName> propertyList=ALL_PROPERTIES;	//default to listing all properties
 				final WebDAVXMLGenerator webdavXMLGenerator=new WebDAVXMLGenerator();	//create a WebDAV XML generator
 				try
@@ -228,7 +241,6 @@ Debug.trace("depth requested:", depth);
 					final Document document=getXML(request, webdavXMLGenerator.getDocumentBuilder());	//get the XML from the request body
 					if(document!=null)	//if there was an XML document in the request
 					{
-	Debug.trace("Found XML request content:", XML.toString(document));
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
 						propertyList=WebDAVXMLProcessor.getPropfindProperties(request, documentElement);	//get the property list from the XML document
@@ -382,10 +394,10 @@ Debug.trace("checking authorization for requested destination", requestedDestina
 	@param request The HTTP request in response to which properties are being retrieved.
 	@param resource The resource the properties of which should be found.
 	@param propertyElement The XML element which will receive a representation of the resource properties.
-	@param properties A list of all requested properties, or {@link WebDAVConstants#ALL_PROPERTIES} or {@link WebDAVConstants#PROPERTY_NAMES} indicating all properties or all property names, respectively.
+	@param properties A list of all requested properties, or {@link WebDAV#ALL_PROPERTIES} or {@link WebDAV#PROPERTY_NAMES} indicating all properties or all property names, respectively.
 	@param webdavXMLGenerator The generator for constructing XML to represent WebDAV information.
-	@see WebDAVConstants#ALL_PROPERTIES
-	@see WebDAVConstants#PROPERTY_NAMES
+	@see WebDAV#ALL_PROPERTIES
+	@see WebDAV#PROPERTY_NAMES
 	@exception DOMException if there is an error updating the properties element.
 	@exception IOException if there is an error accessing the resource.
 	*/
