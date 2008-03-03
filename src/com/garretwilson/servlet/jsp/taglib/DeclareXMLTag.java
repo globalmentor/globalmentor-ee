@@ -8,10 +8,10 @@ import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
 import com.globalmentor.io.ContentTypes;
-import com.globalmentor.text.xml.XMLUtilities;
+import com.globalmentor.text.xml.XML;
 
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
-import static com.globalmentor.text.xml.XMLUtilities.*;
+import static com.globalmentor.text.xml.XML.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**A tag for declaring a JSP to be XML.
@@ -75,7 +75,7 @@ public class DeclareXMLTag extends TagSupport
 				final String publicID=getPublicID();	//get the public ID
 				if(publicID!=null)	//if there is a document type public ID
 				{
-					mediaType=XMLUtilities.getContentType(publicID);	//get the content type for this doctype public ID
+					mediaType=XML.getContentType(publicID);	//get the content type for this doctype public ID
 				}
 				if(mediaType==null)	//if we still couldn't find a content type
 				{

@@ -14,7 +14,7 @@ import static com.garretwilson.net.http.HTTPConstants.*;
 import static com.garretwilson.net.http.webdav.WebDAVConstants.*;
 import static com.garretwilson.servlet.http.HttpServletUtilities.*;
 
-import com.globalmentor.text.xml.XMLUtilities;
+import com.globalmentor.text.xml.XML;
 import com.globalmentor.util.*;
 
 import org.w3c.dom.*;
@@ -228,7 +228,7 @@ Debug.trace("depth requested:", depth);
 					final Document document=getXML(request, webdavXMLGenerator.getDocumentBuilder());	//get the XML from the request body
 					if(document!=null)	//if there was an XML document in the request
 					{
-	Debug.trace("Found XML request content:", XMLUtilities.toString(document));
+	Debug.trace("Found XML request content:", XML.toString(document));
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
 						propertyList=WebDAVXMLProcessor.getPropfindProperties(request, documentElement);	//get the property list from the XML document
@@ -257,7 +257,7 @@ Debug.trace("depth requested:", depth);
 						//TODO add a response description here
 					}
 					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
-Debug.trace("Ready to send back XML:", XMLUtilities.toString(multistatusDocument));
+Debug.trace("Ready to send back XML:", XML.toString(multistatusDocument));
 					setXML(request, response, multistatusDocument);	//put the XML in our response and send it back, compressed if possible
 				}
 				catch(final DOMException domException)	//any XML problem here is the server's fault
