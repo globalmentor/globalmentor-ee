@@ -343,7 +343,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			{
 				final String contentTypeString=getURLConnection().getContentType();	//get the content type of the URL connection
 				//URLConnection returns a non-standard "content/unknown" type if the content is unknown rather than returning null as the API claims; convert this value to null
-				return contentTypeString!=null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? createContentType(contentTypeString) : null;	//return a new content type if a content type is known
+				return contentTypeString!=null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? getContentTypeInstance(contentTypeString) : null;	//return a new content type if a content type is known
 			}
 
 			/**Returns the content length of the resource.

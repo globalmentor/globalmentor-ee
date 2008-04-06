@@ -33,9 +33,11 @@ import com.globalmentor.io.*;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.net.*;
 import com.globalmentor.net.mime.*;
+import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.util.*;
 
+import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Enums.*;
@@ -103,9 +105,9 @@ public class HTTPServlets
 				final String token=stringTokenizer.nextToken();	//get the next token
 				try
 				{
-					contentTypeList.add(new ContentType(trimRightFirst(token, ';').toString().trim()));	//add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(getContentTypeInstance(trimRightFirst(token, ';').toString().trim()));	//add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				}
-				catch(final javax.mail.internet.ParseException parseException)	//ignore content type strings that aren't syntactically correct
+				catch(final ArgumentSyntaxException argumentSyntaxException)	//ignore content type strings that aren't syntactically correct
 				{			
 				}
 			}

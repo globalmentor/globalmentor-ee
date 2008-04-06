@@ -84,7 +84,7 @@ public class DeclareXMLTag extends TagSupport
 			ContentType mediaType=null;	//we'll determine the media type if we can
 			if(contentType!=null)	//if there is a content type string
 			{
-				mediaType=ContentTypes.createContentType(contentType);	//create a new media type
+				mediaType=ContentTypes.getContentTypeInstance(contentType);	//create a new media type
 			}
 			else	//if there is no content type string
 			{

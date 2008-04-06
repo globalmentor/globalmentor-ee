@@ -11,10 +11,12 @@ import javax.mail.internet.*;
 import com.garretwilson.faces.component.ComponentUtilities;
 import com.garretwilson.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.globalmentor.java.Classes;
+import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
+import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
@@ -149,7 +151,7 @@ Debug.error(exception);
 				try
 				{
 					final byte[] bytes=fileItem.get();	//get the bytes of the file
-					final ContentType contentType=new ContentType(fileItem.getContentType());	//get the content type of the file
+					final ContentType contentType=getContentTypeInstance(fileItem.getContentType());	//get the content type of the file
 //G***del Debug.trace("uploaded file content type", contentType);
 					if(isText(contentType))	//if this is a text file
 					{
@@ -163,9 +165,9 @@ Debug.error(exception);
 						return bytes;	//return the binary contents of the file
 					}
 				}
-				catch(final ParseException parseException)	//if there is a problem parsing the content type
+				catch(final ArgumentSyntaxException argumentSyntaxException)	//if there is a problem parsing the content type
 				{
-					throw new ConverterException(parseException);
+					throw new ConverterException(argumentSyntaxException);
 				}
 				catch(final UnsupportedEncodingException unsupportedEncodingException)	//if we don't recognize the file encoding
 				{

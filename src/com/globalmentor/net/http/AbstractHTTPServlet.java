@@ -820,7 +820,7 @@ Debug.trace("sending redirect", redirectURI);
 	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException
 	{
 		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getURI()));	//ask the servlet context for the MIME type
-		return contentTypeString!=null ? createContentType(contentTypeString) : null;	//create a content type object if a content type string was returned
+		return contentTypeString!=null ? getContentTypeInstance(contentTypeString) : null;	//create a content type object if a content type string was returned
 	}
 
 	/**Determines the content length of the given resource.
