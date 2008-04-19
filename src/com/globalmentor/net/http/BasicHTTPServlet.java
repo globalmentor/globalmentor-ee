@@ -449,6 +449,11 @@ Debug.trace("path info:", request.getPathInfo());
 			Debug.warn(httpException);	//log the problem
 			response.sendError(httpException.getStatusCode(), httpException.getMessage());	//send back the status code as an error
 		}
+		catch(final IOException ioException)	//if there is some other I/O error
+		{
+			Debug.error(ioException);	//log the problem
+			throw ioException;	//rethrow the exception to let the container handle it
+		}
 		catch(final MissingResourceException missingResourceException)	//if there is a resource missing, the server isn't property configured
 		{
 			Debug.warn(missingResourceException);	//log the problem
