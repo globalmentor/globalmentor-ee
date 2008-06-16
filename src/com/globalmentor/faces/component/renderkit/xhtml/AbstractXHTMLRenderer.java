@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
@@ -10,8 +26,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.Renderer;
 
-import static com.globalmentor.faces.render.RenderUtilities.*;
-import static com.globalmentor.faces.taglib.xhtml.XHTMLTagConstants.*;
+import static com.globalmentor.faces.render.FacesRender.*;
+import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**Encapsulates basic XHTML rendering functionality.
@@ -97,10 +113,10 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 		protected Set<String> getPassthroughAttributeSet() {return passthroughAttributeSet;}
 
 	/**@return The attributes to pass through when rendering.*/
-//G***del	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
+//TODO del	public String[] getPassthroughAttributes() {return DEFAULT_PASSTHROUGH_ATTRIBUTES;}
 
 	/**@return The name of the XML element for the component.*/
-//G***del	protected abstract String getComponentElementName();
+//TODO del	protected abstract String getComponentElementName();
 
 	/**The name of the XML element for the component.*/
 	private final String componentElementName;

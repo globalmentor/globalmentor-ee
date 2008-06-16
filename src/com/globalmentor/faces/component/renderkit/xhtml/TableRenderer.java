@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
@@ -8,7 +24,7 @@ import javax.faces.context.ResponseWriter;
 
 import com.globalmentor.faces.component.UIColumnFacet;
 
-import static com.globalmentor.faces.component.ComponentUtilities.*;
+import static com.globalmentor.faces.component.FacesComponents.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**The renderer for an XHTML table based upon a <code>UIData</code> component.
@@ -97,7 +113,7 @@ public class TableRenderer extends DataRenderer
 					}
 				}
 			}
-//G***del			boolean isHeaderStarted=false;	//show that we haven't yet started the header
+//TODO del			boolean isHeaderStarted=false;	//show that we haven't yet started the header
 			final UIComponent tableHeader=data.getHeader();	//get the table header, if there is one
 				//if we have a table header or at least one column header
 			if((tableHeader!=null && tableHeader.isRendered()) || columnHeaderCount>0)
@@ -278,7 +294,7 @@ public class TableRenderer extends DataRenderer
 			if(columnCount>1)	//if more than one column is called for
 			{
 		    writer.writeAttribute(ELEMENT_TD_ATTRIBUTE_COLSPAN, String.valueOf(columnCount), null);	//colspan="columnCount"
-		    writer.writeAttribute(ELEMENT_TD_ATTRIBUTE_SCOPE, TD_SCOPE_COLGROUP, null);	//scope="colgroup" G***do we always want this, even for multicolumn headers that aren't table headers (if there is such a thing)?
+		    writer.writeAttribute(ELEMENT_TD_ATTRIBUTE_SCOPE, TD_SCOPE_COLGROUP, null);	//scope="colgroup" TODO do we always want this, even for multicolumn headers that aren't table headers (if there is such a thing)?
 			}
 			//TODO render the style class
 			encodeTree(facet, context);	//encode this facet and all its descendants 

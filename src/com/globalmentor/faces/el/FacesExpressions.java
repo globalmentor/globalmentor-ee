@@ -1,22 +1,43 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.el;
 
-import java.io.*;
-import java.util.*;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
-import com.globalmentor.io.*;
-import com.globalmentor.util.Debug;
-
-import static com.globalmentor.faces.el.ExpressionConstants.*;
-import static com.globalmentor.java.Characters.*;
-
 /**Utilities for working with the extended JSF expression language.
 @author Garret Wilson
 */
-public class ExpressionUtilities
+public class FacesExpressions
 {
+
+	/**The JSF EL '#' character, indicating a reference.*/
+	public final static char REFERENCE_CHAR='#';
+	/**The JSF EL '{' character, indicating the start of a reference expression.*/
+	public final static char REFERENCE_EXPRESSION_BEGIN_CHAR='{';
+	/**The JSF EL '}' character, indicating the end of a reference expression.*/
+	public final static char REFERENCE_EXPRESSION_END_CHAR='}';
+	/**The extended JSF EL '(' character, indicating the start of a group.*/
+	public final static char GROUP_BEGIN_CHAR='(';
+	/**The extended JSF EL ')' character, indicating the end of a group.*/
+	public final static char GROUP_END_CHAR=')';
+	/**The extended JSF EL ',' character, which separates parameters.*/
+	public final static char PARAMETER_SEPARATOR_CHAR=',';
 
 	/**Creates an expression representing either a reference of unknown type or
 		a literal string value if no reference is present.
@@ -80,10 +101,9 @@ public class ExpressionUtilities
 			}
 			else	//if this is not a method reference, it must be a value reference
 			{
-//G***del Debug.setDebug(true);
-//G***del Debug.trace("creating value-binding expression for string: ", string);
+//TODO del Debug.trace("creating value-binding expression for string: ", string);
 				final ValueBinding valueBinding=application.createValueBinding(string);	//create a value binding for the string
-//G***Debug.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
+//TODO Debug.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
 				return new ValueBindingExpression(valueBinding);	//create and return a value binding expression from the value binding we created
 			}
 		}
@@ -122,9 +142,9 @@ public class ExpressionUtilities
 	public static boolean isReferenceExpression(final String string)
 	{
 		return string.length()>=3	//if there is enough room for the reference characters
-				&& string.charAt(0)==REFERENCE_CHAR	//#
-				&& string.charAt(1)==REFERENCE_EXPRESSION_BEGIN_CHAR	//.{...
-				&& string.charAt(string.length()-1)==REFERENCE_EXPRESSION_END_CHAR;	//...}
+				&& string.charAt(0)==FacesExpressions.REFERENCE_CHAR
+				&& string.charAt(1)==FacesExpressions.REFERENCE_EXPRESSION_BEGIN_CHAR
+				&& string.charAt(string.length()-1)==FacesExpressions.REFERENCE_EXPRESSION_END_CHAR;	//...}
 	}
 
 	/**Determines if the expression conforms to the syntax requirements of an
@@ -138,8 +158,8 @@ public class ExpressionUtilities
 	{
 		if(isReferenceExpression(string))	//if the string is a reference
 		{
-			final int groupBeginIndex=string.indexOf(GROUP_BEGIN_CHAR);	//find out where this group begins
-			return groupBeginIndex>=0 && groupBeginIndex<string.indexOf(GROUP_END_CHAR);	//see if there are group characters in order (...)
+			final int groupBeginIndex=string.indexOf(FacesExpressions.GROUP_BEGIN_CHAR);	//find out where this group begins
+			return groupBeginIndex>=0 && groupBeginIndex<string.indexOf(FacesExpressions.GROUP_END_CHAR);	//see if there are group characters in order (...)
 		}
 		return false;	//this isn't even a reference
 	}
@@ -152,7 +172,8 @@ public class ExpressionUtilities
 	*/
 	public static String createValueBindingExpressionString(final String expression)
 	{
-		return new StringBuilder().append(REFERENCE_CHAR).append(REFERENCE_EXPRESSION_BEGIN_CHAR)
-				.append(expression).append(REFERENCE_EXPRESSION_END_CHAR).toString();
+		return new StringBuilder().append(FacesExpressions.REFERENCE_CHAR).append(FacesExpressions.REFERENCE_EXPRESSION_BEGIN_CHAR)
+				.append(expression).append(FacesExpressions.REFERENCE_EXPRESSION_END_CHAR).toString();
 	}
+
 }

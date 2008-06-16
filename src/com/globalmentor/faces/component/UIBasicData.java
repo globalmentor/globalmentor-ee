@@ -1,23 +1,26 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.*;
 
 import javax.faces.context.*;
 import javax.faces.component.*;
 import javax.faces.event.*;
-import javax.faces.model.ArrayDataModel;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.ResultDataModel;
-import javax.faces.model.ResultSetDataModel;
-import javax.faces.model.ScalarDataModel;
-
-import static com.globalmentor.faces.component.ComponentUtilities.*;
-
-import com.globalmentor.faces.el.*;
-import com.globalmentor.util.*;
 
 /**Basic data component with enhanced functionality.
 This class also creates a work-around for the JSF RI bug that erroneously
@@ -37,7 +40,7 @@ public class UIBasicData extends UIData
 	}
 
 
-/*G***del
+/*TODO del
     public void setRowIndex(int rowIndex)
 		{
 			Debug.trace("basic data setting row index:", rowIndex);
@@ -53,7 +56,7 @@ else
 	Debug.trace("row data not available; let's find out why.");
 	final Object value=getValue();
 	Debug.trace("value is: ", value);
-//G***del	Debug.trace("data model is:", getDataModel());
+//TODO del	Debug.trace("data model is:", getDataModel());
 	if(value instanceof Object[])
 	{
 		final Object[] objects=(Object[])value;
@@ -107,7 +110,7 @@ Debug.trace("variable is now:", requestMap.get(getVar()));
 	*/
 	public void broadcast(final FacesEvent event) throws AbortProcessingException
 	{
-		if(ComponentUtilities.getParent(this, UIData.class)!=null)	//if we're nested within another UIData
+		if(FacesComponents.getParent(this, UIData.class)!=null)	//if we're nested within another UIData
 		{
 			if(getValueBinding("value")!=null)	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
 			{

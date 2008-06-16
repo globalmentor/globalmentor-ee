@@ -1,14 +1,29 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.application;
 
 import javax.faces.application.*;
 import javax.faces.component.*;
 import javax.faces.context.FacesContext;
 
-
 import static com.globalmentor.faces.Faces.*;
-import static com.globalmentor.faces.component.ComponentConstants.*;
-import static com.globalmentor.faces.component.ComponentUtilities.*;
-import static com.globalmentor.faces.el.ExpressionUtilities.*;
+import static com.globalmentor.faces.component.FacesComponentConstants.*;
+import static com.globalmentor.faces.component.FacesComponents.*;
+import static com.globalmentor.faces.el.FacesExpressions.*;
 
 import com.globalmentor.faces.component.*;
 import com.globalmentor.faces.el.ExpressionMethodBinding;
@@ -17,7 +32,7 @@ import com.globalmentor.util.Debug;
 /**Utilities for working with JSF applications.
 @author Garret Wilson
 */
-public class ApplicationUtilities
+public class FacesApplications
 {
 	/**Creates a <code>UIColumn</code> component.
 	@param application The current JSF application
@@ -25,9 +40,9 @@ public class ApplicationUtilities
 	*/
 	public static UIColumn createColumn(final Application application)	//TODO probably require a unique ID here, too
 	{
-		final String id=FacesContext.getCurrentInstance().getViewRoot().createUniqueId();	//G***testing
+		final String id=FacesContext.getCurrentInstance().getViewRoot().createUniqueId();	//TODO testing
 		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE, id);	//create a column component
-/*G***del
+/*TODO del
 Debug.setDebug(true);
 Debug.setVisible(true);
 Debug.trace("created column with ID", id);
@@ -334,7 +349,7 @@ Debug.trace("created column with ID", id);
 	@param componentType The type of component to create.
 	@return A new component.
 	*/
-/*G***del; force all components to give an ID
+/*TODO del; force all components to give an ID
 	public static UIComponent createComponent(final Application application, final String componentType)
 	{
 		return createComponent(application, componentType, FacesContext.getCurrentInstance().getViewRoot().createUniqueId());	//TODO fix

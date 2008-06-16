@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
@@ -6,10 +22,8 @@ import java.util.*;
 import javax.faces.component.*;
 import javax.faces.context.*;
 
-import com.globalmentor.util.Debug;
-
-import static com.globalmentor.faces.component.ComponentUtilities.*;
-import static com.globalmentor.faces.taglib.xhtml.XHTMLTagConstants.*;
+import static com.globalmentor.faces.component.FacesComponents.*;
+import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element.
@@ -43,10 +57,6 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-*/
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
@@ -108,18 +118,13 @@ Debug.setVisible(true);
 	*/
 	public void decode(final FacesContext context, final UIComponent component)
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-Debug.trace("decoding command", component, "client id", component.getClientId(context));
-*/
 			//TODO this code should go in a generic AbstractInputRenderer---or maybe even something more general than that
 		if(isMutable(component))	//if the component is mutable
 		{
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
 			final String clientID=component.getClientId(context);	//get the component's client ID
 			final Object value=requestParameterMap.get(clientID);	//see if there is a value for our component
-//G***del Debug.trace("found value:", value);
+//TODO del Debug.trace("found value:", value);
 				//if there is a value for our component
 			if(value!=null)
 			{

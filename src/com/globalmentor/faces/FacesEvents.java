@@ -21,7 +21,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 
-import com.globalmentor.faces.component.ComponentUtilities;
+import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.util.NameValuePair;
 
 /**Utilities for working with JavaServer Faces events.
@@ -40,7 +40,7 @@ public class FacesEvents
 	*/
 	public static Object getParameter(final FacesEvent event, final FacesContext context, final String name)
 	{
-		return ComponentUtilities.getParameter(event.getComponent(), context, name);	//get the parameters for the event's component
+		return FacesComponents.getParameter(event.getComponent(), context, name);	//get the parameters for the event's component
 	}
 	/**Retrieves the parameters of a given event, derived from the names and
 	 	values of all direct <code>UIParameter</code> children of the comopnent of
@@ -51,7 +51,7 @@ public class FacesEvents
 	*/
 	public static NameValuePair<String, Object>[] getParameters(final FacesEvent event, final FacesContext context)
 	{
-		return ComponentUtilities.getParameters(event.getComponent(), context);	//get all the parameters for the event's component
+		return FacesComponents.getParameters(event.getComponent(), context);	//get all the parameters for the event's component
 	}
 
 	/**Creates and returns a map of the names and values of all direct
@@ -65,7 +65,7 @@ public class FacesEvents
 	*/
 	public static Map<String, Object> getParameterMap(final FacesEvent event, final FacesContext context)
 	{
-		return ComponentUtilities.getParameterMap(event.getComponent(), context);	//get the parameters for the event's component		
+		return FacesComponents.getParameterMap(event.getComponent(), context);	//get the parameters for the event's component		
 	}
 
 }

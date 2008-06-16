@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component;
 
 import java.io.*;
@@ -104,11 +120,6 @@ public class UIBasicForm extends UIForm
 	*/
 	public void processDecodes(final FacesContext context)
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(context));
-*/
 		FacesContext decodeContext=context;	//we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype=(String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE);	//get the enctype
 		if(enctype!=null && XHTML.MULTIPART_FORM_DATA_CONTENT_TYPE.match(enctype))	//if our form was multipart-encoded, see if this is a multipart submission
@@ -119,12 +130,12 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 				if(FileUpload.isMultipartContent(request))	//if this is multipart content
 				{			
 	Debug.trace("is multipart content");
-	/*G***fix or delete
+	/*TODO fix or delete
 					final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
 						//create a factory to populate a map with form fields
 					final MultipartFormFieldFactory formFieldFactory=new MultipartFormFieldFactory(diskFileUpload.getFileItemFactory());
 					diskFileUpload.setFileItemFactory(formFieldFactory);	//use our special factory for creating file items
-	//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
+	//TODO del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
 					diskFileUpload.setSizeMax(-1);	//don't reject anything
 					try	//try to parse the file items submitted in the request
 					{
@@ -139,7 +150,7 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 						boolean foundClientID=false;	//start by assuming this is not a submission for our form
 	*/
 					final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
-	//G***del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
+	//TODO del				diskFileUpload.setSizeThreshold(Integer.MAX_VALUE);	//don't write anything to the disk
 					diskFileUpload.setSizeMax(-1);	//don't reject anything
 					try	//try to parse the file items submitted in the request
 					{
@@ -150,16 +161,16 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 						for(final Object object:fileItems)	//look at each file item
 						{
 							final FileItem fileItem=(FileItem)object;	//cast the object to a file item
-/*G***del
+/*TODO del
 		Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
-		if(fileItem.isFormField())	//G***del
+		if(fileItem.isFormField())	//TODO del
 		{
 			Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 		}
 */
 							if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
 							{
-//G***del	Debug.trace("found our client ID!", clientID);
+//TODO del	Debug.trace("found our client ID!", clientID);
 								foundClientID=true;	//show that we found the client ID
 								break;	//stop searching for the client ID
 							}
@@ -191,7 +202,7 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 				}			
 			}
 		}
-//G***del Debug.trace("ready to process default form decodes");
+//TODO del Debug.trace("ready to process default form decodes");
 			//if this form submision was meant for us, we'll have set up the request parameters with the submitted values
 		super.processDecodes(decodeContext);	//do the default decode processing with either the context we received, or the one we wrapped to return our extra parameters
 	}
@@ -238,13 +249,13 @@ Debug.trace("processing decodes in UIBasicForm with client ID", getClientId(cont
 		*/
 		public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName)
 		{
-//G***del 	Debug.trace("ready to create a file item");
+//TODO del 	Debug.trace("ready to create a file item");
 			final FileItem fileItem;	//we'll store a file item here to return
 			if(isFormField)	//if this is a form field
 			{
 					//delegate to the default factory
 				fileItem=getDefaultFileItemFactory().createItem(fieldName, contentType, isFormField, fileName);
-//G***del		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+//TODO del		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 				getFormFieldMap().put(fileItem.getFieldName(), fileItem.getString());	//store this field in this map
 			}
 			else	//if this is not a form field

@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component;
 
 import java.io.File;
@@ -18,14 +34,14 @@ import com.globalmentor.util.NameValuePair;
 
 import static com.globalmentor.faces.FacesValues.*;
 import static com.globalmentor.faces.application.FacesMessages.*;
-import static com.globalmentor.faces.component.ComponentConstants.*;
-import static com.globalmentor.faces.el.ExpressionUtilities.*;
+import static com.globalmentor.faces.component.FacesComponentConstants.*;
+import static com.globalmentor.faces.el.FacesExpressions.*;
 import static com.globalmentor.java.Java.*;
 
 /**Utilities for working with JavaServer Faces components.
 @author Garret Wilson
 */
-public class ComponentUtilities
+public class FacesComponents
 {
 
 	//message methods
@@ -197,7 +213,7 @@ public class ComponentUtilities
 				nameValuePairList.add(new NameValuePair<String, Object>(parameter.getName(), parameter.getValue()));	//create a new name-value pair representing this parameter and add it to our list 
 			}
 		}
-		return nameValuePairList.toArray(new NameValuePair[nameValuePairList.size()]);	//G***why won't this allow the generic designation?
+		return nameValuePairList.toArray(new NameValuePair[nameValuePairList.size()]);	//TODO why won't this allow the generic designation?
 	}
 
 	/**Creates and returns a map of the names and values of all direct
@@ -314,7 +330,7 @@ public class ComponentUtilities
 	/**Determines if a component is disabled.
 	@param component The component to check.
 	@return <code>true</code> if the component is disabled.
-	@see ComponentConstants#DISABLED_ATTRIBUTE
+	@see FacesComponentConstants#DISABLED_ATTRIBUTE
 	*/
 	public static boolean isDisabled(final UIComponent component)
 	{
@@ -324,7 +340,7 @@ public class ComponentUtilities
 	/**Determines if a component is read-only.
 	@param component The component to check.
 	@return <code>true</code> if the component is read-only.
-	@see ComponentConstants#READONLY_ATTRIBUTE
+	@see FacesComponentConstants#READONLY_ATTRIBUTE
 	*/
 	public static boolean isReadonly(final UIComponent component)
 	{
@@ -529,11 +545,9 @@ public class ComponentUtilities
 	*/
 	protected static void setValueBinding(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-//G***del when works		final FacesContext facesContext=FacesContext.getCurrentInstance();	//get the JSF context
 		final Application application=FacesContext.getCurrentInstance().getApplication();	//get the JSF application
 			//create an expression and wrap it in a value binding
 		final ValueBinding valueBinding=new ExpressionValueBinding(createExpression(application, attributeValue));
-//G***del when works		final ValueBinding valueBinding=facesContext.getApplication().createValueBinding(attributeValue);	//create a value binding for the attribute value
 		component.setValueBinding(attributeName, valueBinding);	//set the value binding for the component
 	}
 

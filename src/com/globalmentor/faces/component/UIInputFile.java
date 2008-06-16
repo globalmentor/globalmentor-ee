@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component;
 
 import java.io.*;
@@ -8,7 +24,7 @@ import javax.faces.convert.*;
 import javax.faces.el.*;
 import javax.mail.internet.*;
 
-import com.globalmentor.faces.component.ComponentUtilities;
+import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.globalmentor.java.Classes;
 import com.globalmentor.text.ArgumentSyntaxException;
@@ -41,7 +57,7 @@ public class UIInputFile extends UIInput
 		/**@return The directory in which to store files, if there is one.*/
 		public File getDirectory()
 		{
-			return ComponentUtilities.getValue(this, getFacesContext(), directory, DIRECTORY_VAR);	//get the local value or value binding
+			return FacesComponents.getValue(this, getFacesContext(), directory, DIRECTORY_VAR);	//get the local value or value binding
 		}		
 
 		/**Sets the directory.
@@ -60,7 +76,7 @@ public class UIInputFile extends UIInput
 		*/
 		public String getFilename()
 		{
-			return ComponentUtilities.getValue(this, getFacesContext(), filename, FILENAME_VAR);	//get the local value or value binding
+			return FacesComponents.getValue(this, getFacesContext(), filename, FILENAME_VAR);	//get the local value or value binding
 		}		
 
 		/**Sets the filename to use when storing the file.
@@ -95,8 +111,6 @@ public class UIInputFile extends UIInput
 	*/
 	protected Object getConvertedValue(final FacesContext context, final Object newSubmittedValue) throws ConverterException
 	{
-//G***del Debug.setDebug(true);	//G***del
-//G***del Debug.trace("getting converted value of input field");
 			//TODO make sure the original FileItem gets removed elsewhere in the application, in case there's an error, so it won't be sitting around taking up space
 		final Object convertedValue;	//we'll determined the converted value
 		final Object defaultConvertedValue=super.getConvertedValue(context, newSubmittedValue);	//do the default conversion
@@ -147,15 +161,15 @@ Debug.error(exception);
 			}
 			else	//if there is no directory specified
 			{
-//G***del Debug.trace("no directory");
+//TODO del Debug.trace("no directory");
 				try
 				{
 					final byte[] bytes=fileItem.get();	//get the bytes of the file
 					final ContentType contentType=getContentTypeInstance(fileItem.getContentType());	//get the content type of the file
-//G***del Debug.trace("uploaded file content type", contentType);
+//TODO del Debug.trace("uploaded file content type", contentType);
 					if(isText(contentType))	//if this is a text file
 					{
-//G***del Debug.trace("is text type");
+//TODO del Debug.trace("is text type");
 						final String encoding=UTF_8;	//TODO get the encoding from the file if we can; look at the content type, test a text file, and look into an XML file
 						final String string=new String(bytes, encoding);	//convert the bytes to a string using the correct encoding
 						return string;	//return the string representation of the file contents

@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component.renderkit.xhtml;
 
 import javax.faces.component.*;
@@ -16,10 +32,10 @@ public class ListRenderer extends DataRenderer
 	public static final String RENDERER_TYPE=UIList.COMPONENT_TYPE;
 
 	/**The name of the XML element for the component.*/
-//G***del	private final String componentElementName;
+//TODO del	private final String componentElementName;
 
 		/**@return The name of the XML element for the component.*/
-//G***del		protected String getComponentElementName() {return componentElementName;}
+//TODO del		protected String getComponentElementName() {return componentElementName;}
 
 	/**The name of the XML element for an item in a column.*/
 	private final String itemElementName;
@@ -48,7 +64,7 @@ public class ListRenderer extends DataRenderer
 	public ListRenderer(final String listElementName, final String itemElementName)
 	{
 		super(listElementName);	//construct the parent with the name of the XML list element
-//G***del		this.componentElementName=listElementName;
+//TODO del		this.componentElementName=listElementName;
 		this.itemElementName=itemElementName;
 	}
 

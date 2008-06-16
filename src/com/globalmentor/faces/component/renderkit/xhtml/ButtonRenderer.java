@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component.renderkit.xhtml;
 
 import java.io.IOException;
@@ -6,17 +22,14 @@ import java.util.*;
 
 import javax.faces.component.*;
 import javax.faces.context.*;
-import javax.faces.el.ValueBinding;
 import javax.faces.event.*;
 
-import com.globalmentor.faces.component.ComponentUtilities;
+import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.faces.component.UIBasicCommand;
 import com.globalmentor.faces.component.UIBasicForm;
-import com.globalmentor.util.Debug;
 
-import static com.globalmentor.faces.component.ComponentUtilities.*;
-import static com.globalmentor.faces.render.RenderUtilities.*;
-import static com.globalmentor.faces.taglib.xhtml.XHTMLTagConstants.*;
+import static com.globalmentor.faces.component.FacesComponents.*;
+import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
 import static com.globalmentor.javascript.JavaScript.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 
@@ -37,7 +50,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	protected final static String HIDDEN_FIELD_ID="button";
 
 	/**@return The name of the XML element for the component.*/
-//G***del	protected String getComponentElementName() {return ELEMENT_BUTTON;}
+//TODO del	protected String getComponentElementName() {return ELEMENT_BUTTON;}
 
 	/**Default constructor.*/
 	public ButtonRenderer()
@@ -52,11 +65,11 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	protected String getHiddenFieldClientID(final FacesContext context, final UIComponent component)
 	{
-			//G***testing	TODO try not to rely on UIBasicForm
-		final UIBasicForm parentForm=(UIBasicForm)ComponentUtilities.getParent(component, UIForm.class);	//get the parent form, if there is one
+			//TODO testing	TODO try not to rely on UIBasicForm
+		final UIBasicForm parentForm=(UIBasicForm)FacesComponents.getParent(component, UIForm.class);	//get the parent form, if there is one
 		assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
 		return parentForm.getHiddenFieldClientID(context);
-/*G***fix
+/*TODO fix
 		final String clientID=component.getClientId(context);	//get the component's client ID
 		return clientID+NamingContainer.SEPARATOR_CHAR+HIDDEN_FIELD_ID;	//construct a client ID for the hidden field
 */
@@ -71,9 +84,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
-//G***del Debug.setDebug(true);
-//G***del Debug.setVisible(true);
-/*G***fix
+/*TODO fix
 	if (renderedSet) {
     return (rendered);
 }
@@ -86,7 +97,7 @@ if (vb != null) {
 */
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 		final String clientID=component.getClientId(context);	//get the component's client ID
-//G***del Debug.trace("ready to try to encode button:", clientID);
+//TODO del Debug.trace("ready to try to encode button:", clientID);
 
 /*TODO fix without relying on UIBasicForm
 		if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
@@ -103,17 +114,17 @@ if (vb != null) {
 		}
 */
 		
-//G***del		renderPopupJavaScript(writer, null);	//G***testing
+//TODO del		renderPopupJavaScript(writer, null);	//TODO testing
 		super.encodeBegin(context, component);	//do the default encoding
 		if(component.isRendered())	//if the component should be rendered
 		{
 			final UICommand command=(UICommand)component;	//get the component as a command component
 
-//G***del Debug.setDebug(true);
-//G***del Debug.trace("**********encoding, action type is: ", command.getAction().getType(context));
-//G***del Debug.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
+//TODO del Debug.setDebug(true);
+//TODO del Debug.trace("**********encoding, action type is: ", command.getAction().getType(context));
+//TODO del Debug.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
 			
-//G***del Debug.trace("encoding command", command, "client id", clientID);
+//TODO del Debug.trace("encoding command", command, "client id", clientID);
 			writer.writeAttribute(ATTRIBUTE_NAME, clientID, CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			final String type;	//we'll deterine the type to generate
@@ -132,28 +143,28 @@ if (vb != null) {
 			{
 				writer.writeAttribute(ATTRIBUTE_VALUE, value, ATTRIBUTE_VALUE);	//write the value
 			}
-/*G***del
-			else	//G***testing
+/*TODO del
+			else	//TODO testing
 			{
-				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//G***testing
+				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//TODO testing
 			}
 */
-/*G***del
-			else	//G***testing
+/*TODO del
+			else	//TODO testing
 			{
-				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//G***testing
+				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//TODO testing
 			}
 */
-/*G***del
-			if(value!=null)	//if a value is given, write it as button content G***testing
+/*TODO del
+			if(value!=null)	//if a value is given, write it as button content TODO testing
 			{
-				writer.writeText(value, null);	//G***testing
+				writer.writeText(value, null);	//TODO testing
 			}
  */
 			if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
 			{
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
-				final UIForm parentForm=(UIForm)ComponentUtilities.getParent(component, UIForm.class);	//get the parent form, if there is one
+				final UIForm parentForm=(UIForm)FacesComponents.getParent(component, UIForm.class);	//get the parent form, if there is one
 				assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
 				final String parentFormID=parentForm.getClientId(context);	//get the ID of the parent form
 				final URI popupURI;	//see if we have a popup URI
@@ -173,68 +184,68 @@ if (vb != null) {
 				for(final Object confirm:confirms)	//for each confirmation parameter
 				{
 					onclickJavaScript.append(createIf(createNot(confirmLiteral(confirm.toString())), returnValue(Boolean.FALSE)));	//if(!confirm(confirmString){return false;}
-//G***del when works					onclickJavaScript.append("if(!confirm('"+confirm+"')) return false;");	//TODO fix with utilities
+//TODO del when works					onclickJavaScript.append("if(!confirm('"+confirm+"')) return false;");	//TODO fix with utilities
 				}
 				
-//G***fix the window name				public static String createName(final String string)
+//TODO fix the window name				public static String createName(final String string)
 				
 				if(popupURI!=null)	//if we have a popup URI
 				{
 					onclickJavaScript.append(popupWindow(popupURI, "popupwindow"));	//TODO fix the window name
 				}
 
-//G***del				onclickJavaScript.append("if(oldsubmitcontrol!=null)");	//G***testing
-/*G***del
+//TODO del				onclickJavaScript.append("if(oldsubmitcontrol!=null)");	//TODO testing
+/*TODO del
 				final String form=getFormVariable(parentFormID);
 				final String var=getFormComponentVariable(parentFormID, "oldsubmitcontrol");
 				final String hiddenField=getFormComponentVariable(parentFormID, hiddenFieldClientID);
 				final String hiddenFieldValue=getPropertyVariable(hiddenField, "value");
 */
 
-//G***fix				final String var="window.oldsubmitcontrol";
+//TODO fix				final String var="window.oldsubmitcontrol";
 
-/*G***del
-				onclickJavaScript.append("if("+form+"!=undefined)");	//G***testing
-				onclickJavaScript.append(createStatement("alert('found the form')"));	//G***testing
+/*TODO del
+				onclickJavaScript.append("if("+form+"!=undefined)");	//TODO testing
+				onclickJavaScript.append(createStatement("alert('found the form')"));	//TODO testing
 */
 
-/*G***del
-				onclickJavaScript.append("if("+var+"==undefined)");	//G***testing
-				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+/*TODO del
+				onclickJavaScript.append("if("+var+"==undefined)");	//TODO testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//TODO testing
 
-				onclickJavaScript.append(createStatement(var+"='test'"));	//G***testing
+				onclickJavaScript.append(createStatement(var+"='test'"));	//TODO testing
 
-				onclickJavaScript.append("if("+var+"!=undefined)");	//G***testing
-				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+				onclickJavaScript.append("if("+var+"!=undefined)");	//TODO testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//TODO testing
 */
 
-/*G***fix
-				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
-				onclickJavaScript.append(createStatement(var+"="+hiddenField));	//G***testing
-				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//G***testing
+/*TODO fix
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//TODO testing
+				onclickJavaScript.append(createStatement(var+"="+hiddenField));	//TODO testing
+				onclickJavaScript.append(createStatement("alert('custom form variable is defined: '+("+var+"!=undefined))"));	//TODO testing
 */
 
-//G***del				onclickJavaScript.append(createStatement(var+"='testvalue'"));	//G***testing
+//TODO del				onclickJavaScript.append(createStatement(var+"='testvalue'"));	//TODO testing
 				
 				
-//G***del				onclickJavaScript.append(createStatement("alert('before submit hidden field value: '+"+hiddenFieldValue+")"));	//G***testing
+//TODO del				onclickJavaScript.append(createStatement("alert('before submit hidden field value: '+"+hiddenFieldValue+")"));	//TODO testing
 				
 				
-//G***del				onclickJavaScript.append(createStatement("alert('custom form variable is now defined')"));	//G***testing
+//TODO del				onclickJavaScript.append(createStatement("alert('custom form variable is now defined')"));	//TODO testing
 
-/*G***fix
-				onclickJavaScript.append("if("+form+"==undefined and "+var+"==undefined)");	//G***testing
-				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//G***testing
+/*TODO fix
+				onclickJavaScript.append("if("+form+"==undefined and "+var+"==undefined)");	//TODO testing
+				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//TODO testing
 */
 
-/*G***fix
-				onclickJavaScript.append("var "+var+";if("+var+"==undefined)");	//G***testing
-				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//G***testing
+/*TODO fix
+				onclickJavaScript.append("var "+var+";if("+var+"==undefined)");	//TODO testing
+				onclickJavaScript.append(createStatement("alert('"+var+" is undefined')"));	//TODO testing
 */
 				
-//G***fix				onclickJavaScript.append(createStatement(setLiteralValue(getPropertyVariable(var, "value"), "")));	//G***testing
+//TODO fix				onclickJavaScript.append(createStatement(setLiteralValue(getPropertyVariable(var, "value"), "")));	//TODO testing
 
-//G***fix				onclickJavaScript.append(createStatement(var+"="+getFormComponentVariable(parentFormID, hiddenFieldClientID)));	//G***testing
+//TODO fix				onclickJavaScript.append(createStatement(var+"="+getFormComponentVariable(parentFormID, hiddenFieldClientID)));	//TODO testing
 				
 				
 				
@@ -245,7 +256,7 @@ if (vb != null) {
 					//document.forms['formID']['hiddenFieldClientID'].value='';
 				onclickJavaScript.append(createStatement(setFormComponentPropertyLiteralValue(parentFormID, hiddenFieldClientID, "value", "")));
 
-//G***del				onclickJavaScript.append(createStatement("alert('aftersubmit hidden field value: '+"+hiddenFieldValue+")"));	//G***testing
+//TODO del				onclickJavaScript.append(createStatement("alert('aftersubmit hidden field value: '+"+hiddenFieldValue+")"));	//TODO testing
 
 				onclickJavaScript.append(returnValue(Boolean.FALSE));	//return false
 				writer.writeAttribute(ATTRIBUTE_ONCLICK, onclickJavaScript, null);	//write the JavaScript
@@ -262,11 +273,6 @@ if (vb != null) {
 	*/
 	public void decode(final FacesContext context, UIComponent component)
 	{
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-Debug.trace("decoding command", component, "client id", component.getClientId(context));
-*/
 		if(isMutable(component))	//if the component is mutable
 		{
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
@@ -276,7 +282,7 @@ Debug.trace("decoding command", component, "client id", component.getClientId(co
 			{
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				final String hiddenFieldValue=(String)requestParameterMap.get(hiddenFieldClientID);	//see if there is a value for our hidden field
-/*G***del
+/*TODO del
 Debug.trace("hidden field value:", hiddenFieldValue);
 Debug.trace("expecting value of client ID:", clientID);
 */
@@ -289,12 +295,12 @@ Debug.trace("expecting value of client ID:", clientID);
 			}
 
 				//if our button was the one pressed (check for an image map click for this button, too)
-//G***fix			if(value!=null || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
-//G***testing with IE bug
-//G***del when works if(clientID.equals(value) || clientID.equals(testValue) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
-//G***fix IE bug; works, but keeps value around			if(clientID.equals(value) || clientID.equals(testValue) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
-//G***fix			if(clientID.equals(value) || (value!=null && value.contains("value=\""+test+"\"")) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
-//G***fix			if(clientID.equals(value) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+//TODO fix			if(value!=null || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+//TODO testing with IE bug
+//TODO del when works if(clientID.equals(value) || clientID.equals(testValue) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+//TODO fix IE bug; works, but keeps value around			if(clientID.equals(value) || clientID.equals(testValue) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+//TODO fix			if(clientID.equals(value) || (value!=null && value.contains("value=\""+test+"\"")) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
+//TODO fix			if(clientID.equals(value) || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
 			if(isClientIDMatch || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
 			{
 				final String type=(String)component.getAttributes().get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type
@@ -303,7 +309,7 @@ Debug.trace("expecting value of client ID:", clientID);
 					return;	//don't generate an event for the reset button
 				}
 				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component
-//G***del Debug.trace("---queueing an action:", actionEvent);
+//TODO del Debug.trace("---queueing an action:", actionEvent);
 				component.queueEvent(actionEvent);	//queue our new action
 			}
     }

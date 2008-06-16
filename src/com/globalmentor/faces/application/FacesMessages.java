@@ -23,7 +23,7 @@ import com.globalmentor.util.Debug;
 /**Utilities for working with the JavaServer Faces messages.
 @author Garret Wilson
 */
-public class FacesMessageUtilities
+public class FacesMessages
 {
 
 	/**Creates a message based upon a throwable error.

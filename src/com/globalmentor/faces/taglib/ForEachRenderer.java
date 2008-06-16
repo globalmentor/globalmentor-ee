@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.taglib;
 
 import java.io.IOException;
@@ -48,7 +64,7 @@ public class ForEachRenderer extends Renderer {
    // listeners can be specified with the <corejsf:tabbedpane>'s actionListener
    // attribute or with <f:actionListener> tags in the body of the
    // <corejsf:tabbedpane> tag.
-/*G***fix
+/*TODO fix
    public void decode(FacesContext context, UIComponent component) {
       Map requestParams = context.getExternalContext().getRequestParameterMap();
       String clientId = component.getClientId(context);
@@ -62,7 +78,7 @@ public class ForEachRenderer extends Renderer {
    // The encodeBegin method writes the starting <table> HTML element
    // with the CSS class specified by the <corejsf:tabbedpane>'s styleClass
    // attribute (if supplied)
-/*G***fix
+/*TODO fix
    public void encodeBegin(FacesContext context, UIComponent component)
          throws java.io.IOException {
       ResponseWriter writer = context.getResponseWriter();
@@ -85,18 +101,18 @@ public class ForEachRenderer extends Renderer {
          throws java.io.IOException {
 	   	if(component.getChildCount()>0)
 	   	{
-/*G***del
+/*TODO del
 Debug.setDebug(true);
 Debug.trace("items is a: ", component.getAttributes().get("items").getClass().getName());
 Debug.trace("var is a: ", component.getAttributes().get("var").getClass().getName());
 */
 	   		
-//G***del	   		String itemsString = (String) component.getAttributes().get("items");
+//TODO del	   		String itemsString = (String) component.getAttributes().get("items");
 	   		Collection items = (Collection) component.getAttributes().get("items");
    	String varString = (String) component.getAttributes().get("var");
 
    	Application app=context.getApplication();
-//G***del   	final Object items=app.createValueBinding(itemsString).getValue(context);
+//TODO del   	final Object items=app.createValueBinding(itemsString).getValue(context);
    		final ValueBinding varValueBinding=app.createValueBinding("#{"+varString+"}");
    		for(Object object : items)
    		{
@@ -124,7 +140,7 @@ Debug.trace("var is a: ", component.getAttributes().get("var").getClass().getNam
    // The content for the tabbed pane can be specified as either a URL for
    // a JSP page or a facet name, so encodeEnd() checks to see if it's a facet;
    // if so, it encodes it; if not, it includes the JSP page
-/*G***fix
+/*TODO fix
    public void encodeEnd(FacesContext context, UIComponent component)
          throws java.io.IOException {
       ResponseWriter writer = context.getResponseWriter();

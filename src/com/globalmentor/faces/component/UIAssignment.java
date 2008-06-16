@@ -1,3 +1,19 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.component;
 
 import java.io.IOException;
@@ -9,7 +25,7 @@ import javax.faces.el.*;
 import com.globalmentor.java.Classes;
 import com.globalmentor.util.Debug;
 
-import static com.globalmentor.faces.component.ComponentUtilities.*;
+import static com.globalmentor.faces.component.FacesComponents.*;
 
 /**Represents an assignment to a variable of a value.
 The value may be an object or, if a string, a value-binding extended JSF EL expression.
@@ -58,7 +74,7 @@ public class UIAssignment extends UIComponentBase
 		/**@return The value of the assignment.*/
 		protected Object getValue()
 		{
-			return ComponentUtilities.getValue(this, getFacesContext(), value, VALUE_PROPERTY);	//get the local value or value binding
+			return FacesComponents.getValue(this, getFacesContext(), value, VALUE_PROPERTY);	//get the local value or value binding
 		}		
 
 		/**Sets the value.
@@ -134,7 +150,7 @@ public class UIAssignment extends UIComponentBase
 		final Object value=getValue();	//get our value
 		if(value!=null)	//if we have a value
 		{
-/*G***del
+/*TODO del
 			ValueBinding vb = getValueBinding("value");
     	if(vb!=null)
     	{
@@ -144,11 +160,6 @@ public class UIAssignment extends UIComponentBase
     	{
     		Debug.trace("performing assignment", getClientId(context), "with value", value);
     	}
-*/
-/*G***del
-Debug.setDebug(true);
-Debug.setVisible(true);
-Debug.trace("value of ", expression.getExpressionString(), "is", value, "of type", value!=null ? value.getClass() : null);
 */
 			final Application application=context.getApplication();	//get the JSF application
 			final ValueBinding varValueBinding=application.createValueBinding("#{"+getVar()+"}");	//create a value binding for the variable TODO refactor into an ExpressionUtilities method

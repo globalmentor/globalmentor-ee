@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package com.globalmentor.faces.component;
+package com.globalmentor.faces.taglib.xhtml;
 
-import com.globalmentor.faces.component.renderkit.xhtml.ListRenderer;
-import com.globalmentor.java.Classes;
-
-/**A component containing an ordered list.
+/**Constant values for use in XHTML tags.
 @author Garret Wilson
 */
-public class UIList extends UIBasicData
+public class XHTMLTags
 {
-	public static final String COMPONENT_TYPE=Classes.getFullName(UIList.class, "List");	//TODO we probably don't even need a special list type
-
-	/**Constructor.*/
-	public UIList()
-	{
-		super();	//construct the parent class
-		setRendererType(ListRenderer.RENDERER_TYPE);	//default to an XHTML &lt;dl&/gt; renderer
-	}
+	/**The style class XHTML attribute.*/
+	public final static String STYLE_CLASS_ATTRIBUTE="styleClass";
+	/**The client ID XHTML attribute.*/
+	public final static String CLIENT_ID_ATTRIBUTE="clientId";
 }

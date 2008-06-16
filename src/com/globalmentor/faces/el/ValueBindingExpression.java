@@ -1,9 +1,23 @@
+/*
+ * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.globalmentor.faces.el;
 
 import javax.faces.context.FacesContext;
 import javax.faces.el.*;
-
-import com.globalmentor.util.Debug;
 
 /**The representation of a value bound to a property.
 @author Garret Wilson
@@ -22,7 +36,6 @@ public class ValueBindingExpression<T> implements Expression<T>
 	*/
 	public ValueBindingExpression(final ValueBinding valueBinding)
 	{
-//G***del Debug.setDebug(true);
 		this.valueBinding=valueBinding;	//save the value binding
 	}
 
@@ -40,12 +53,6 @@ public class ValueBindingExpression<T> implements Expression<T>
 	*/
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
-/*G***del
-Debug.trace("getting value of a value-binding expression: ", getExpressionString());
-Debug.trace("value: ", getValueBinding().getValue(context));
-Debug.trace("type: ", getValueBinding().getType(context));
-Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
-*/
 		return (T)getValueBinding().getValue(context);	//return the value cast to the correct type
 	}
 
@@ -94,14 +101,6 @@ Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
 	*/
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
 	{
-/*G***del
-		Debug.setDebug(true);
-		Debug.setVisible(true);
-Debug.trace("getting type of a value-binding expression: ", getExpressionString());
-Debug.trace("value: ", getValueBinding().getValue(context));
-Debug.trace("type: ", getValueBinding().getType(context));
-//G***del; can throw NullPointerException Debug.trace("type of value: ", getValueBinding().getValue(context).getClass());
-*/
 		return getValueBinding().getType(context);	//return the type of the value binding
 	}
 
