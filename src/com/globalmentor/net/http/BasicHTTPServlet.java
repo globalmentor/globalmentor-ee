@@ -343,7 +343,7 @@ Debug.trace("request URI:", request.getRequestURI());
 Debug.trace("request URL:", request.getRequestURL());
 Debug.trace("path info:", request.getPathInfo());
 */
-		Debug.log("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString());	//log the request
+		Debug.log("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString(), request.getContentType());	//log the request
 		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet TODO fix race condition here
 		{
 			init(request);	//initialize from this request
