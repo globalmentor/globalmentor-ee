@@ -22,17 +22,16 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 import javax.faces.convert.*;
 import javax.faces.el.*;
-import javax.mail.internet.*;
 
 import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.globalmentor.java.Classes;
+import com.globalmentor.net.ContentType;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
-import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
@@ -165,7 +164,7 @@ Debug.error(exception);
 				try
 				{
 					final byte[] bytes=fileItem.get();	//get the bytes of the file
-					final ContentType contentType=getContentTypeInstance(fileItem.getContentType());	//get the content type of the file
+					final ContentType contentType=ContentType.getInstance(fileItem.getContentType());	//get the content type of the file
 //TODO del Debug.trace("uploaded file content type", contentType);
 					if(isText(contentType))	//if this is a text file
 					{

@@ -32,13 +32,12 @@ import javax.servlet.http.*;
 import com.globalmentor.io.*;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.net.*;
+import com.globalmentor.net.ContentType;
 import com.globalmentor.net.mime.*;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.util.*;
 
-import static com.globalmentor.io.ContentTypes.*;
-import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Enums.*;
 import static com.globalmentor.net.Servlets.*;
@@ -105,7 +104,7 @@ public class HTTPServlets
 				final String token=stringTokenizer.nextToken();	//get the next token
 				try
 				{
-					contentTypeList.add(getContentTypeInstance(trimRightFirst(token, ';').toString().trim()));	//add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(ContentType.getInstance(trimRightFirst(token, ';').toString().trim()));	//add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				}
 				catch(final ArgumentSyntaxException argumentSyntaxException)	//ignore content type strings that aren't syntactically correct
 				{			
@@ -1026,7 +1025,7 @@ public class HTTPServlets
 	{
 		setNoCache(request, response);	//turn off caching
 			//set the content type to the media type, if we have one, else a binary file
-		response.setContentType(contentType!=null ? contentType.toString() : APPLICATION_OCTET_STREAM_CONTENT_TYPE.toString());
+		response.setContentType(contentType!=null ? contentType.toString() : ContentType.APPLICATION_OCTET_STREAM_CONTENT_TYPE.toString());
 		if(filename!=null)	//if a filename is given, send the content as an attachment
 		{
 			setContentDisposition(response, contentDispositionType, filename);	//set the content disposition

@@ -22,17 +22,15 @@ import java.security.Principal;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import javax.mail.internet.ContentType;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.DocumentBuilder;
 
 import static com.globalmentor.io.Charsets.*;
-import static com.globalmentor.io.ContentTypeConstants.*;
-import static com.globalmentor.io.ContentTypes.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
+import static com.globalmentor.net.ContentTypeConstants.*;
 import static com.globalmentor.net.URIs.*;
 import static com.globalmentor.net.http.HTTP.*;
 import static com.globalmentor.net.http.HTTPServlets.*;
@@ -42,6 +40,7 @@ import static com.globalmentor.text.Text.*;
 
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.net.ContentType;
 import com.globalmentor.net.Resource;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.xml.XMLSerializer;
@@ -690,7 +689,7 @@ Debug.trace("sending redirect", redirectURI);
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET);	//serialize the document to the byte array with no byte order mark
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentTypes.toString(TEXT_PRIMARY_TYPE, XML_SUBTYPE, new NameValuePair<String, String>(CHARSET_PARAMETER, UTF_8)));
+			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new NameValuePair<String, String>(ContentType.CHARSET_PARAMETER, UTF_8)));
 //TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream=getCompressedOutputStream(request, response);	//get an output stream to the response, compressing the output if possible
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
@@ -820,7 +819,7 @@ Debug.trace("sending redirect", redirectURI);
 	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException
 	{
 		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getURI()));	//ask the servlet context for the MIME type
-		return contentTypeString!=null ? getContentTypeInstance(contentTypeString) : null;	//create a content type object if a content type string was returned
+		return contentTypeString!=null ? ContentType.getInstance(contentTypeString) : null;	//create a content type object if a content type string was returned
 	}
 
 	/**Determines the content length of the given resource.

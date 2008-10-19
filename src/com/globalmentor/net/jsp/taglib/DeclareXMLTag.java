@@ -18,13 +18,13 @@ package com.globalmentor.net.jsp.taglib;
 
 import java.io.IOException;
 
-import javax.mail.internet.ContentType;
-
 import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.globalmentor.io.ContentTypes;
+import com.globalmentor.io.*;
+import com.globalmentor.net.ContentType;
+
 import static com.globalmentor.net.http.HTTPServlets.*;
 import com.globalmentor.text.xml.XML;
 import static com.globalmentor.text.xml.XML.*;
@@ -84,7 +84,7 @@ public class DeclareXMLTag extends TagSupport
 			ContentType mediaType=null;	//we'll determine the media type if we can
 			if(contentType!=null)	//if there is a content type string
 			{
-				mediaType=ContentTypes.getContentTypeInstance(contentType);	//create a new media type
+				mediaType=ContentType.getInstance(contentType);	//create a new media type
 			}
 			else	//if there is no content type string
 			{

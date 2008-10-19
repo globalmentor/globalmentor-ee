@@ -21,11 +21,10 @@ import java.net.*;
 import java.util.*;
 import static java.util.Collections.*;
 
-import javax.mail.internet.ContentType;
 import javax.servlet.http.HttpServletRequest;
 
-import com.globalmentor.io.ContentTypes;
-import static com.globalmentor.io.ContentTypes.*;
+import com.globalmentor.io.*;
+
 import static com.globalmentor.java.Objects.*;
 import com.globalmentor.net.*;
 import com.globalmentor.urf.*;
@@ -309,7 +308,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	{
 
 		/**The non-standard "content/unknown" string returned by {@link URLConnection} when the content is unknown.*/
-		private final static String CONTENT_UNKNOWN_CONTENT_TYPE_STRING=ContentTypes.toString(ContentTypes.CONTENT_PRIMARY_TYPE, ContentTypes.UNKNOWN_SUBTYPE);
+		private final static String CONTENT_UNKNOWN_CONTENT_TYPE_STRING=ContentType.toString(ContentType.CONTENT_PRIMARY_TYPE, ContentType.UNKNOWN_SUBTYPE);
 
 		/**The URL of the resource.*/
 		private final URL url;
@@ -343,7 +342,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			{
 				final String contentTypeString=getURLConnection().getContentType();	//get the content type of the URL connection
 				//URLConnection returns a non-standard "content/unknown" type if the content is unknown rather than returning null as the API claims; convert this value to null
-				return contentTypeString!=null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? getContentTypeInstance(contentTypeString) : null;	//return a new content type if a content type is known
+				return contentTypeString!=null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? ContentType.getInstance(contentTypeString) : null;	//return a new content type if a content type is known
 			}
 
 			/**Returns the content length of the resource.
