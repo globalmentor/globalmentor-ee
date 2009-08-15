@@ -1,5 +1,5 @@
 /*
- * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ * Copyright © 1996-2009 GlobalMentor, Inc. <http://www.globalmentor.com/>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,56 +66,6 @@ public class BasicHTTPServlet extends HttpServlet
 	/**The init parameter, "logHTTP", used to specify whether HTTP communication should be logged; should be "true" or "false".*/
 	public final static String LOG_HTTP_INIT_PARAMETER="logHTTP";
 
-	/**The cached data directory, or <code>null</code> if it has not yet been initialized.*/
-//TODO del if not needed	private File dataDirectory=null;
-
-		/**Determines the data directory.
-		After the first retrieval, this directory is cached.
-		@param context The servlet context from which to retrieve init parameters.
-		@return A file representing the preferred data directory.
-		@exception ServletException if the {@value ServletUtilities#DATA_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
-		@see ServletUtilities#getDataDirectory(ServletContext)
-		*/
-/*TODO del if not needed
-		public File getDataDirectory(final ServletContext context) throws ServletException
-		{
-			if(dataDirectory==null)	//if the data directory has not been determined (there is a benign race condition here)
-			{
-				dataDirectory=ServletUtilities.getDataDirectory(context);	//get the data directory from the init parameter if possible
-				if(dataDirectory==null)	//if we can't get the WEB-INF directory
-				{
-					throw new ServletException(DATA_DIRECTORY_INIT_PARAMETER+" init parameter not specified and real path to WEB-INF directory not available.");
-				}
-			}
-			return dataDirectory;	//return the data directory
-		}
-*/
-
-	/**The cached log directory, or <code>null</code> if it has not yet been initialized.*/
-//TODO del if not needed	private File logDirectory=null;
-
-		/**Determines the log directory.
-		After the first retrieval, this directory is cached.
-		@param context The servlet context from which to retrieve init parameters.
-		@return A file representing the preferred log directory.
-		@exception ServletException if the {@value ServletUtilities#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
-		@see ServletUtilities#getLogDirectory(ServletContext)
-		*/
-/*TODO del if not needed
-		public File getLogDirectory(final ServletContext context) throws ServletException
-		{
-			if(logDirectory==null)	//if the log directory has not been determined (there is a benign race condition here)
-			{
-				logDirectory=ServletUtilities.getLogDirectory(context);	//get the log directory from the init parameter if possible
-				if(logDirectory==null)	//if we can't get the WEB-INF directory
-				{
-					throw new ServletException(LOG_DIRECTORY_INIT_PARAMETER+" init parameter not specified and real path to WEB-INF directory not available.");
-				}
-			}
-			return logDirectory;	//return the data directory
-		}
-*/
-
 	/**The cached shared debug log file, or <code>null</code> if it has not yet been initialized.*/
 	private static File debugLogFile=null;
 
@@ -150,23 +100,22 @@ public class BasicHTTPServlet extends HttpServlet
 		super.init(servletConfig);	//do the default initialization
 		try	//configure the debug level before we do anything else
 		{
-			final String debugString=servletConfig.getInitParameter(DEBUG_INIT_PARAMETER);	//get the debug setting from the init parameters
-			if(debugString!=null)	//if there is a debug setting specified
+			final Boolean debug=getBooleanInitParameter(servletConfig, DEBUG_INIT_PARAMETER);	//get the debug setting from the init parameters
+			if(debug!=null)	//if there is a debug setting specified
 			{
-				final Boolean debugBoolean=Boolean.valueOf(debugString);	//convert the string to a boolean object
 				try
 				{
-					Debug.setDebug(debugBoolean.booleanValue());	//change the debug to the specified level
+					Debug.setDebug(debug);	//turn debug on or off
 				}
 				catch(final IOException ioException)	//if we have a problem turning on debugging
 				{
 					throw new ServletException(ioException);
-				}					
+				}
 			}
-			final String debugReportLevelString=servletConfig.getInitParameter(DEBUG_REPORT_LEVEL_INIT_PARAMETER);	//get the debug level from the init parameters
-			if(debugReportLevelString!=null)	//if there is a debug report level specified
+			final Debug.ReportLevel debugReportLevel=getEnumInitParameter(servletConfig, DEBUG_REPORT_LEVEL_INIT_PARAMETER, Debug.ReportLevel.class);	//get the debug level from the init parameters
+			if(debugReportLevel!=null)	//if there is a debug report level specified
 			{
-				Debug.setMinimumReportLevel(Debug.ReportLevel.valueOf(debugReportLevelString));	//change the debug to the specified level
+				Debug.setMinimumReportLevel(debugReportLevel);	//change the debug to the specified level
 			}
 		}
 		catch(final IllegalArgumentException illegalArgumentException)	//if an illegal debug report level was reported
@@ -190,11 +139,10 @@ public class BasicHTTPServlet extends HttpServlet
 			throw new ServletException(ioException);
 		}
 			//configure HTTP logging
-		final String logHTTPString=servletConfig.getInitParameter(LOG_HTTP_INIT_PARAMETER);	//get the HTTP log setting from the init parameters
-		if(logHTTPString!=null)	//if there is an HTTP log setting specified
+		final Boolean logHTTP=getBooleanInitParameter(servletConfig, LOG_HTTP_INIT_PARAMETER);	//get the HTTP log setting from the init parameters
+		if(logHTTP!=null)	//if there is an HTTP log setting specified
 		{
-			final Boolean logHTTPBoolean=Boolean.valueOf(logHTTPString);	//convert the string to a boolean object
-			HTTPClient.getInstance().setLogged(logHTTPBoolean.booleanValue());	//turn HTTP logging on or off
+			HTTPClient.getInstance().setLogged(logHTTP.booleanValue());	//turn HTTP logging on or off
 		}		
 //TODO del Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ * Copyright © 1996-2009 GlobalMentor, Inc. <http://www.globalmentor.com/>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,15 @@ import java.io.*;
 
 import javax.servlet.*;
 
+import com.globalmentor.java.Booleans;
+
 
 import static com.globalmentor.net.URIs.*;
 
 /**Constants and utilities for working with servlets.
+<p>Using {@link #getStringInitParameter(ServletConfig, String)} this class allows one to retrieve configured init parameters by searching
+first for an init parameter of the {@link ServletConfig}, followed by an init parameter of the entire {@link ServletContext}.
+In this way, the servlet context can set a property that may be overridden by the servlet config for an individual servlet.</p>
 @author Garret Wilson
 */
 public class Servlets
@@ -63,6 +68,54 @@ public class Servlets
 	@deprecated
 	*/
 	public final static String ICON_DIRECTORY="/images/icons/";
+
+	/**Retrieves the configured init parameter, if any.
+	First an init parameter of the {@link ServletConfig} is searched for,	followed by an init parameter of the entire {@link ServletContext}.
+	In this way, the servlet context can set a property that may be overridden by the servlet config for an individual servlet
+	@param servletConfig The servlet configuration.
+	@param name The name of the init parameter.
+	@return The configured init parameter, either from the servlet config or the servlet context, or <code>null</code> if the indicated init param was not found.
+	@throws NullPointerException if the given servlet config and/or name is <code>null</code>.
+	*/
+	public static String getStringInitParameter(final ServletConfig servletConfig, final String name)
+	{
+		String initParam=servletConfig.getInitParameter(name);	//try to get the init param from the servlet config
+		if(initParam==null)	//if the servlet config does not have this init param
+		{
+			initParam=servletConfig.getServletContext().getInitParameter(name);	//see if the servlet context has this init parameter
+		}
+		return initParam;	//return the init param, if any, that was found
+	}
+
+	/**Retrieves the configured Boolean init parameter, if any.
+	@param servletConfig The servlet configuration.
+	@param name The name of the init parameter.
+	@return The configured Boolean init parameter, either from the servlet config or the servlet context, or <code>null</code> if the indicated init param was not found.
+	@throws NullPointerException if the given servlet config and/or name is <code>null</code>.
+	@throws IllegalArgumentException if the stored value is not {@value Boolean#TRUE} or {@value Boolean#FALSE}.
+	@see #getStringInitParameter(ServletConfig, String)
+	*/
+	public static Boolean getBooleanInitParameter(final ServletConfig servletConfig, final String name)
+	{
+		final String string=getStringInitParameter(servletConfig, name);
+		return string!=null ? Booleans.parseBoolean(string) : null;
+	}
+
+	/**Retrieves the configured enum init parameter, if any.
+	@param <E> The type of enum to retrieve.
+	@param servletConfig The servlet configuration.
+	@param name The name of the init parameter.
+	@param enumClass The class indicating the type of enum to retrieve.
+	@return The configured enum init parameter, either from the servlet config or the servlet context, or <code>null</code> if the indicated init param was not found.
+	@throws NullPointerException if the given servlet config, name, and/or enum class is <code>null</code>.
+	@throws IllegalArgumentException if the stored value is not a valid representation of the enum of the given type
+	@see #getStringInitParameter(ServletConfig, String)
+	*/
+	public static <E extends Enum<E>> E getEnumInitParameter(final ServletConfig servletConfig, final String name, final Class<E> enumClass)
+	{
+		final String string=getStringInitParameter(servletConfig, name);
+		return string!=null ? Enum.valueOf(enumClass, string) : null;
+	}
 
 	/**Determines the real path of the <code>/WEB-INF</code> directory.
 	@param servletContext The servlet context with which the directory is associated.
