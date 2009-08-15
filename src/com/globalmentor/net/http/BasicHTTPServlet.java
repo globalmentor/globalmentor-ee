@@ -29,6 +29,8 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.java.CharSequences;
+import com.globalmentor.log.Log;
+
 import static com.globalmentor.net.Servlets.*;
 import com.globalmentor.security.*;
 import com.globalmentor.text.SyntaxException;
@@ -130,7 +132,7 @@ public class BasicHTTPServlet extends HttpServlet
 			if(debugLogFile==null)	//if no log file has been determined (there is a benign race condition here)
 			{
 				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
-				final String logFilename="debug "+logFilenameDateFormat.format(new Date())+".log";	//create a filename in the form "date debug.log" TODO use a constant
+				final String logFilename=addExtension("debug-"+logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION);	//create a filename in the form "debug-YYYY-MM-DD.log"
 				debugLogFile=new File(getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
 			}
 			return debugLogFile;	//return the log file
