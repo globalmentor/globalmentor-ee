@@ -22,7 +22,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 
 import com.globalmentor.faces.component.FacesComponents;
-import com.globalmentor.util.NameValuePair;
+import com.globalmentor.model.NameValuePair;
 
 /**Utilities for working with JavaServer Faces events.
 @author Garret Wilson

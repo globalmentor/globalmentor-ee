@@ -38,14 +38,15 @@ import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
+import com.globalmentor.collections.Collections;
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.model.NameValuePair;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.net.Resource;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.xml.XMLSerializer;
 import com.globalmentor.util.*;
-import com.globalmentor.util.Collections;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

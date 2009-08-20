@@ -29,8 +29,8 @@ import javax.faces.el.*;
 
 import com.globalmentor.faces.el.*;
 import com.globalmentor.java.Objects;
+import com.globalmentor.model.NameValuePair;
 import com.globalmentor.util.Debug;
-import com.globalmentor.util.NameValuePair;
 
 import static com.globalmentor.faces.FacesValues.*;
 import static com.globalmentor.faces.application.FacesMessages.*;

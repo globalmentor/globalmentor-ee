@@ -24,6 +24,7 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import com.globalmentor.collections.DecoratorIDedMappedList;
 import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
 import static com.globalmentor.net.http.HTTP.*;
