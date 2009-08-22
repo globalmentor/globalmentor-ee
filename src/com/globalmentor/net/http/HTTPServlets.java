@@ -352,12 +352,12 @@ public class HTTPServlets
 	final String ifModifiedSinceHeader=request.getHeader(IF_MODIFIED_SINCE_HEADER);
 	if(ifModifiedSinceHeader!=null)
 	{
-		Debug.trace("ifModifiedSince:", ifModifiedSinceHeader);
+		Log.trace("ifModifiedSince:", ifModifiedSinceHeader);
 	}
 	final String ifUnmodifiedSinceHeader=request.getHeader(IF_UNMODIFIED_SINCE_HEADER);
 	if(ifUnmodifiedSinceHeader!=null)
 	{
-		Debug.trace("ifUnmodifiedSince:", ifUnmodifiedSinceHeader);
+		Log.trace("ifUnmodifiedSince:", ifUnmodifiedSinceHeader);
 	}
 */
 
@@ -713,7 +713,7 @@ public class HTTPServlets
 			//e.g. Firefox 1.5: "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8) Gecko/20051111 Firefox/1.5"
 			//e.g. IE 6.0: "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
 			//e.g. Safari 1.3.2: "Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/312.8 (KHTML, like Gecko) Safari/312.5"
-//TODO del Debug.trace("user agent:", userAgent);
+//TODO del Log.trace("user agent:", userAgent);
 			String userAgentName=null;	//we'll determine the user agent name
 			String userAgentVersion=null;	//we'll determine the user agent version string
 			int[] userAgentVersionNumbers=null;	//we'll determine the version numbers
@@ -757,7 +757,7 @@ public class HTTPServlets
 					}
 				}
 			}
-//TODO del Debug.trace("user agent name:", userAgentName, "with version", userAgentVersion, "with version numbers", userAgentVersionNumbers!=null ? Arrays.toString(userAgentVersionNumbers) : null);
+//TODO del Log.trace("user agent name:", userAgentName, "with version", userAgentVersion, "with version numbers", userAgentVersionNumbers!=null ? Arrays.toString(userAgentVersionNumbers) : null);
 			if(userAgentName!=null)	//if we determined a user agent name
 			{
 				properties.put(USER_AGENT_NAME_PROPERTY, userAgentName);	//store the user agent name
@@ -1072,7 +1072,7 @@ public class HTTPServlets
 					|| (version instanceof Number && ((Number)version).doubleValue()>6.0)	//or this is an MSIE version greater than 6.0
 					|| (userAgent!=null && userAgent.indexOf(USER_AGENT_MSIE6_SV1)>=0))	//or this is MSIE with Service Pack 2 installed (only IE6 would have SP2)
 			{
-//TODO del Debug.traceStack("using encoding:", contentCoding);
+//TODO del Log.traceStack("using encoding:", contentCoding);
 				setContentEncoding(response, contentCoding);	//set the content coding
 					//TODO decide whether to set the "Vary" header; see http://www.unix.org.ua/orelly/java-ent/servlet/ch06_02.htm
 				switch(contentCoding)	//see which output stream we should create

@@ -26,9 +26,9 @@ import javax.faces.el.*;
 import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.globalmentor.java.Classes;
+import com.globalmentor.log.Log;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.text.ArgumentSyntaxException;
-import com.globalmentor.util.Debug;
 
 import org.apache.commons.fileupload.*;
 
@@ -115,13 +115,13 @@ public class UIInputFile extends UIInput
 		final Object defaultConvertedValue=super.getConvertedValue(context, newSubmittedValue);	//do the default conversion
 		if(newSubmittedValue instanceof FileItem)	//if the submitted value is a file item
 		{
-Debug.trace("the submitted item is a fileitem");
+Log.trace("the submitted item is a fileitem");
 			final FileItem fileItem=(FileItem)newSubmittedValue;	//get the submitted value as a file item
 			assert !fileItem.isFormField() : "File item isn't expected to be a form field for file input.";
 			final File directory=getDirectory();	//get the directory in which to store files
 			if(directory!=null)	//if a directory is specified
 			{
-Debug.trace("we have a directory:", directory);
+Log.trace("we have a directory:", directory);
 				final String filename;	//we'll determine the filename to use
 				if(getFilename()!=null)	//if a filename is explicitly specified
 				{
@@ -133,7 +133,7 @@ Debug.trace("we have a directory:", directory);
 				}
 				if(filename!=null && filename.length()>0)	//if we have a filename
 				{
-Debug.trace("we have a filename:", filename);
+Log.trace("we have a filename:", filename);
 						//if there is a file separator character in the filename, throw an exception
 						//---this could be a security breach from a rogue client!
 					if(filename.indexOf(File.separatorChar)>=0)		//if the filename isn't a simple one
@@ -142,33 +142,33 @@ Debug.trace("we have a filename:", filename);
 					}
 					try
 					{
-Debug.trace("making sure directory exists");
+Log.trace("making sure directory exists");
 						if(!directory.isDirectory())	//if the directory doesn't exist as a directory
 						{
 							mkdirs(directory);	//try to create the the directory
 						}
 						final File file=new File(directory, filename);	//we now know which file to use
-Debug.trace("file to write is:", file);
+Log.trace("file to write is:", file);
 						fileItem.write(file);	//write the file item to a file
 					}
 					catch(final Exception exception)	//if there was a problem writing the file to a directory (we can't just check for an IOException, because FileItem.write() can throw a general exception)
 					{
-Debug.error(exception);
+Log.error(exception);
 						throw new ConverterException(exception);
 					}
 				}				
 			}
 			else	//if there is no directory specified
 			{
-//TODO del Debug.trace("no directory");
+//TODO del Log.trace("no directory");
 				try
 				{
 					final byte[] bytes=fileItem.get();	//get the bytes of the file
 					final ContentType contentType=ContentType.getInstance(fileItem.getContentType());	//get the content type of the file
-//TODO del Debug.trace("uploaded file content type", contentType);
+//TODO del Log.trace("uploaded file content type", contentType);
 					if(isText(contentType))	//if this is a text file
 					{
-//TODO del Debug.trace("is text type");
+//TODO del Log.trace("is text type");
 						final String encoding=UTF_8;	//TODO get the encoding from the file if we can; look at the content type, test a text file, and look into an XML file
 						final String string=new String(bytes, encoding);	//convert the bytes to a string using the correct encoding
 						return string;	//return the string representation of the file contents

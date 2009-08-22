@@ -25,6 +25,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.collections.DecoratorIDedMappedList;
+import com.globalmentor.log.Log;
 import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
 import static com.globalmentor.net.http.HTTP.*;
@@ -104,24 +105,24 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	public void doCopy(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("moving; checking to see if resource exists", resourceURI);			
+Log.trace("moving; checking to see if resource exists", resourceURI);			
 		if(exists(request, resourceURI))	//if this resource exists
 	    {
-Debug.trace("resource exists; getting resource");			
+Log.trace("resource exists; getting resource");			
 			final R resource=getResource(request, resourceURI);	//get the resource information
-Debug.trace("getting destination");			
+Log.trace("getting destination");			
 			final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
 			if(requestedDestinationURI!=null)	//if a destination was given
 				{
-Debug.trace("requested destination", requestedDestinationURI);
+Log.trace("requested destination", requestedDestinationURI);
 					//get the canonical destination URI
 				final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 				final boolean destinationExists=exists(request, destinationURI);	//see whether the destination resource already exists
-Debug.trace("destination exists?", destinationExists);			
+Log.trace("destination exists?", destinationExists);			
 				final Depth depth=getDepth(request);	//determine the requested depth
-Debug.trace("depth requested:", depth);
+Log.trace("depth requested:", depth);
 				final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
-Debug.trace("is overwrite?", overwrite);			
+Log.trace("is overwrite?", overwrite);			
 				copyResource(request, resource, destinationURI, depth==Depth.INFINITY ? -1 : depth.ordinal(), overwrite);	//copy the resource to its new location
 				if(destinationExists)	//if the destination resource already existed
 				{
@@ -154,22 +155,22 @@ Debug.trace("is overwrite?", overwrite);
 	public void doMove(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-Debug.trace("moving; checking to see if resource exists", resourceURI);			
+Log.trace("moving; checking to see if resource exists", resourceURI);			
 		if(exists(request, resourceURI))	//if this resource exists
 	    {
-Debug.trace("resource exists; getting resource");			
+Log.trace("resource exists; getting resource");			
 			final R resource=getResource(request, resourceURI);	//get the resource information
-Debug.trace("getting destination");			
+Log.trace("getting destination");			
 			final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
 			if(requestedDestinationURI!=null)	//if a destination was given
 				{
-Debug.trace("requested destination", requestedDestinationURI);
+Log.trace("requested destination", requestedDestinationURI);
 					//get the canonical destination URI
 				final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 				final boolean destinationExists=exists(request, destinationURI);	//see whether the destination resource already exists
-Debug.trace("destination exists?", destinationExists);			
+Log.trace("destination exists?", destinationExists);			
 				final boolean overwrite=isOverwrite(request);	//see if we should overwrite an existing destination resource
-Debug.trace("is overwrite?", overwrite);			
+Log.trace("is overwrite?", overwrite);			
 				moveResource(request, resource, destinationURI, overwrite);	//move the resource to its new location
 				if(destinationExists)	//if the destination resource already existed
 				{
@@ -270,12 +271,12 @@ Debug.trace("is overwrite?", overwrite);
 						//TODO add a response description here
 					}
 					response.setStatus(SC_MULTI_STATUS);	//show that we will be sending back multistatus content
-Debug.trace("Ready to send back XML:", XML.toString(multistatusDocument));
+Log.trace("Ready to send back XML:", XML.toString(multistatusDocument));
 					setXML(request, response, multistatusDocument);	//put the XML in our response and send it back, compressed if possible
 				}
 				catch(final DOMException domException)	//any XML problem here is the server's fault
 				{
-					Debug.error(domException);	//report the error
+					Log.error(domException);	//report the error
 					throw new HTTPInternalServerErrorException(domException);	//show that the XML wasn't correct
 				}
 	    }
@@ -380,7 +381,7 @@ Debug.trace("Ready to send back XML:", XML.toString(multistatusDocument));
 				final URI requestedDestinationURI=getDestination(request);	//get the destination URI for the operation
 				if(requestedDestinationURI!=null)	//if a destination was given (ignore missing destinations---a principal is authorized to copy or move a resource to nowhere)
 				{
-Debug.trace("checking authorization for requested destination", requestedDestinationURI);
+Log.trace("checking authorization for requested destination", requestedDestinationURI);
 						//get the canonical destination URI
 					final URI destinationURI=getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 						//for COPY and MOVE, make sure the principal is authorized to do a PUT on the destination

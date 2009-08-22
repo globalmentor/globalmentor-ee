@@ -41,6 +41,7 @@ import static com.globalmentor.text.Text.*;
 import com.globalmentor.collections.Collections;
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
+import com.globalmentor.log.Log;
 import com.globalmentor.model.NameValuePair;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.net.Resource;
@@ -122,7 +123,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-//TODO del Debug.trace("doing options for URI", resourceURI);
+//TODO del Log.trace("doing options for URI", resourceURI);
 		final Set<String> allowedMethodSet=getAllowedMethods(request, resourceURI);	//get the allowed methods
 		response.addHeader(ALLOW_HEADER, Collections.toString(allowedMethodSet, COMMA_CHAR));	//put the allowed methods in the "allow" header, separated by commas
 		response.setContentLength(0);	//set the content length to zero, according to the HTTP specification for OPTIONS
@@ -172,13 +173,13 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPS
   */
 	public void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-//	TODO del Debug.trace("getting resource URI");
+//	TODO del Log.trace("getting resource URI");
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-//	TODO del Debug.trace("checking destination existence");
-Debug.trace("checking destination existence");
+//	TODO del Log.trace("checking destination existence");
+Log.trace("checking destination existence");
 		final boolean exists=exists(request, resourceURI);	//see whether the resource already exists
-//	TODO del Debug.trace("exists", exists);
-Debug.trace("exists", exists);
+//	TODO del Log.trace("exists", exists);
+Log.trace("exists", exists);
 		final InputStream inputStream=request.getInputStream();	//get an input stream from the request
 		final OutputStream outputStream;	//we'll determine the output stream to use
 		if(exists)	//if this resource exists
@@ -194,35 +195,35 @@ Debug.trace("exists", exists);
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 			{
-//			TODO del Debug.warn(illegalArgumentException);
+//			TODO del Log.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
 		}
 		try
 		{
-Debug.trace("trying to write");
+Log.trace("trying to write");
 			InputStreams.copy(inputStream, outputStream);	//copy the file from the request to the resource
-Debug.trace("written");
+Log.trace("written");
 		}
 		finally
 		{
 /*TODO del; doesn't work
 			if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
 			{
-Debug.trace("syncing file output stream", resource.getReferenceURI());
+Log.trace("syncing file output stream", resource.getReferenceURI());
 				((FileOutputStream)outputStream).getFD().sync();
 			}
 */
 /*TODO test
 			if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
 			{
-Debug.trace("forcing file output stream", resourceURI);
+Log.trace("forcing file output stream", resourceURI);
 				((FileOutputStream)outputStream).getChannel().force(true);
 			}
 */
-//TODO del Debug.trace("closing output stream for resource URI", resourceURI);
+//TODO del Log.trace("closing output stream for resource URI", resourceURI);
 			outputStream.close();	//always close the output stream
-//TODO del Debug.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
+//TODO del Log.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
 		}
 
 /*TODO del when works
@@ -233,14 +234,14 @@ Debug.trace("forcing file output stream", resourceURI);
     }
 		else	//if the resource doesn't exist
 		{
-//		TODO del Debug.trace("trying to create resource");
+//		TODO del Log.trace("trying to create resource");
 			try
 			{
 				resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 			{
-//			TODO del Debug.warn(illegalArgumentException);
+//			TODO del Log.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
 		}
@@ -250,12 +251,12 @@ Debug.trace("forcing file output stream", resourceURI);
 			final OutputStream outputStream=getOutputStream(request, resource);	//get an output stream to the resource
 			try
 			{
-Debug.trace("trying to write");
+Log.trace("trying to write");
 				OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
 			}
 			catch(final IllegalArgumentException illegalArgumentException)	//if this is an invalid resource URI
 			{
-//			TODO del Debug.warn(illegalArgumentException);
+//			TODO del Log.warn(illegalArgumentException);
 					throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 			}
 			finally
@@ -264,20 +265,20 @@ Debug.trace("trying to write");
 /*TODO del; doesn't work
 				if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
 				{
-Debug.trace("syncing file output stream", resource.getReferenceURI());
+Log.trace("syncing file output stream", resource.getReferenceURI());
 					((FileOutputStream)outputStream).getFD().sync();
 				}
 */
 /*TODO del when works
 				if(outputStream instanceof FileOutputStream)	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
 				{
-Debug.trace("forcing file output stream", resource.getReferenceURI());
+Log.trace("forcing file output stream", resource.getReferenceURI());
 					((FileOutputStream)outputStream).getChannel().force(true);
 				}
 
-Debug.trace("closing output stream of resource type", resource.getClass());
+Log.trace("closing output stream of resource type", resource.getClass());
 				outputStream.close();	//always close the output stream
-Debug.trace("closed output stream; now content of resource is", getContentLength(request, resource));
+Log.trace("closed output stream; now content of resource is", getContentLength(request, resource));
 			}
 		}
 */
@@ -291,16 +292,16 @@ Debug.trace("closed output stream; now content of resource is", getContentLength
 			throw ioException;	//rethrow the exception
 		}
 */
-Debug.trace("done PUT; determining response");
+Log.trace("done PUT; determining response");
 		if(exists)	//if the resource already existed
 		{
-Debug.trace("PUT already existed; returning SC_NO_CONTENT");
+Log.trace("PUT already existed; returning SC_NO_CONTENT");
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT);	//indicate success by showing that there is no content to return
 			response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		}
 		else	//if the resource did not exist already
 		{
-Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
+Log.trace("PUT resource didn't already exist; returning SC_CREATED");
 			response.setStatus(HttpServletResponse.SC_CREATED);	//indicate that we created the resource
 			response.setContentLength(0);	//TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		}
@@ -340,10 +341,10 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent) throws ServletException, IOException
 	{
 		final URI resourceURI=getResourceURI(request);	//get the URI of the requested resource
-//	TODO del Debug.trace("serving resource", resourceURI);
+//	TODO del Log.trace("serving resource", resourceURI);
 		if(exists(request, resourceURI))	//if this resource exists
     {
-//TODO del Debug.trace("resource exists", resourceURI);
+//TODO del Log.trace("resource exists", resourceURI);
     	//TODO check if headers
     	final R resource=getResource(request, resourceURI);	//get a resource description
     	serveResource(request, response, resource, serveContent);	//serve the resource
@@ -367,7 +368,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	{
   	if(isCollection(request, resource.getURI()))	//if the resource is a collection
   	{
-//TODO del Debug.trace("is collection", resourceURI);
+//TODO del Log.trace("is collection", resourceURI);
   		if(LIST_DIRECTORIES)	//if we should list directories
   		{
   			final Writer writer=response.getWriter();
@@ -389,11 +390,11 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
   	}
 //TODO del check; prevents default resources being returned; maybe throw not found exception somewhere here if it's clear there's nothing there  	else	//if this resource is not a collection
     {
-//TODO del Debug.trace("is not a collection; ready to send back file", resourceURI);
+//TODO del Log.trace("is not a collection; ready to send back file", resourceURI);
     	final Date lastModifiedDate=getLastModifiedDate(request, resource);	//get the last modified date of the resource
     	if(lastModifiedDate!=null)	//if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
     	{
-//TODO del Debug.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
+//TODO del Log.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
 				final Date roundedLastModifiedDate=new Date((lastModifiedDate.getTime()/1000)*1000);	//round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
 				try
 				{
@@ -401,13 +402,13 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 /*TODO del 
 	if(ifModifiedSinceDate!=null)
 	{
-		Debug.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
-		Debug.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
+		Log.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
+		Log.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
 	}
 */
 	      	if(ifModifiedSinceDate!=null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate)<=0)	//if there is an If-Modified-Since date and the resource was not modified since that date
 	      	{
-//TODO del Debug.trace("Not modified---use the value in the cache!");
+//TODO del Log.trace("Not modified---use the value in the cache!");
 	      		throw new HTTPNotModifiedException();	//stop serving content and indicate that the resource has not been modified
 	      	}
 	      	//TODO add support for If-Unmodified-Since
@@ -417,12 +418,12 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 					throw new IllegalArgumentException(syntaxException);
 				}
     	}
-  		//    	TODO del Debug.trace("ready to send back a file");
+  		//    	TODO del Log.trace("ready to send back a file");
   		final ContentType contentType=getContentType(request, resource);	//get the content type of the resource
     	if(contentType!=null)	//if we know the content type
       {
-//      	TODO del Debug.trace("setting content type to:", contentType);
-//TODO del Debug.trace("setting content type to:", contentType);	//TODO del
+//      	TODO del Log.trace("setting content type to:", contentType);
+//TODO del Log.trace("setting content type to:", contentType);	//TODO del
     		response.setContentType(contentType.toString());	//tell the response which content type we're serving
     	}
     	if(HEAD_METHOD.equals(request.getMethod()))	//if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
@@ -430,7 +431,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 				final long contentLength=getContentLength(request, resource);	//get the content length of the resource
       	if(contentLength>=0)	//if we found a content length for the resource
 	      {
-//      	TODO del Debug.trace("setting content length to:", contentLength);
+//      	TODO del Log.trace("setting content length to:", contentLength);
       		assert contentLength<Integer.MAX_VALUE : "Resource size "+contentLength+" is too large.";
       		response.setContentLength((int)contentLength);	//tell the response the size of the resource      		
       	}
@@ -445,12 +446,12 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
     		final OutputStream outputStream;	//we'll determine the output stream
     		if(contentType!=null && isText(contentType))	//if this is a text content type TODO later add other content types, if they can be compressed
     		{
-//TODO del      			Debug.trace("compressing content type:", contentType);
+//TODO del      			Log.trace("compressing content type:", contentType);
     			outputStream=getCompressedOutputStream(request, response);	//get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
     		}
     		else	//if we don't know the content type, or it isn't text
     		{
-//TODO del      			Debug.trace("not compressing content type:", contentType);
+//TODO del      			Log.trace("not compressing content type:", contentType);
     			outputStream=response.getOutputStream();	//get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
     		}
     		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
@@ -530,7 +531,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	protected URI getResourceURI(final HttpServletRequest request, final URI requestedResourceURI, final String method, final URI analogousResourceURI)	//TODO now that we pass the request, remove the method parameter because it is redundance
 	{
 		URI resourceURI=requestedResourceURI;	//start off assuming we'll use the requested URI
-//	TODO del Debug.trace("requested URI", requestedResourceURI);
+//	TODO del Log.trace("requested URI", requestedResourceURI);
 		final String requestResourceURIString=requestedResourceURI.toString();	//get the string version of the request URI
 		if(!endsWith(requestResourceURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
 		{
@@ -552,7 +553,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 			{
 				try
 				{
-//Debug.trace("can we subsitutue", collectionURI, "for", requestedResourceURI);
+//Log.trace("can we subsitutue", collectionURI, "for", requestedResourceURI);
 					if(canSubstitute(request, requestedResourceURI, collectionURI))	//if we can substitute the collection URI for the requested URI
 					{
 						resourceURI=collectionURI;	//use the collection URI				
@@ -560,11 +561,11 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 				}
 				catch(final IOException ioException)	//if there is an error checking existence or whether the resource is a collection
 				{
-					Debug.warn(ioException);	//don't do anything major, now---the request will fail, later, and there's no forwarding to be done for error-prone resources
+					Log.warn(ioException);	//don't do anything major, now---the request will fail, later, and there's no forwarding to be done for error-prone resources
 				}
 			}
 		}
-//TODO del Debug.trace("using URI", resourceURI);
+//TODO del Log.trace("using URI", resourceURI);
 		return resourceURI;	//return the resource URI we decided on
 	}
 
@@ -581,8 +582,8 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 	*/
 	protected boolean canSubstitute(final HttpServletRequest request, final URI requestedResourceURI, final URI substituteResourceURI) throws IOException
 	{
-//Debug.trace("requested resource exists:", exists(request, requestedResourceURI));
-//Debug.trace("substitute resource is collection:", isCollection(request, substituteResourceURI));
+//Log.trace("requested resource exists:", exists(request, requestedResourceURI));
+//Log.trace("substitute resource is collection:", isCollection(request, substituteResourceURI));
 		return !exists(request, requestedResourceURI) && isCollection(request, substituteResourceURI);	//if the resource doesn't exist, but the substitute resource is a collection, we can substitute
 	}
 
@@ -598,7 +599,7 @@ Debug.trace("PUT resource didn't already exist; returning SC_CREATED");
 /*TODO fix
 	protected URI getResourceURI(final URI requestURI)
 	{
-Debug.trace("request URI", requestURI);
+Log.trace("request URI", requestURI);
 		final String requestURIString=requestURI.toString();	//get the string version of the request URI
 		if(!endsWith(requestURIString, PATH_SEPARATOR))	//if the URI is not a collection URI
 		{
@@ -615,7 +616,7 @@ Debug.trace("request URI", requestURI);
 			}
 			if(redirect)	//if we should redirect
 			{
-Debug.trace("sending redirect", redirectURI);
+Log.trace("sending redirect", redirectURI);
 				if(isRedirectSupported(request))	//if redirection is supported by the user agent sending the request
 				{
 					throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
@@ -640,16 +641,16 @@ Debug.trace("sending redirect", redirectURI);
 	*/
 	protected Document getXML(final HttpServletRequest request, final DocumentBuilder documentBuilder) throws IOException, DOMException, SAXException
 	{
-//	TODO del Debug.trace("getting XML");
+//	TODO del Log.trace("getting XML");
 		final int contentLength=request.getContentLength();	//get the length of the request
-//	TODO del Debug.trace("content length", contentLength);
+//	TODO del Log.trace("content length", contentLength);
 		//TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
 		if(contentLength>0)	//if content is present	//TODO fix chunked coding
 		{
 			final InputStream inputStream=request.getInputStream();	//get an input stream to the request content
-//TODO del Debug.trace("Ready to get XML bytes of Content-Length:", contentLength);
+//TODO del Log.trace("Ready to get XML bytes of Content-Length:", contentLength);
 			final byte[] content=InputStreams.getBytes(inputStream, contentLength);	//read the request TODO check for the content being shorter than expected
-//TODO del Debug.trace("got bytes:", new String(content, "UTF-8"));
+//TODO del Log.trace("got bytes:", new String(content, "UTF-8"));
 			boolean hasContent=false;	//we'll start out assuming there actually is no content
 			for(final byte b:content)	//look at each byte in the content
 			{
@@ -662,7 +663,7 @@ Debug.trace("sending redirect", redirectURI);
 			if(hasContent)	//if we have content
 			{
 				final InputStream xmlInputStream=new ByteArrayInputStream(content);	//create a new input stream from the bytes we read
-//TODO del Debug.trace("ready to parse");
+//TODO del Log.trace("ready to parse");
 				return documentBuilder.parse(xmlInputStream);	//parse the bytes we read
 			}
 		}

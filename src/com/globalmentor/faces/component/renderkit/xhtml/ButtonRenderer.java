@@ -97,7 +97,7 @@ if (vb != null) {
 */
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 		final String clientID=component.getClientId(context);	//get the component's client ID
-//TODO del Debug.trace("ready to try to encode button:", clientID);
+//TODO del Log.trace("ready to try to encode button:", clientID);
 
 /*TODO fix without relying on UIBasicForm
 		if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
@@ -121,10 +121,10 @@ if (vb != null) {
 			final UICommand command=(UICommand)component;	//get the component as a command component
 
 //TODO del Debug.setDebug(true);
-//TODO del Debug.trace("**********encoding, action type is: ", command.getAction().getType(context));
-//TODO del Debug.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
+//TODO del Log.trace("**********encoding, action type is: ", command.getAction().getType(context));
+//TODO del Log.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
 			
-//TODO del Debug.trace("encoding command", command, "client id", clientID);
+//TODO del Log.trace("encoding command", command, "client id", clientID);
 			writer.writeAttribute(ATTRIBUTE_NAME, clientID, CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			final String type;	//we'll deterine the type to generate
@@ -283,8 +283,8 @@ if (vb != null) {
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				final String hiddenFieldValue=(String)requestParameterMap.get(hiddenFieldClientID);	//see if there is a value for our hidden field
 /*TODO del
-Debug.trace("hidden field value:", hiddenFieldValue);
-Debug.trace("expecting value of client ID:", clientID);
+Log.trace("hidden field value:", hiddenFieldValue);
+Log.trace("expecting value of client ID:", clientID);
 */
 				isClientIDMatch=clientID.equals(hiddenFieldValue);	//record whether the the hidden field value contains our client ID
 			}
@@ -309,7 +309,7 @@ Debug.trace("expecting value of client ID:", clientID);
 					return;	//don't generate an event for the reset button
 				}
 				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component
-//TODO del Debug.trace("---queueing an action:", actionEvent);
+//TODO del Log.trace("---queueing an action:", actionEvent);
 				component.queueEvent(actionEvent);	//queue our new action
 			}
     }

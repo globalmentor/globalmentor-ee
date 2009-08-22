@@ -27,7 +27,6 @@ import static com.globalmentor.faces.el.FacesExpressions.*;
 
 import com.globalmentor.faces.component.*;
 import com.globalmentor.faces.el.ExpressionMethodBinding;
-import com.globalmentor.util.Debug;
 
 /**Utilities for working with JSF applications.
 @author Garret Wilson
@@ -45,7 +44,7 @@ public class FacesApplications
 /*TODO del
 Debug.setDebug(true);
 Debug.setVisible(true);
-Debug.trace("created column with ID", id);
+Log.trace("created column with ID", id);
 */
 		return column;	//return the component
 	}

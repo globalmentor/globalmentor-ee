@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.globalmentor.faces.context.RequestParametersFacesContextDecorator;
 import com.globalmentor.io.*;
+import com.globalmentor.log.Log;
 import com.globalmentor.text.xml.xhtml.XHTML;
 import com.globalmentor.util.*;
 
@@ -132,7 +133,7 @@ public class UIBasicForm extends UIForm
 					final HttpServletRequest request=(HttpServletRequest)context.getExternalContext().getRequest();	//get the HTTP request
 					if(FileUpload.isMultipartContent(request))	//if this is multipart content
 					{			
-		Debug.trace("is multipart content");
+		Log.trace("is multipart content");
 		/*TODO fix or delete
 						final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
 							//create a factory to populate a map with form fields
@@ -165,15 +166,15 @@ public class UIBasicForm extends UIForm
 							{
 								final FileItem fileItem=(FileItem)object;	//cast the object to a file item
 	/*TODO del
-			Debug.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
+			Log.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
 			if(fileItem.isFormField())	//TODO del
 			{
-				Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+				Log.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 			}
 	*/
 								if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName()))	//if this is a form field for our client ID
 								{
-	//TODO del	Debug.trace("found our client ID!", clientID);
+	//TODO del	Log.trace("found our client ID!", clientID);
 									foundClientID=true;	//show that we found the client ID
 									break;	//stop searching for the client ID
 								}
@@ -200,7 +201,7 @@ public class UIBasicForm extends UIForm
 						}
 						catch(final FileUploadException fileUploadException)	//if there was an error parsing the files
 						{
-							Debug.warn(fileUploadException);	//just warn about the problem
+							Log.warn(fileUploadException);	//just warn about the problem
 						}
 					}			
 				}
@@ -208,9 +209,9 @@ public class UIBasicForm extends UIForm
 		}
 		catch(final MimeTypeParseException mimeTypeParseException)
 		{
-			Debug.warn(mimeTypeParseException);	//just warn about the incorrect MIME type format
+			Log.warn(mimeTypeParseException);	//just warn about the incorrect MIME type format
 		}
-//TODO del Debug.trace("ready to process default form decodes");
+//TODO del Log.trace("ready to process default form decodes");
 			//if this form submision was meant for us, we'll have set up the request parameters with the submitted values
 		super.processDecodes(decodeContext);	//do the default decode processing with either the context we received, or the one we wrapped to return our extra parameters
 	}
@@ -257,13 +258,13 @@ public class UIBasicForm extends UIForm
 		*/
 		public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName)
 		{
-//TODO del 	Debug.trace("ready to create a file item");
+//TODO del 	Log.trace("ready to create a file item");
 			final FileItem fileItem;	//we'll store a file item here to return
 			if(isFormField)	//if this is a form field
 			{
 					//delegate to the default factory
 				fileItem=getDefaultFileItemFactory().createItem(fieldName, contentType, isFormField, fileName);
-//TODO del		Debug.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+//TODO del		Log.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
 				getFormFieldMap().put(fileItem.getFieldName(), fileItem.getString());	//store this field in this map
 			}
 			else	//if this is not a form field

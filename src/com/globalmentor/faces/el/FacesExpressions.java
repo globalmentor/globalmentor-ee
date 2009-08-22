@@ -101,9 +101,9 @@ public class FacesExpressions
 			}
 			else	//if this is not a method reference, it must be a value reference
 			{
-//TODO del Debug.trace("creating value-binding expression for string: ", string);
+//TODO del Log.trace("creating value-binding expression for string: ", string);
 				final ValueBinding valueBinding=application.createValueBinding(string);	//create a value binding for the string
-//TODO Debug.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
+//TODO Log.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
 				return new ValueBindingExpression(valueBinding);	//create and return a value binding expression from the value binding we created
 			}
 		}

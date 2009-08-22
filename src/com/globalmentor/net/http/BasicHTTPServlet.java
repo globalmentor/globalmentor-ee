@@ -29,13 +29,12 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.java.CharSequences;
-import com.globalmentor.log.Log;
+import com.globalmentor.log.*;
 
 import static com.globalmentor.net.Servlets.*;
 import com.globalmentor.security.*;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
-import com.globalmentor.util.*;
 
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.net.URIs.*;
@@ -48,8 +47,7 @@ This servlet supports the following initialization parameters:
 <dl>
 	<dt>{@value Servlets#DATA_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing data.</dd>
 	<dt>{@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt> <dd>The directory for storing logs.</dd>
-	<dt>{@value #DEBUG_INIT_PARAMETER}</dt> <dd>Whether debugging is turned on.</dd> 
-	<dt>{@value #DEBUG_REPORT_LEVEL_INIT_PARAMETER}</dt> <dd>The level of debug reporting for the JVM of type {@link Debug.ReportLevel}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
+	<dt>{@value #LOG_LEVEL_INIT_PARAMETER}</dt> <dd>The level of logging for the JVM of type {@link Log.Level}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
 	<dt>{@value #LOG_HTTP_INIT_PARAMETER}</dt> <dd>Whether HTTP communication is logged.</dd> 
  </dl>
 @author Garret Wilson
@@ -57,40 +55,37 @@ This servlet supports the following initialization parameters:
 public class BasicHTTPServlet extends HttpServlet
 {
 
-	/**The init parameter, "debug", used to specify whether debugging is turned on; should be "true" or "false".*/
-	public final static String DEBUG_INIT_PARAMETER="debug";
+	/**The init parameter, {@value #LOG_LEVEL_INIT_PARAMETER}, used to specify the level of logging for the JVM of type {@link Log.Level}.*/
+	public final static String LOG_LEVEL_INIT_PARAMETER="logLevel";
 
-	/**The init parameter, "debugReportLevel", used to specify the level of debug reporting for the JVM of type {@link Debug.ReportLevel}.*/
-	public final static String DEBUG_REPORT_LEVEL_INIT_PARAMETER="debugReportLevel";
-
-	/**The init parameter, "logHTTP", used to specify whether HTTP communication should be logged; should be "true" or "false".*/
+	/**The init parameter, {@value #LOG_HTTP_INIT_PARAMETER}, used to specify whether HTTP communication should be logged; should be "true" or "false".*/
 	public final static String LOG_HTTP_INIT_PARAMETER="logHTTP";
 
-	/**The cached shared debug log file, or <code>null</code> if it has not yet been initialized.*/
-	private static File debugLogFile=null;
+	/**The cached shared default log file, or <code>null</code> if it has not yet been initialized.*/
+	private static File logFile=null;
 
-		/**Determines the debug log file for the entire JVM.
+		/**Determines the default log file for the entire JVM.
 		After the first retrieval, this file is cached.
 		The first servlet to request this file gets priority.
 		@param context The servlet context from which to retrieve init parameters.
-		@return The file for debug logging.
+		@return The file for logging.
 		@exception ServletException if the {@value Servlets#LOG_DIRECTORY_INIT_PARAMETER} init directory was not specified and the real path to <code>WEB-INF</code> could not be determined.
 		@see Servlets#getLogDirectory(ServletContext)
 		*/
-		protected static File getDebugLogFile(final ServletContext context)
+		protected static File getLogFile(final ServletContext context)
 		{
-			if(debugLogFile==null)	//if no log file has been determined (there is a benign race condition here)
+			if(logFile==null)	//if no log file has been determined (there is a benign race condition here)
 			{
 				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
 				final String logFilename=addExtension("debug-"+logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION);	//create a filename in the form "debug-YYYY-MM-DD.log"
-				debugLogFile=new File(getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
+				logFile=new File(getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
 			}
-			return debugLogFile;	//return the log file
+			return logFile;	//return the log file
 		}
 
 	/**Initializes the servlet.
 	This version ensures the log directory exists.
-	This version configures debugging.
+	This version configures logging.
 	This version configures HTTP logging.
 	@param servletConfig The servlet configuration.
 	@exception ServletException if there is a problem initializing.
@@ -98,45 +93,27 @@ public class BasicHTTPServlet extends HttpServlet
 	public void init(final ServletConfig servletConfig) throws ServletException
 	{
 		super.init(servletConfig);	//do the default initialization
-		try	//configure the debug level before we do anything else
+		try	//configure the log level before we do anything else
 		{
-			final Boolean debug=getBooleanInitParameter(servletConfig, DEBUG_INIT_PARAMETER);	//get the debug setting from the init parameters
-			if(debug!=null)	//if there is a debug setting specified
+			final Log.Level logLevel=getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class);	//get the log level from the init parameters
+			try	//make sure the log directory exists
 			{
-				try
-				{
-					Debug.setDebug(debug);	//turn debug on or off
-				}
-				catch(final IOException ioException)	//if we have a problem turning on debugging
-				{
-					throw new ServletException(ioException);
-				}
+				ensureDirectoryExists(getLogDirectory(getServletContext()));	//make sure the log directory exists
 			}
-			final Debug.ReportLevel debugReportLevel=getEnumInitParameter(servletConfig, DEBUG_REPORT_LEVEL_INIT_PARAMETER, Debug.ReportLevel.class);	//get the debug level from the init parameters
-			if(debugReportLevel!=null)	//if there is a debug report level specified
+			catch(final IOException ioException)	//if we can't create the log directory
 			{
-				Debug.setMinimumReportLevel(debugReportLevel);	//change the debug to the specified level
+				throw new ServletException(ioException);
 			}
+			final DefaultLogConfiguration logConfiguration= new DefaultLogConfiguration(getLogFile(getServletContext()));
+			if(logLevel!=null)	//configure the log level if given
+			{
+				logConfiguration.setLevel(logLevel);
+			}
+			Log.setDefaultConfiguration(logConfiguration);	//set the default log configuration
 		}
-		catch(final IllegalArgumentException illegalArgumentException)	//if an illegal debug report level was reported
+		catch(final IllegalArgumentException illegalArgumentException)	//if an illegal log report level was reported
 		{
 			throw new ServletException(illegalArgumentException);
-		}
-		try	//make sure the log directory exists
-		{
-			ensureDirectoryExists(getLogDirectory(getServletContext()));	//make sure the log directory exists
-		}
-		catch(final IOException ioException)	//if we can't create the log directory
-		{
-			throw new ServletException(ioException);
-		}
-		try	//configure the debug output
-		{
-			Debug.setOutput(getDebugLogFile(getServletContext()));	//set the log file
-		}
-		catch(final IOException ioException)	//if we can't access the debug file
-		{
-			throw new ServletException(ioException);
 		}
 			//configure HTTP logging
 		final Boolean logHTTP=getBooleanInitParameter(servletConfig, LOG_HTTP_INIT_PARAMETER);	//get the HTTP log setting from the init parameters
@@ -144,7 +121,7 @@ public class BasicHTTPServlet extends HttpServlet
 		{
 			HTTPClient.getInstance().setLogged(logHTTP.booleanValue());	//turn HTTP logging on or off
 		}		
-//TODO del Debug.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
+//TODO del Log.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
 	}
 
 	/**A thread-safe map of nonces, keyed to nonce ID strings.*/
@@ -282,18 +259,14 @@ public class BasicHTTPServlet extends HttpServlet
   */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
-/*TODO fix
-Debug.setDebug(true);
-Debug.setVisible(true);
-*/
 /*TODO del
-Debug.trace("servicing method", request.getMethod());
-Debug.trace("servlet path:", request.getServletPath());
-Debug.trace("request URI:", request.getRequestURI());
-Debug.trace("request URL:", request.getRequestURL());
-Debug.trace("path info:", request.getPathInfo());
+Log.trace("servicing method", request.getMethod());
+Log.trace("servlet path:", request.getServletPath());
+Log.trace("request URI:", request.getRequestURI());
+Log.trace("request URL:", request.getRequestURL());
+Log.trace("path info:", request.getPathInfo());
 */
-		Debug.log("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString(), request.getContentType());	//log the request
+		Log.info("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString(), request.getContentType());	//log the request
 		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet TODO fix race condition here
 		{
 			init(request);	//initialize from this request
@@ -321,37 +294,37 @@ Debug.trace("path info:", request.getPathInfo());
 		catch(final OutOfMemoryError outOfMemoryError)	//if there was an out-of-memory error, log the info before rethrowing the error
 		{
 			final Runtime runtime=Runtime.getRuntime();	//get the runtime instance
-			Debug.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()-runtime.freeMemory());
+			Log.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()-runtime.freeMemory());
 			throw outOfMemoryError;	//rethrow the error
 		}
 		catch(final AssertionError assertionError)	//if there was an assertion error, that's a serious internal server error
 		{
-			Debug.warn(assertionError);	//log the problem
+			Log.warn(assertionError);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, assertionError.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final NullPointerException nullPointerException)	//if there was a null pointer exception, that's a serious internal server error
 		{
-			Debug.warn(nullPointerException);	//log the problem
+			Log.warn(nullPointerException);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, nullPointerException.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final ClassCastException classCastException)	//if there was a class cast exception, that's a serious internal server error
 		{
-			Debug.warn(classCastException);	//log the problem
+			Log.warn(classCastException);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, classCastException.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final IllegalArgumentException illegalArgumentException)	//if some method ran into an illegal argument, we assume the client is responsible
 		{
-			Debug.warn(illegalArgumentException);	//log the problem
+			Log.warn(illegalArgumentException);	//log the problem
 			response.sendError(SC_BAD_REQUEST, illegalArgumentException.getMessage());	//send back a 400 Bad Request error
 		}
 		catch(final IllegalStateException illegalStateException)	//if there was an illgal state exception, that's a serious internal server error
 		{
-			Debug.warn(illegalStateException);	//log the problem
+			Log.warn(illegalStateException);	//log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, illegalStateException.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final UnsupportedOperationException unsupportedOperationException)	//if some operation is not supported by the server
 		{
-			Debug.warn(unsupportedOperationException);	//log the problem
+			Log.warn(unsupportedOperationException);	//log the problem
 			response.sendError(SC_NOT_IMPLEMENTED, unsupportedOperationException.getMessage());	//send back a 401 Not Implemented error
 		}
 		catch(final HTTPMovedPermanentlyException movedPermanentlyException)	//if a permanent redirect was requested (301)
@@ -390,34 +363,34 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		catch(final HTTPMethodNotAllowedException methodNotAllowedException)	//405 Method Not Allowed
 		{
-			Debug.warn(methodNotAllowedException);	//log the problem
+			Log.warn(methodNotAllowedException);	//log the problem
 			setAllow(response, methodNotAllowedException.getAllowedMethods());	//report the allowed methods
 			response.sendError(methodNotAllowedException.getStatusCode());	//send back the status code as an error
 		}
 		catch(final HTTPException httpException)	//if any other HTTP error was encountered
 		{
-			Debug.warn(httpException);	//log the problem
+			Log.warn(httpException);	//log the problem
 			response.sendError(httpException.getStatusCode(), httpException.getMessage());	//send back the status code as an error
 		}
 		catch(final IOException ioException)	//if there is some other I/O error
 		{
-			Debug.error(ioException);	//log the problem
+			Log.error(ioException);	//log the problem
 			throw ioException;	//rethrow the exception to let the container handle it
 		}
 		catch(final MissingResourceException missingResourceException)	//if there is a resource missing, the server isn't property configured
 		{
-			Debug.warn(missingResourceException);	//log the problem
+			Log.warn(missingResourceException);	//log the problem
 					//TODO find out why this isn't working with Tomcat 5.5.9
 			response.sendError(SC_INTERNAL_SERVER_ERROR, missingResourceException.getMessage());	//send back a 500 Internal Server Error			
 		}
 		catch(final RuntimeException runtimeException)	//if there are any other runtime exceptions
 		{
-			Debug.error(runtimeException);	//log the error
+			Log.error(runtimeException);	//log the error
 			throw runtimeException;	//let the container take care of the error
 		}
 		catch(final Error error)	//if there are any other errors
 		{
-			Debug.error(error);	//log the error
+			Log.error(error);	//log the error
 			throw error;	//let the container take care of the error
 		}
   }
@@ -505,7 +478,7 @@ Debug.trace("path info:", request.getPathInfo());
 	*/
 	protected boolean isStale(final Nonce nonce)
 	{
-//TODO del Debug.trace("checking staleness of nonce", nonce, "with time", nonce.getTime().getTime());
+//TODO del Log.trace("checking staleness of nonce", nonce, "with time", nonce.getTime().getTime());
 		return System.currentTimeMillis()-nonce.getTime().getTime()>NONCE_EXPIRATION_DURATION;	//see if the difference between now and then is longer than we allow
 	}
 
@@ -563,7 +536,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		if(credentials!=null)	//if credentials were provided
 		{
-			Debug.log("authorized", isAuthorized, resourceURI, method, principal, realm);	//log the authorization result
+			Log.info("authorized", isAuthorized, resourceURI, method, principal, realm);	//log the authorization result
 		}
 		if(!isAuthorized)	//if authentication and authorization didn't succeed, throw an exception
 		{
@@ -665,12 +638,12 @@ Debug.trace("path info:", request.getPathInfo());
 	*/
 	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPUnauthorizedException
 	{
-//TODO del Debug.trace("authenticating");
+//TODO del Log.trace("authenticating");
 		final String credentialsRealm=credentials!=null ? credentials.getRealm() : null;	//see if the credentials reports the realm, if we have credentials
-//TODO del Debug.trace("got realm", realm);
+//TODO del Log.trace("got realm", realm);
 		if(credentialsRealm!=null && !credentialsRealm.equals(realm))	//if a realm is given but it doesn't equal the expected realm for the requested resource
 		{
-//TODO del Debug.trace("realm doesn't match", getRealm(resourceURI));
+//TODO del Log.trace("realm doesn't match", getRealm(resourceURI));
 			return false;	//don't allow credentials marked for one realm to be used for another realm
 		}
 		if(credentials!=null)	//if there are credentials given
@@ -678,16 +651,16 @@ Debug.trace("path info:", request.getPathInfo());
 			if(credentials instanceof DigestAuthenticateCredentials)	//if these are digest credentials, make sure they are valid
 			{
 				final DigestAuthenticateCredentials digestCredentials=(DigestAuthenticateCredentials)credentials;	//get the credentials as digest credentials
-//TODO del Debug.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
+//TODO del Log.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
 				if(!requestURI.equals(digestCredentials.getURI().toString()))	//if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
 				{
 					return false;	//don't allow authentication for other resources
 				}
-//			TODO del Debug.trace("getting nonce for credentials nonce ID", digestCredentials.getNonce());
+//			TODO del Log.trace("getting nonce for credentials nonce ID", digestCredentials.getNonce());
 				final Nonce nonce=getNonce(digestCredentials.getNonce());	//get the nonce the request is using
 				if(nonce==null || !isValid(request, nonce))	//if we have no knowledge of this nonce or the nonce is invalid
 				{
-//				TODO del Debug.trace("nonce is not valid", nonce);
+//				TODO del Log.trace("nonce is not valid", nonce);
 					return false;	//the nonce is either very old or an incorrect nonce altogether
 				}
 				if(principal==null)	//if no principal was given
@@ -695,16 +668,16 @@ Debug.trace("path info:", request.getPathInfo());
 					return false;	//an anonymous principal cannot authenticate against given credentials
 				}			
 				final char[] password=getPassword(principal);	//get the password for the principal
-//TODO del Debug.trace("got password for credentials", new String(password));
+//TODO del Log.trace("got password for credentials", new String(password));
 				if(password==null || !digestCredentials.isValid(method, password))	//see if the credentials are valid for this principal's password
 				{
 					return false;	//indicate that the credentials have an invalid password
 				}
 				setNoncePrincipalID(nonce, principal.getName());	//associate this principal with the nonce
-//			TODO del Debug.trace("checking staleness");
+//			TODO del Log.trace("checking staleness");
 				if(isStale(nonce))	//if the nonce is stale
 				{
-//				TODO del Debug.trace("nonce is stale");
+//				TODO del Log.trace("nonce is stale");
 					final Nonce newNonce=createNonce();	//create a new, unstale nonce
 					setNoncePrincipalID(newNonce, principal.getName());	//associate this principal with the new nonce
 					final AuthenticateChallenge challenge=createAuthenticateChallenge(resourceURI, method, principal, realm, credentials, newNonce, true);	//create an authenticate challenge with the new nonce
@@ -719,7 +692,7 @@ Debug.trace("path info:", request.getPathInfo());
 		}
 		else	//if no credentials were given
 		{
-//TODO del Debug.trace("there were no credentials given, and principal is", principal);
+//TODO del Log.trace("there were no credentials given, and principal is", principal);
 			return principal==null;	//only anonymous principals can authenticate against missing credentials
 		}
 	}

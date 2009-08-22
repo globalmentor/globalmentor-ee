@@ -38,8 +38,6 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import com.globalmentor.util.Debug;
-
 // Renderer for the UITabbedPane component
 
 public class ForEachRenderer extends Renderer {
@@ -103,8 +101,8 @@ public class ForEachRenderer extends Renderer {
 	   	{
 /*TODO del
 Debug.setDebug(true);
-Debug.trace("items is a: ", component.getAttributes().get("items").getClass().getName());
-Debug.trace("var is a: ", component.getAttributes().get("var").getClass().getName());
+Log.trace("items is a: ", component.getAttributes().get("items").getClass().getName());
+Log.trace("var is a: ", component.getAttributes().get("var").getClass().getName());
 */
 	   		
 //TODO del	   		String itemsString = (String) component.getAttributes().get("items");

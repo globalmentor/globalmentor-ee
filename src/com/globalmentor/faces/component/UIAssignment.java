@@ -23,7 +23,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.globalmentor.java.Classes;
-import com.globalmentor.util.Debug;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
 
@@ -154,11 +153,11 @@ public class UIAssignment extends UIComponentBase
 			ValueBinding vb = getValueBinding("value");
     	if(vb!=null)
     	{
-    		Debug.trace("performing assignment", getClientId(context), "with expression:", vb.getExpressionString(), "value", value);
+    		Log.trace("performing assignment", getClientId(context), "with expression:", vb.getExpressionString(), "value", value);
     	}
     	else
     	{
-    		Debug.trace("performing assignment", getClientId(context), "with value", value);
+    		Log.trace("performing assignment", getClientId(context), "with value", value);
     	}
 */
 			final Application application=context.getApplication();	//get the JSF application

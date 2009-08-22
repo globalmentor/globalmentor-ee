@@ -18,7 +18,7 @@ package com.globalmentor.faces.application;
 
 import javax.faces.application.FacesMessage;
 
-import com.globalmentor.util.Debug;
+import com.globalmentor.log.Log;
 
 /**Utilities for working with the JavaServer Faces messages.
 @author Garret Wilson
@@ -33,7 +33,7 @@ public class FacesMessages
 	*/
 	public static FacesMessage createMessage(final Throwable throwable)
 	{
-		Debug.error(throwable);	//log the error
+		Log.error(throwable);	//log the error
 		final String messageString=throwable.getMessage();	//get the throwable's message
 		final FacesMessage message=new FacesMessage(messageString!=null ? messageString : throwable.toString());	//create a new faces message from the message string
     message.setSeverity(FacesMessage.SEVERITY_ERROR);	//show that this was an error		

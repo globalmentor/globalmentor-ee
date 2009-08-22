@@ -43,27 +43,27 @@ public class UIBasicData extends UIData
 /*TODO del
     public void setRowIndex(int rowIndex)
 		{
-			Debug.trace("basic data setting row index:", rowIndex);
+			Log.trace("basic data setting row index:", rowIndex);
 			super.setRowIndex(rowIndex);
-Debug.trace("row index set, var:", getVar());
-Debug.trace("row data available:", isRowAvailable());
+Log.trace("row index set, var:", getVar());
+Log.trace("row data available:", isRowAvailable());
 if(isRowAvailable())
 {
-	Debug.trace("row data is:", getRowData());
+	Log.trace("row data is:", getRowData());
 }
 else
 {
-	Debug.trace("row data not available; let's find out why.");
+	Log.trace("row data not available; let's find out why.");
 	final Object value=getValue();
-	Debug.trace("value is: ", value);
-//TODO del	Debug.trace("data model is:", getDataModel());
+	Log.trace("value is: ", value);
+//TODO del	Log.trace("data model is:", getDataModel());
 	if(value instanceof Object[])
 	{
 		final Object[] objects=(Object[])value;
-		Debug.trace("This is an array of length: ", objects.length);
+		Log.trace("This is an array of length: ", objects.length);
 	}
 Map requestMap =getFacesContext().getExternalContext().getRequestMap();
-Debug.trace("variable is now:", requestMap.get(getVar()));
+Log.trace("variable is now:", requestMap.get(getVar()));
 
 		}
 */
