@@ -77,7 +77,7 @@ public class BasicHTTPServlet extends HttpServlet
 			if(logFile==null)	//if no log file has been determined (there is a benign race condition here)
 			{
 				final DateFormat logFilenameDateFormat=new W3CDateFormat(W3CDateFormat.Style.DATE);	//create a formatter for the log filename
-				final String logFilename=addExtension("debug-"+logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION);	//create a filename in the form "debug-YYYY-MM-DD.log"
+				final String logFilename=addExtension("servlet-"+logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION);	//create a filename in the form "servlet-YYYY-MM-DD.log"
 				logFile=new File(getLogDirectory(context), logFilename);	//create the log file from the log directory and the log filename
 			}
 			return logFile;	//return the log file
@@ -121,7 +121,14 @@ public class BasicHTTPServlet extends HttpServlet
 		{
 			HTTPClient.getInstance().setLogged(logHTTP.booleanValue());	//turn HTTP logging on or off
 		}		
-//TODO del Log.trace("servlet", servletConfig.getServletName(), "using log directory", getLogDirectory(servletConfig.getServletContext()));
+		Log.info("Initializing servlet", servletConfig.getServletName());
+	}
+
+	/**Destroys the servlet.*/
+	public void destroy()
+	{
+		Log.info("Destroying servlet", getServletConfig().getServletName());
+		super.destroy();
 	}
 
 	/**A thread-safe map of nonces, keyed to nonce ID strings.*/
