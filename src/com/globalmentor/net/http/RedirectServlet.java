@@ -83,7 +83,7 @@ public class RedirectServlet extends BasicHTTPServlet
 				else	//if the requested URI doesn't have an absolute path
 				{
 					final URI requestURI=getResourceURI(request);	//see which URI was requested
-					redirectURI=getCurrentLevel(requestURI).resolve(requestedRedirectURI);	//resolve the requested redirect against the request current level
+					redirectURI=resolve(getCurrentLevel(requestURI), requestedRedirectURI);	//resolve the requested redirect against the request current level
 				}
 			}
 				//get the boolean value of the permanent parameter
