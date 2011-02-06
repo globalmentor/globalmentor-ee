@@ -83,6 +83,12 @@ public class BasicHTTPServlet extends HttpServlet
 			return logFile;	//return the log file
 		}
 
+	/**The log configuration for this servlet, or <code>null</code> if the servlet hasn't yet been initialized.*/
+	private DefaultLogConfiguration logConfiguration=null;
+
+	/**@return The log configuration for this servlet, or <code>null</code> if the servlet hasn't yet been initialized.*/
+	protected LogConfiguration getLogConfiguration() {return logConfiguration;}
+	
 	/**Initializes the servlet.
 	This version ensures the log directory exists.
 	This version configures logging.
@@ -104,7 +110,7 @@ public class BasicHTTPServlet extends HttpServlet
 			{
 				throw new ServletException(ioException);
 			}
-			final DefaultLogConfiguration logConfiguration= new DefaultLogConfiguration(getLogFile(getServletContext()));
+			logConfiguration= new DefaultLogConfiguration(getLogFile(getServletContext()));
 			if(logLevel!=null)	//configure the log level if given
 			{
 				logConfiguration.setLevel(logLevel);
@@ -128,6 +134,10 @@ public class BasicHTTPServlet extends HttpServlet
 	public void destroy()
 	{
 		Log.info("Destroying servlet", getServletConfig().getServletName());
+		if(logConfiguration!=null)	//if we initialized a log configuration
+		{
+			logConfiguration.dispose();	//dispose of the log configuration
+		}
 		super.destroy();
 	}
 
