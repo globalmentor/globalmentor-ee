@@ -202,7 +202,7 @@ Log.trace("exists", exists);
 		try
 		{
 Log.trace("trying to write");
-			InputStreams.copy(inputStream, outputStream);	//copy the file from the request to the resource
+			Streams.copy(inputStream, outputStream);	//copy the file from the request to the resource
 Log.trace("written");
 		}
 		finally
@@ -457,7 +457,7 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
     		final InputStream inputStream=new BufferedInputStream(getInputStream(request, resource));	//get an input stream to the resource
     		try
     		{
-    			InputStreams.copy(inputStream, outputStream);	//copy the input stream to the output stream
+    			Streams.copy(inputStream, outputStream);	//copy the input stream to the output stream
     		}
     		finally
     		{
@@ -697,7 +697,7 @@ Log.trace("sending redirect", redirectURI);
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
 			try
 			{
-				InputStreams.copy(inputStream, outputStream);	//write the bytes to the response
+				Streams.copy(inputStream, outputStream);	//write the bytes to the response
 			}
 			finally
 			{

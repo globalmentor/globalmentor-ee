@@ -19,7 +19,6 @@ package com.globalmentor.net.http;
 import java.io.*;
 import java.net.URI;
 import java.text.*;
-import java.text.ParseException;
 import java.util.*;
 import static java.util.Arrays.*;
 import static java.util.Collections.*;
@@ -33,7 +32,6 @@ import com.globalmentor.io.*;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.model.Locales;
 import com.globalmentor.net.*;
-import com.globalmentor.net.ContentType;
 import com.globalmentor.net.mime.*;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.text.SyntaxException;
@@ -1040,7 +1038,7 @@ public class HTTPServlets
 			response.setContentLength(size);	//show how many bytes we're going to download
 		}
 		final OutputStream outputStream=new BufferedOutputStream(response.getOutputStream());	//get an output stream to the response
-		InputStreams.copy(inputStream, outputStream);  //copy the file to the output stream
+		Streams.copy(inputStream, outputStream);  //copy the file to the output stream
 		outputStream.flush(); //flush the output stream
 	}
 
