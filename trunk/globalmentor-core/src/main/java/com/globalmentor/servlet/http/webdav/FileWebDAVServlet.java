@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http.webdav;
+package com.globalmentor.servlet.http.webdav;
 
 import java.io.*;
 import java.net.*;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http.webdav;
+package com.globalmentor.servlet.http.webdav;
 
 import java.io.*;
 import java.net.*;
@@ -28,11 +28,14 @@ import com.globalmentor.collections.DecoratorIDedMappedList;
 import com.globalmentor.log.Log;
 import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
+import com.globalmentor.net.http.webdav.*;
+
 import static com.globalmentor.net.http.HTTP.*;
-import static com.globalmentor.net.http.HTTPServlets.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
+import static com.globalmentor.servlet.http.HTTPServlets.*;
+
+import com.globalmentor.servlet.http.AbstractHTTPServlet;
 import com.globalmentor.text.xml.XML;
-import com.globalmentor.util.*;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import javax.servlet.http.*;
 

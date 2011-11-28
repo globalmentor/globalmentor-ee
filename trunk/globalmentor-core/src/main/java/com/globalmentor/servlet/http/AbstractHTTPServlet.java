@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import java.io.*;
 import java.net.*;
@@ -33,8 +33,8 @@ import static com.globalmentor.java.Classes.getLocalName;
 import static com.globalmentor.net.ContentTypeConstants.*;
 import static com.globalmentor.net.URIs.*;
 import static com.globalmentor.net.http.HTTP.*;
-import static com.globalmentor.net.http.HTTPServlets.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
+import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
@@ -43,11 +43,10 @@ import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
 import com.globalmentor.log.Log;
 import com.globalmentor.model.NameValuePair;
-import com.globalmentor.net.ContentType;
-import com.globalmentor.net.Resource;
+import com.globalmentor.net.*;
+import com.globalmentor.net.http.*;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.xml.XMLSerializer;
-import com.globalmentor.util.*;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

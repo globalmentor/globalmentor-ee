@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.jsp.taglib;
+package com.globalmentor.servlet.jsp.taglib;
 
 import java.io.IOException;
 
@@ -22,11 +22,10 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.globalmentor.io.*;
 import com.globalmentor.net.ContentType;
-
-import static com.globalmentor.net.http.HTTPServlets.*;
 import com.globalmentor.text.xml.XML;
+
+import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.xml.XML.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
 

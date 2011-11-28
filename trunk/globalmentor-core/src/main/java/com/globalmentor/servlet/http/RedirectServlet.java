@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import java.io.*;
 import java.net.URI;
 import javax.servlet.*;
 import javax.servlet.http.*;
+
+import com.globalmentor.net.http.*;
 
 import static com.globalmentor.net.URIs.*;
 

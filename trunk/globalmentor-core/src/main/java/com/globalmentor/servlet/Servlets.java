@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net;
+package com.globalmentor.servlet;
 
 import java.io.*;
 
 import javax.servlet.*;
 
 import com.globalmentor.java.Booleans;
+import com.globalmentor.net.URIs;
 
 
 import static com.globalmentor.net.URIs.*;

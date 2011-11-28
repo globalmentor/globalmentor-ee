@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import java.io.*;
 import java.net.*;
@@ -23,10 +23,9 @@ import static java.util.Collections.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.globalmentor.io.*;
-
 import static com.globalmentor.java.Objects.*;
 import com.globalmentor.net.*;
+import com.globalmentor.net.http.HTTPConflictException;
 import com.globalmentor.urf.*;
 import com.globalmentor.urf.content.Content;
 

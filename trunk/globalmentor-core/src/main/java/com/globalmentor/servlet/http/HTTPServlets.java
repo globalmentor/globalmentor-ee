@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import java.io.*;
 import java.net.URI;
@@ -32,22 +32,23 @@ import javax.servlet.http.*;
 import com.globalmentor.io.*;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.model.Locales;
-import com.globalmentor.net.*;
 import com.globalmentor.net.ContentType;
+import com.globalmentor.net.http.*;
 import com.globalmentor.net.mime.*;
+import com.globalmentor.servlet.Servlets;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.text.SyntaxException;
 
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Enums.*;
 import static com.globalmentor.model.Locales.*;
-import static com.globalmentor.net.Servlets.*;
 import static com.globalmentor.net.URIs.*;
-import static com.globalmentor.net.http.Cookies.*;
 import static com.globalmentor.net.http.HTTP.*;
 import static com.globalmentor.net.http.HTTPFormatter.*;
 import static com.globalmentor.net.http.HTTPParser.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
+import static com.globalmentor.servlet.Servlets.*;
+import static com.globalmentor.servlet.http.Cookies.*;
 import static com.globalmentor.util.regex.Matchers.*;
 
 /**Constants and utilities for working with servlets.

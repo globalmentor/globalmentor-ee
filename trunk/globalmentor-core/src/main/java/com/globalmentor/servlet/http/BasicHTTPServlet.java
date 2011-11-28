@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.globalmentor.net.http;
+package com.globalmentor.servlet.http;
 
 import java.io.*;
 import java.net.URI;
@@ -30,8 +30,8 @@ import javax.servlet.http.*;
 
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.log.*;
+import com.globalmentor.net.http.*;
 
-import static com.globalmentor.net.Servlets.*;
 import com.globalmentor.security.*;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
@@ -39,8 +39,9 @@ import com.globalmentor.text.W3CDateFormat;
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.net.URIs.*;
 import static com.globalmentor.net.http.HTTP.*;
-import static com.globalmentor.net.http.HTTPServlets.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
+import static com.globalmentor.servlet.Servlets.*;
+import static com.globalmentor.servlet.http.HTTPServlets.*;
 
 /**An HTTP servlet with extended functionality.
 This servlet supports the following initialization parameters:
