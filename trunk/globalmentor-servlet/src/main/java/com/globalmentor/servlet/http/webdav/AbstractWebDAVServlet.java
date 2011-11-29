@@ -248,7 +248,7 @@ Log.trace("is overwrite?", overwrite);
 					{
 						final Element documentElement=document.getDocumentElement();	//get the document element
 							//TODO check to make sure the document element is correct
-						propertyList=WebDAVXMLProcessor.getPropfindProperties(request, documentElement);	//get the property list from the XML document
+						propertyList=WebDAVXMLProcessor.getPropfindProperties(documentElement);	//get the property list from the XML document
 					}
 				}
 				catch(final DOMException domException)	//any XML problem here is the client's fault
