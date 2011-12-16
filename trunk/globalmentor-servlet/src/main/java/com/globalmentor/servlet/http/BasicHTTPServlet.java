@@ -51,6 +51,7 @@ This servlet supports the following initialization parameters:
 	<dt>{@value #LOG_LEVEL_INIT_PARAMETER}</dt> <dd>The level of logging for the JVM of type {@link Log.Level}. If multiple servlets specify this value, the last one initialized will have precedence.</dd> 
 	<dt>{@value #LOG_HTTP_INIT_PARAMETER}</dt> <dd>Whether HTTP communication is logged.</dd> 
  </dl>
+<p>Subclasses should override
 @author Garret Wilson
 */
 public class BasicHTTPServlet extends HttpServlet
@@ -89,39 +90,57 @@ public class BasicHTTPServlet extends HttpServlet
 
 	/**@return The log configuration for this servlet, or <code>null</code> if the servlet hasn't yet been initialized.*/
 	protected LogConfiguration getLogConfiguration() {return logConfiguration;}
-	
+
 	/**Initializes the servlet.
+	This version delegates to {@link #initialize(ServletConfig)}, throwing the appropriate
+	{@link ServletException} if certain runtime exceptions are thrown.
+	Child classes should override {@link #initialize(ServletConfig)}.
+	@param servletConfig The servlet configuration.
+	@exception ServletException if there is a problem initializing.
+	*/
+	public final void init(final ServletConfig servletConfig) throws ServletException
+	{
+		super.init(servletConfig);	//do the default initialization
+		try
+		{
+			initialize(servletConfig);	//perform initialization
+		}
+		catch(final IllegalArgumentException illegalArgumentException)
+		{
+			throw new ServletException(illegalArgumentException);
+		}
+		catch(final IllegalStateException illegalStateException)
+		{
+			throw new ServletException(illegalStateException);
+		}
+	}
+	
+	
+	/**Initializes the servlet. Child classes should call this version.
 	This version ensures the log directory exists.
 	This version configures logging.
 	This version configures HTTP logging.
 	@param servletConfig The servlet configuration.
 	@exception ServletException if there is a problem initializing.
 	*/
-	public void init(final ServletConfig servletConfig) throws ServletException
+	public void initialize(final ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException
 	{
-		super.init(servletConfig);	//do the default initialization
-		try	//configure the log level before we do anything else
+		//configure the log level before we do anything else
+		final Log.Level logLevel=getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class);	//get the log level from the init parameters
+		try	//make sure the log directory exists
 		{
-			final Log.Level logLevel=getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class);	//get the log level from the init parameters
-			try	//make sure the log directory exists
-			{
-				ensureDirectoryExists(getLogDirectory(getServletContext()));	//make sure the log directory exists
-			}
-			catch(final IOException ioException)	//if we can't create the log directory
-			{
-				throw new ServletException(ioException);
-			}
-			logConfiguration= new DefaultLogConfiguration(getLogFile(getServletContext()));
-			if(logLevel!=null)	//configure the log level if given
-			{
-				logConfiguration.setLevel(logLevel);
-			}
-			Log.setDefaultConfiguration(logConfiguration);	//set the default log configuration
+			ensureDirectoryExists(getLogDirectory(getServletContext()));	//make sure the log directory exists
 		}
-		catch(final IllegalArgumentException illegalArgumentException)	//if an illegal log report level was reported
+		catch(final IOException ioException)	//if we can't create the log directory
 		{
-			throw new ServletException(illegalArgumentException);
+			throw new ServletException(ioException);
 		}
+		logConfiguration= new DefaultLogConfiguration(getLogFile(getServletContext()));
+		if(logLevel!=null)	//configure the log level if given
+		{
+			logConfiguration.setLevel(logLevel);
+		}
+		Log.setDefaultConfiguration(logConfiguration);	//set the default log configuration
 			//configure HTTP logging
 		final Boolean logHTTP=getBooleanInitParameter(servletConfig, LOG_HTTP_INIT_PARAMETER);	//get the HTTP log setting from the init parameters
 		if(logHTTP!=null)	//if there is an HTTP log setting specified
@@ -254,7 +273,7 @@ public class BasicHTTPServlet extends HttpServlet
 	@exception IllegalStateException if this servlet has already been initialized from a request.
 	@exception ServletException if there is a problem initializing.
 	*/
-	public void init(final HttpServletRequest request) throws ServletException
+	public void initialize(final HttpServletRequest request) throws ServletException
 	{
 		if(isInitializedFromRequest)	//if we've already initialized from a request
 		{
@@ -287,7 +306,7 @@ Log.trace("path info:", request.getPathInfo());
 		Log.info("("+request.getRemoteAddr()+")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString(), request.getContentType());	//log the request
 		if(!isInitializedFromRequest)	//if we haven't initialized from a request, yet TODO fix race condition here
 		{
-			init(request);	//initialize from this request
+			initialize(request);	//initialize from this request
 			isInitializedFromRequest=true;	//show that we have initialized from a request
 		}
 		else	//if we have initialized from a request, make sure the variables are still the same
@@ -306,7 +325,9 @@ Log.trace("path info:", request.getPathInfo());
 		try
 		{
 			if(!OPTIONS_METHOD.equals(request.getMethod()))	//TODO testing
+			{
 				checkAuthorization(request);	//check to see if the request is authorized
+			}
 			doMethod(request.getMethod(), request, response);	//allow the subclass to do special processing if needed
 		}
 		catch(final OutOfMemoryError outOfMemoryError)	//if there was an out-of-memory error, log the info before rethrowing the error

@@ -94,7 +94,7 @@ public class DeclareXMLTag extends TagSupport
 				}
 				if(mediaType==null)	//if we still couldn't find a content type
 				{
-					mediaType=XML_CONTENT_TYPE;	//use the generic "text/xml" content type
+					mediaType=CONTENT_TYPE;	//use the generic "text/xml" content type
 				}
 			}
 			return mediaType;	//return the media type we found

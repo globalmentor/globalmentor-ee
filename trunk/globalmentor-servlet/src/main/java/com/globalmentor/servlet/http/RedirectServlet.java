@@ -46,11 +46,11 @@ public class RedirectServlet extends BasicHTTPServlet
 	/**The required initialization parameter "redirectURI" specifying the redirect URI.*/
 	public final String REDIRECT_URI_PARAMETER="redirectURI";
 
-	/**The optional initialization parameter "permanent" specifying whether the redirect should be permant.*/
+	/**The optional initialization parameter "permanent" specifying whether the redirect should be permanent.*/
 	public final String PERMANENT_PARAMETER="permanent";
 
 	/**Services an HTTP request based upon its method.
-  This version redirects all request to a configured URI.
+  This version redirects all requests to a configured URI.
   @param method The HTTP method being serviced. 
   @param request The HTTP request.
   @param response The HTTP response.
