@@ -22,13 +22,10 @@ import static com.globalmentor.java.Conditions.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static java.util.Collections.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.Writer;
+import java.io.*;
 import java.util.*;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
+import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.collections.*;
@@ -151,6 +148,7 @@ public class PropertyStoreServlet extends BasicHTTPServlet
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
+		setNoCache(request, response); //turn off caching of the response
 		final ReadWriteLockMap<String, String> propertyMap = getPropertyMap();
 		propertyMap.readLock().lock(); //lock our property map for reading
 		try
