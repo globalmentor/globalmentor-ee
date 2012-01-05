@@ -40,7 +40,7 @@ import static com.globalmentor.net.URIs.*;
 	302 Found.</p>
 @author Garret Wilson
 */
-public class RedirectServlet extends BasicHTTPServlet
+public class RedirectServlet extends BaseHTTPServlet
 {
 
 	/**The required initialization parameter "redirectURI" specifying the redirect URI.*/

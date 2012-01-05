@@ -66,7 +66,7 @@ import com.globalmentor.util.PropertiesUtilities;
  * 
  * @author Garret Wilson
  */
-public class PropertyStoreServlet extends BasicHTTPServlet
+public class PropertyStoreServlet extends BaseHTTPServlet
 {
 
 	/** The maximum length for a property value, 1024. This may be configurable in a future version. */

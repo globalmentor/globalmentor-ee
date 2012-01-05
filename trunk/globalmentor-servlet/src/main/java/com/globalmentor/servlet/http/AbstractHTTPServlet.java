@@ -56,7 +56,7 @@ import org.xml.sax.SAXException;
 @see <a href="http://www.mnot.net/cache_docs/">Caching Tutorial</a>
 @author Garret Wilson
 */
-public abstract class AbstractHTTPServlet<R extends Resource> extends BasicHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
+public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPServlet	//TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
 
 	protected final static boolean LIST_DIRECTORIES=false;	//TODO fix
