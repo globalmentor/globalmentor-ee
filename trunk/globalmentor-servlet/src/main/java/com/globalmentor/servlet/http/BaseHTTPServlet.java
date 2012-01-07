@@ -29,7 +29,8 @@ import javax.servlet.http.*;
 
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.log.*;
-import com.globalmentor.management.profile.Probe;
+import com.globalmentor.management.profile.Profiler;
+import com.globalmentor.management.profile.StackProbeOperation;
 import com.globalmentor.net.http.*;
 
 import com.globalmentor.security.*;
@@ -169,6 +170,10 @@ public class BaseHTTPServlet extends HttpServlet
 		//configure profiling
 		this.profiled = Boolean.TRUE.equals(getBooleanInitParameter(servletConfig, PROFILE_INIT_PARAMETER)); //get the profile setting from the init parameters
 		Log.info("Initializing servlet", servletConfig.getServletName());
+		if(isProfiled())	//if we are being profiled, configure the stack probe
+		{
+			Profiler.setStackProbeOperation(StackProbeOperation.forServer());	//configure the stack probe for use on a server
+		}
 	}
 
 	/** Destroys the servlet. */
@@ -178,7 +183,7 @@ public class BaseHTTPServlet extends HttpServlet
 		{
 			try
 			{
-				Probe.printStackProbeCounts(System.out);
+				Profiler.determineStackProbeOperation().printStackProbeCounts(System.out);
 			}
 			catch(final IOException ioException)
 			{
@@ -362,7 +367,7 @@ public class BaseHTTPServlet extends HttpServlet
 		}
 		if(isProfiled())	//if we are being profiled, make sure a stack probe is started
 		{
-			Probe.startStackProbe();
+			Profiler.startStackProbe();
 		}
 		try
 		{
@@ -479,7 +484,7 @@ public class BaseHTTPServlet extends HttpServlet
 		{
 			if(!isProfiled()) //if we are being profiled, make sure we stop the stack probe (if no other stack probes are running)
 			{
-				Probe.stopStackProbe();
+				Profiler.stopStackProbe();
 			}
 		}
 	}

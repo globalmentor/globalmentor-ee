@@ -107,7 +107,7 @@ public class HTTPServlets
 				final String token = stringTokenizer.nextToken(); //get the next token
 				try
 				{
-					contentTypeList.add(ContentType.getInstance(trimRightFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(ContentType.getInstance(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				}
 				catch(final ArgumentSyntaxException argumentSyntaxException) //ignore content type strings that aren't syntactically correct
 				{
@@ -217,7 +217,7 @@ public class HTTPServlets
 			while(stringTokenizer.hasMoreTokens()) //while there are more tokens
 			{
 				final String token = stringTokenizer.nextToken(); //get the next token
-				final String language = trimRightFirst(token, ';').toString().trim(); //trim any quality designation TODO use a constant, and preferably cycle through all languages to get the one with the highest quality
+				final String language = truncateAtFirst(token, ';').toString().trim(); //trim any quality designation TODO use a constant, and preferably cycle through all languages to get the one with the highest quality
 				final Locale locale = createLocale(language); //create a locale, converting from the HTTP language identification to Java Locale format
 				localeList.add(locale); //add a new locale to the list
 			}
