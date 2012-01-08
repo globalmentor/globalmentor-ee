@@ -1,5 +1,5 @@
 /*
- * Copyright © 2011 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ * Copyright © 2012 GlobalMentor, Inc. <http://www.globalmentor.com/>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Conditions.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
+import static com.globalmentor.text.TextFormatter.*;
 import static java.util.Collections.*;
 
 import java.io.*;
@@ -29,7 +30,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.collections.*;
-import com.globalmentor.java.Strings;
 import com.globalmentor.javascript.JSON;
 import com.globalmentor.net.http.HTTP;
 import com.globalmentor.text.Text;
@@ -126,7 +126,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 			{
 				throw new IllegalArgumentException("Unsupported property: " + propertyName);
 			}
-			propertyUpdate.put(propertyName, Strings.concat(parameterEntry.getValue(), COMMA_CHAR)); //combine the values into a single comma-separated value and store it
+			propertyUpdate.put(propertyName, formatList(COMMA_CHAR, parameterEntry.getValue())); //combine the values into a single comma-separated value and store it
 		}
 		getPropertyMap().putAll(propertyUpdate); //update the property map with the new values; this is a thread-safe, atomic operation 
 	}
