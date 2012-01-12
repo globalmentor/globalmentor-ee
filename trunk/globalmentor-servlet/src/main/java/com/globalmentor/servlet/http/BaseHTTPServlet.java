@@ -482,7 +482,7 @@ public class BaseHTTPServlet extends HttpServlet
 		}
 		finally
 		{
-			if(!isProfiled()) //if we are being profiled, make sure we stop the stack probe (if no other stack probes are running)
+			if(isProfiled()) //if we are being profiled, make sure we stop the stack probe (if no other stack probes are running)
 			{
 				Profiler.stopStackProbe();
 			}
