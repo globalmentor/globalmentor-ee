@@ -25,6 +25,7 @@ import javax.servlet.jsp.tagext.*;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.text.xml.XML;
 
+import static com.globalmentor.java.Characters.SPACE_CHAR;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.xml.XML.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
