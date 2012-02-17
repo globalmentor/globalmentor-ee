@@ -52,10 +52,14 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
  * <dd>The directory for storing data.</dd>
  * <dt>{@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt>
  * <dd>The directory for storing logs.</dd>
+ * <dt>{@value #DEBUG_INIT_PARAMETER}</dt>
+ * <dd>Whether the servlet is in debug mode; should be "true" or "false"; sets the log level to debug if not explicitly set.</dd>
  * <dt>{@value #LOG_LEVEL_INIT_PARAMETER}</dt>
  * <dd>The level of logging for the JVM of type {@link Log.Level}. If multiple servlets specify this value, the last one initialized will have precedence.</dd>
  * <dt>{@value #LOG_HTTP_INIT_PARAMETER}</dt>
  * <dd>Whether HTTP communication is logged.</dd>
+ * <dt>{@value #PROFILE_INIT_PARAMETER}</dt>
+ * <dd>Whether profiling should occur; should be "true" or "false".</dd>
  * </dl>
  * <p>
  * Subclasses should override
@@ -63,6 +67,12 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
  */
 public class BaseHTTPServlet extends HttpServlet
 {
+
+	/**
+	 * The init parameter, {@value #DEBUG_INIT_PARAMETER}, used to specify whether the servlet is in debug mode; should be "true" or "false"; sets the log level
+	 * to debug if not explicitly set.
+	 */
+	public final static String DEBUG_INIT_PARAMETER = "debug";
 
 	/** The init parameter, {@value #LOG_LEVEL_INIT_PARAMETER}, used to specify the level of logging for the JVM of type {@link Log.Level}. */
 	public final static String LOG_LEVEL_INIT_PARAMETER = "logLevel";
@@ -102,6 +112,15 @@ public class BaseHTTPServlet extends HttpServlet
 	protected boolean isProfiled()
 	{
 		return profiled;
+	}
+
+	/** Whether debugging is enabled for this servlet. */
+	private boolean debug = false;
+
+	/** @return Whether debugging is enabled for this servlet. */
+	protected boolean isDebug()
+	{
+		return debug;
 	}
 
 	/** The log configuration for this servlet, or <code>null</code> if the servlet hasn't yet been initialized. */
@@ -144,8 +163,13 @@ public class BaseHTTPServlet extends HttpServlet
 	 */
 	public void initialize(final ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException
 	{
+		this.debug = Boolean.TRUE.equals(getBooleanInitParameter(servletConfig, DEBUG_INIT_PARAMETER)); //get the debug setting from the init parameters
 		//configure the log level before we do anything else
-		final Log.Level logLevel = getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class); //get the log level from the init parameters
+		Log.Level logLevel = getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class); //get the log level from the init parameters
+		if(logLevel == null && isDebug()) //if no log level is specified but we are in debug mode
+		{
+			logLevel = Log.Level.DEBUG; //default to debug log level
+		}
 		try
 		//make sure the log directory exists
 		{
@@ -160,6 +184,7 @@ public class BaseHTTPServlet extends HttpServlet
 		{
 			logConfiguration.setLevel(logLevel);
 		}
+		logConfiguration.setStandardOutput(isDebug()); //if we are debugging, turn on logging to the standard output
 		Log.setDefaultConfiguration(logConfiguration); //set the default log configuration
 		//configure HTTP logging
 		final Boolean logHTTP = getBooleanInitParameter(servletConfig, LOG_HTTP_INIT_PARAMETER); //get the HTTP log setting from the init parameters
@@ -170,16 +195,16 @@ public class BaseHTTPServlet extends HttpServlet
 		//configure profiling
 		this.profiled = Boolean.TRUE.equals(getBooleanInitParameter(servletConfig, PROFILE_INIT_PARAMETER)); //get the profile setting from the init parameters
 		Log.info("Initializing servlet", servletConfig.getServletName());
-		if(isProfiled())	//if we are being profiled, configure the stack probe
+		if(isProfiled()) //if we are being profiled, configure the stack probe
 		{
-			Profiler.setStackProbeOperation(StackProbeOperation.forServer());	//configure the stack probe for use on a server
+			Profiler.setStackProbeOperation(StackProbeOperation.forServer()); //configure the stack probe for use on a server
 		}
 	}
 
 	/** Destroys the servlet. */
 	public void destroy()
 	{
-		if(isProfiled())	//if we are profiling the servlet, print out stack probe counts
+		if(isProfiled()) //if we are profiling the servlet, print out stack probe counts
 		{
 			try
 			{
@@ -365,7 +390,7 @@ public class BaseHTTPServlet extends HttpServlet
 				throw new IllegalStateException("Servlet path changed unexpectedly from " + servletPath + " to " + requestServletPath);
 			}
 		}
-		if(isProfiled())	//if we are being profiled, make sure a stack probe is started
+		if(isProfiled()) //if we are being profiled, make sure a stack probe is started
 		{
 			Profiler.startStackProbe();
 		}
