@@ -23,11 +23,12 @@ import static java.util.Collections.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.urframework.*;
+import org.urframework.content.Content;
+
 import static com.globalmentor.java.Objects.*;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.HTTPConflictException;
-import com.globalmentor.urf.*;
-import com.globalmentor.urf.content.Content;
 
 /**The default implementation of an HTTP servlet that accesses files in the web application.
 This servlet may access files within a War file because it uses general servlet routines for resource access.
