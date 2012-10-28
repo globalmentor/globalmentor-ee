@@ -131,7 +131,7 @@ public class Servlets
 	/**Determines the data directory.
 	The data directory is determined in this order:
 	<ol>
-		<li>The file for the value of the context parameter {@value Servlets#DATA_DIRECTORY_INIT_PARAMETER}.</li>
+		<li>The file for the value of the context parameter {@value #DATA_DIRECTORY_INIT_PARAMETER}.</li>
 		<li>The file for the real path to <code>/WEB-INF/</code>.</li>
 	</ol>
 	@param context The servlet context from which to retrieve init parameters.
@@ -173,7 +173,7 @@ public class Servlets
 	/**Determines the log directory.
 	The log directory is determined in this order:
 	<ol>
-		<li>The file for the value of the context parameter {@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}.</li>
+		<li>The file for the value of the context parameter {@value #LOG_DIRECTORY_INIT_PARAMETER}.</li>
 		<li>The file for the real path to <code><var>dataDirectory</var>/logs/</code>.</li>
 	</ol>
 	@param context The servlet context from which to retrieve init parameters.
@@ -188,7 +188,7 @@ public class Servlets
 	/**Determines the temp directory.
 	The log directory is determined in this order:
 	<ol>
-		<li>The file for the value of the context parameter {@value Servlets#TEMP_DIRECTORY_INIT_PARAMETER}.</li>
+		<li>The file for the value of the context parameter {@value #TEMP_DIRECTORY_INIT_PARAMETER}.</li>
 		<li>The file for the real path to <code><var>dataDirectory</var>/temp/</code>.</li>
 	</ol>
 	@param context The servlet context from which to retrieve init parameters.

@@ -48,8 +48,6 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
 /**
  * An HTTP servlet with extended functionality. This servlet supports the following initialization parameters:
  * <dl>
- * <dt>{@value Servlets#DATA_DIRECTORY_INIT_PARAMETER}</dt>
- * <dd>The directory for storing data.</dd>
  * <dt>{@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt>
  * <dd>The directory for storing logs.</dd>
  * <dt>{@value #DEBUG_INIT_PARAMETER}</dt>
@@ -61,8 +59,6 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
  * <dt>{@value #PROFILE_INIT_PARAMETER}</dt>
  * <dd>Whether profiling should occur; should be "true" or "false".</dd>
  * </dl>
- * <p>
- * Subclasses should override
  * @author Garret Wilson
  */
 public class BaseHTTPServlet extends HttpServlet
