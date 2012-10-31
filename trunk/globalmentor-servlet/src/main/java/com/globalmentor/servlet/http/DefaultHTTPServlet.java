@@ -27,6 +27,8 @@ import org.urframework.*;
 import org.urframework.content.Content;
 
 import static com.globalmentor.java.Objects.*;
+
+import com.globalmentor.iso.datetime.ISODateTime;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.HTTPConflictException;
 
@@ -284,7 +286,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException
 		{
-			final URFDateTime modifiedDateTime=Content.getModified(getResourceDescription());	//get the last modified date time from the description, if that property exists
+			final ISODateTime modifiedDateTime=Content.getModified(getResourceDescription());	//get the last modified date time from the description, if that property exists
 			return modifiedDateTime!=null ? modifiedDateTime.getTime() : -1;	//return the milliseconds of the time, if the time is available
 		}
 
