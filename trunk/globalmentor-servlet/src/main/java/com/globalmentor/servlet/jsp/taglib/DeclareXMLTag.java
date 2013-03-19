@@ -84,7 +84,7 @@ public class DeclareXMLTag extends TagSupport
 			ContentType mediaType=null;	//we'll determine the media type if we can
 			if(contentType!=null)	//if there is a content type string
 			{
-				mediaType=ContentType.getInstance(contentType);	//create a new media type
+				mediaType=ContentType.create(contentType);	//create a new media type
 			}
 			else	//if there is no content type string
 			{
@@ -181,7 +181,7 @@ public class DeclareXMLTag extends TagSupport
 			ContentType contentType=getMediaType();	//get the preferred content type
 			if(contentType!=null)	//if a content type is specified
 			{
-				if(contentType.match(XHTML_CONTENT_TYPE))	//if the preferred content type is "application/xhtml+xml"
+				if(contentType.hasBaseType(XHTML_CONTENT_TYPE))	//if the preferred content type is "application/xhtml+xml"
 				{
 						//if the client doesn't accept "application/xhtml+xml" exactly
 					if(!isAcceptedContentType(request, XHTML_CONTENT_TYPE, false))

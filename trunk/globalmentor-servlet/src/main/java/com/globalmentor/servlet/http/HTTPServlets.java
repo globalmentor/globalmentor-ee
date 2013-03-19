@@ -107,7 +107,7 @@ public class HTTPServlets
 				final String token = stringTokenizer.nextToken(); //get the next token
 				try
 				{
-					contentTypeList.add(ContentType.getInstance(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(ContentType.create(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				}
 				catch(final ArgumentSyntaxException argumentSyntaxException) //ignore content type strings that aren't syntactically correct
 				{
@@ -146,7 +146,7 @@ public class HTTPServlets
 		{
 			if(matchWildcards || acceptedContentType.getBaseType().indexOf(WILDCARD_CHAR) < 0) //only match wildcards if we were asked to
 			{
-				if(contentType.match(acceptedContentType)) //if our content type matches an accepted content type (make sure we match to the accepted content type, which can have wildcards)
+				if(contentType.hasBaseType(acceptedContentType)) //if our content type matches an accepted content type (make sure we match to the accepted content type, which can have wildcards)
 				{
 					return true; //show that we found a match
 				}

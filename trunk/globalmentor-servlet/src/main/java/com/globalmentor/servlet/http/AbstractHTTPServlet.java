@@ -42,7 +42,6 @@ import com.globalmentor.collections.Collections;
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
 import com.globalmentor.log.Log;
-import com.globalmentor.model.NameValuePair;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.*;
 import com.globalmentor.text.SyntaxException;
@@ -690,7 +689,7 @@ Log.trace("sending redirect", redirectURI);
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET);	//serialize the document to the byte array with no byte order mark
 			final byte[] bytes=byteArrayOutputStream.toByteArray();	//get the bytes we serialized
 				//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new NameValuePair<String, String>(ContentType.CHARSET_PARAMETER, UTF_8)));
+			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8)));
 //TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream=getCompressedOutputStream(request, response);	//get an output stream to the response, compressing the output if possible
 			final InputStream inputStream=new ByteArrayInputStream(bytes);	//get an input stream to the bytes
@@ -820,7 +819,7 @@ Log.trace("sending redirect", redirectURI);
 	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException
 	{
 		final String contentTypeString=getServletContext().getMimeType(getRawName(resource.getURI()));	//ask the servlet context for the MIME type
-		return contentTypeString!=null ? ContentType.getInstance(contentTypeString) : null;	//create a content type object if a content type string was returned
+		return contentTypeString!=null ? ContentType.create(contentTypeString) : null;	//create a content type object if a content type string was returned
 	}
 
 	/**Determines the content length of the given resource.
