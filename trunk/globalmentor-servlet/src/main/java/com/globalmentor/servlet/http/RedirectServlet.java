@@ -54,8 +54,8 @@ public class RedirectServlet extends BaseHTTPServlet
   @param method The HTTP method being serviced. 
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{

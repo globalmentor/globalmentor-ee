@@ -36,7 +36,7 @@ public class ExpressionMethodBinding extends MethodBinding
 
 	/**Expression constructor.
 	@param expression The represented expression.
-	@exception NullPointerException Thrown if the expression is <code>null</code>.
+	@throws NullPointerException Thrown if the expression is <code>null</code>.
 	*/
 	public ExpressionMethodBinding(final Expression<?> expression)
 	{
@@ -51,11 +51,11 @@ public class ExpressionMethodBinding extends MethodBinding
 	@param context The JSF context for the current request.
 	@param params The array of parameters to be passed to the called method,
 		or <code>null</code> for no parameters.
-	@exception EvaluationException if an exception is thrown
+	@throws EvaluationException if an exception is thrown
 		by the called method (the thrown exception must be included as the
 		<code>cause</code> property of this exception).
-	@exception MethodNotFoundException if no suitable method can be found.
-	@exception NullPointerException if <code>context</code>
+	@throws MethodNotFoundException if no suitable method can be found.
+	@throws NullPointerException if <code>context</code>
 		is <code>null</code>
 	@see Expression#getValue(FacesContext)
 	*/
@@ -67,8 +67,8 @@ public class ExpressionMethodBinding extends MethodBinding
 	/**Return the Java class representing the return type from the
 		method identified by this method binding expression.
 	@param context The JSF context for the current request.
-	@exception MethodNotFoundException if no suitable method can be found
-	@exception NullPointerException if <code>context</code>
+	@throws MethodNotFoundException if no suitable method can be found
+	@throws NullPointerException if <code>context</code>
 		is <code>null</code>.
 	@see Expression#getType(FacesContext)
 	*/

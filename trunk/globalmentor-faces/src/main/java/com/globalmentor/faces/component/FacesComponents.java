@@ -85,7 +85,7 @@ public class FacesComponents
 		character, it will be replaced with an 'x'.
 	@param string The string to be changed to a valid ID.
 	@return The string modified to be a valid ID.
-	@exception IllegalArgumentException if the string has no characters.
+	@throws IllegalArgumentException if the string has no characters.
 	*/
 	public static String createValidID(final String string)	//TODO use constants
 	{
@@ -411,7 +411,7 @@ public class FacesComponents
 	@param attributeName The name of the attribute.
 	@param attributeValue The value of the attribute; either a value-binding
 		expression or an <code>Integer</code>.
-	@exception NumberFormatException if the attribute value does not contain a
+	@throws NumberFormatException if the attribute value does not contain a
 		parsable integer.
 	@see Integer
 	*/

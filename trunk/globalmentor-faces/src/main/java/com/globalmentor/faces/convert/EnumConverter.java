@@ -44,8 +44,8 @@ public class EnumConverter<T extends Enum<T>> implements Converter
 	@param component The component with which this model object value is associated.
 	@param value The string value to be converted (may be <code>null</code>).
 	@return <code>null</code> if the value to convert is <code>null</code>, otherwise the result of the conversion.
-	@exception ConverterException if conversion cannot be successfully performed.
-	@exception NullPointerException if <code>context</code> or <code>component</code> is <code>null</code>.
+	@throws ConverterException if conversion cannot be successfully performed.
+	@throws NullPointerException if <code>context</code> or <code>component</code> is <code>null</code>.
 	*/
 	public Object getAsObject(final FacesContext context, final UIComponent component, final String value)
 	{
@@ -64,8 +64,8 @@ public class EnumConverter<T extends Enum<T>> implements Converter
 	@param component The component with which this model object value is associated.
 	@param value The model object value to be converted (may be <code>null</code>).
 	@return A zero-length string if value is <code>null</code>, otherwise the result of the conversion.
-	@exception ConverterException if conversion cannot be successfully performed.
-	@exception NullPointerException if <code>context</code> or <code>component</code> is <code>null</code>.
+	@throws ConverterException if conversion cannot be successfully performed.
+	@throws NullPointerException if <code>context</code> or <code>component</code> is <code>null</code>.
 	*/
 	public String getAsString(final FacesContext context, final UIComponent component, final Object value)
 	{

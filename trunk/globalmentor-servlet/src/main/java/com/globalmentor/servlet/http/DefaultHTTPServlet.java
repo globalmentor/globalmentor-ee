@@ -54,7 +54,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
   */
   protected boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
@@ -66,7 +66,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
   protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
@@ -80,8 +80,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException if there is an error accessing the resource.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException if there is an error accessing the resource.
   */
 	protected HTTPServletResource getResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException
 	{
@@ -112,7 +112,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no content length could be determined.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected long getContentLength(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
@@ -123,7 +123,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected Date getLastModifiedDate(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
@@ -135,7 +135,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource,
+	@throws IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
 	protected InputStream getInputStream(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
@@ -147,7 +147,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected OutputStream getOutputStream(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
@@ -160,9 +160,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which a resource is being created.
 	@param resourceURI The URI of the resource to create.
 	@return An output stream for storing content in the resource.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
 	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
@@ -174,9 +174,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which a collection is being created.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
 	protected HTTPServletResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
@@ -187,7 +187,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**Deletes a resource.
 	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
-	@exception IOException Thrown if the resource could not be deleted.
+	@throws IOException Thrown if the resource could not be deleted.
 	*/
 	protected void deleteResource(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
@@ -198,7 +198,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	@param request The HTTP request in response to which child resources are being retrieved.
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
-	@exception IOException Thrown if there is an error retrieving the list of child resources.
+	@throws IOException Thrown if there is an error retrieving the list of child resources.
 	*/
 	protected List<HTTPServletResource> getChildResources(final HttpServletRequest request, final HTTPServletResource resource) throws IOException
 	{
@@ -215,28 +215,28 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the full content type of the resource, including any parameters.
 		@param request The HTTP request in response to which the content type is being retrieved.
 		@return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
-		@exception IOException if there is an error getting the type of the resource.
+		@throws IOException if there is an error getting the type of the resource.
 		*/
 		public ContentType getContentType(final HttpServletRequest request) throws IOException;
 
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
 		@return The content length of the resource, or <code>-1</code> if the content length could not be determined.
-		@exception IOException if there is an error getting the length of the resource.
+		@throws IOException if there is an error getting the length of the resource.
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException;
 
 		/**Returns the last modification time of the resource.
 		@param request The HTTP request in response to which the last modified time is being retrieved.
 		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT, or <code>-1</code> if the last modified date could not be determined.
-		@exception IOException if there is an error getting the last modified time.
+		@throws IOException if there is an error getting the last modified time.
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException;
 
 		/**Returns an input stream to the resource.
 		@param request The HTTP request in response to which the input stream is being retrieved.
 		@return The lazily-created input stream to the resource.
-		@exception IOException if there is an error getting an input stream to the resource.
+		@throws IOException if there is an error getting an input stream to the resource.
 		*/
 		public InputStream getInputStream(final HttpServletRequest request) throws IOException;
 	}
@@ -262,7 +262,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the full content type of the resource, including any parameters.
 		@param request The HTTP request in response to which the content type is being retrieved.
 		@return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
-		@exception IOException if there is an error getting the type of the resource.
+		@throws IOException if there is an error getting the type of the resource.
 		*/
 		public ContentType getContentType(final HttpServletRequest request) throws IOException
 		{
@@ -272,7 +272,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
 		@return The content length of the resource, or <code>-1</code> if the content length could not be determined.
-		@exception IOException if there is an error getting the length of the resource.
+		@throws IOException if there is an error getting the length of the resource.
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException
 		{
@@ -282,7 +282,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the last modification time of the resource.
 		@param request The HTTP request in response to which the last modified time is being retrieved.
 		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT, or <code>-1</code> if the last modified date could not be determined.
-		@exception IOException if there is an error getting the last modified time.
+		@throws IOException if there is an error getting the last modified time.
 		*/
 		public long getLastModified(final HttpServletRequest request) throws IOException
 		{
@@ -293,7 +293,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Constructs a resource with a reference URI and resource description.
 		@param referenceURI The reference URI for the new resource.
 		@param resourceDescription The description of the resource.
-		@exception NullPointerException if the reference URI and/or resource description is <code>null</code>.
+		@throws NullPointerException if the reference URI and/or resource description is <code>null</code>.
 		*/
 		public AbstractDescriptionResource(final URI referenceURI, final URFResource resourceDescription)
 		{
@@ -322,7 +322,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		private URLConnection urlConnection=null;
 
 			/**@return The lazily-created URL connection to the resource.
-			@exception IOException if there is an error getting a connection to the resource.
+			@throws IOException if there is an error getting a connection to the resource.
 			*/
 			protected URLConnection getURLConnection() throws IOException
 			{
@@ -338,7 +338,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			/**Returns the full content type of the resource, including any parameters.
 			@param request The HTTP request in response to which the content type is being retrieved.
 			@return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
-			@exception IOException if there is an error getting the type of the resource.
+			@throws IOException if there is an error getting the type of the resource.
 			*/
 			public ContentType getContentType(final HttpServletRequest request) throws IOException
 			{
@@ -350,7 +350,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			/**Returns the content length of the resource.
 			@param request The HTTP request in response to which the content length is being retrieved.
 			@return The content length of the resource.
-			@exception IOException if there is an error getting the length of the resource.
+			@throws IOException if there is an error getting the length of the resource.
 			*/
 			public long getContentLength(final HttpServletRequest request) throws IOException
 			{
@@ -360,7 +360,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			/**Returns the last modification time of the resource.
 			@param request The HTTP request in response to which the last modified time is being retrieved.
 			@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
-			@exception IOException if there is an error getting the last modified time.
+			@throws IOException if there is an error getting the last modified time.
 			*/
 			public long getLastModified(final HttpServletRequest request) throws IOException
 			{
@@ -373,7 +373,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 			/**Returns an input stream to the resource.
 			@param request The HTTP request in response to which the input stream is being retrieved.
 			@return The lazily-created input stream to the resource.
-			@exception IOException if there is an error getting an input stream to the resource.
+			@throws IOException if there is an error getting an input stream to the resource.
 			*/
 			public InputStream getInputStream(final HttpServletRequest request) throws IOException	//TODO do we really want to assume there's only one input stream needed to the resource? maybe; probably not
 			{
@@ -387,7 +387,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Constructs a resource with a reference URI and a URL to connect to.
 		@param referenceURI The reference URI for the new resource.
 		@param resourceURL The URL to use for connecting to the resource.
-		@exception NullPointerException if the reference URI and/or URL <code>null</code>.
+		@throws NullPointerException if the reference URI and/or URL <code>null</code>.
 		*/
 		public AbstractURLHTTPServletResource(final URI referenceURI, final URL resourceURL)
 		{
@@ -412,7 +412,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Constructs a resource with a reference URI and a context-relative absolute path.
 		@param referenceURI The reference URI for the new resource.
 		@param resourceURL The URL to use for connecting to the resource.
-		@exception NullPointerException if the reference URI and/or URL <code>null</code>.
+		@throws NullPointerException if the reference URI and/or URL <code>null</code>.
 		*/
 		public DefaultHTTPServletResource(final URI referenceURI, final URL resourceURL)
 		{
@@ -440,7 +440,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Loads bytes from the requested resource.
 		@param request The HTTP request in response to which the bytes are being retrieved.
 		@return The bytes that constitute the resource.
-		@exception IOException if there is an error retrieving the bytes.
+		@throws IOException if there is an error retrieving the bytes.
 		*/
 		protected abstract byte[] loadBytes(final HttpServletRequest request) throws IOException;
 
@@ -448,7 +448,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		@param request The HTTP request in response to which the bytes are being retrieved.
 		If the bytes are retrieved from the decorated resource if they haven't already been.
 		@return The bytes that constitute the resource.
-		@exception IOException if there is an error retrieving the bytes.
+		@throws IOException if there is an error retrieving the bytes.
 		*/
 		protected byte[] getBytes(final HttpServletRequest request) throws IOException
 		{
@@ -465,7 +465,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the full content type of the resource, including any parameters.
 		@param request The HTTP request in response to which the content type is being retrieved.
 		@return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
-		@exception IOException if there is an error getting the type of the resource.
+		@throws IOException if there is an error getting the type of the resource.
 		*/
 		public ContentType getContentType(final HttpServletRequest request) throws IOException
 		{
@@ -475,7 +475,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns the content length of the resource.
 		@param request The HTTP request in response to which the content length is being retrieved.
 		@return The content length of the resource.
-		@exception IOException if there is an error getting the length of the resource.
+		@throws IOException if there is an error getting the length of the resource.
 		*/
 		public long getContentLength(final HttpServletRequest request) throws IOException
 		{
@@ -486,7 +486,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		This version delegates to the decorated resource.
 		@param request The HTTP request in response to which the last modified time is being retrieved.
 		@return The time of last modification as the number of milliseconds since January 1, 1970 GMT.
-		@exception IOException if there is an error getting the last modified time.
+		@throws IOException if there is an error getting the last modified time.
 		*/
 		public synchronized long getLastModified(final HttpServletRequest request) throws IOException
 		{
@@ -496,7 +496,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		/**Returns an input stream to the resource.
 		@param request The HTTP request in response to which the input stream is being retrieved.
 		@return The lazily-created input stream to the resource.
-		@exception IOException if there is an error getting an input stream to the resource.
+		@throws IOException if there is an error getting an input stream to the resource.
 		*/
 		public InputStream getInputStream(final HttpServletRequest request) throws IOException
 		{
@@ -505,7 +505,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 
 		/**HTTP servlet resource constructor.
 		@param resource The decorated HTTP servlet resource.
-		@exception IllegalArgumentException if the given resource is <code>null</code>.
+		@throws IllegalArgumentException if the given resource is <code>null</code>.
 		*/
 		public AbstractByteCacheDecoratorResource(final HTTPServletResource resource)
 		{

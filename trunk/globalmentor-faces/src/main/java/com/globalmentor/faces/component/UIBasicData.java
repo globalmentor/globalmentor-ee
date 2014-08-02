@@ -106,7 +106,7 @@ Log.trace("variable is now:", requestMap.get(getVar()));
 	/**Broadcasts an event to interested components.
 	This version fixes a bug in JSF RI that keeps a cached data data model in nested UIData.
 	@param event The event to broadcast.
-	@exception AbortProcessingException if processing should not continue.
+	@throws AbortProcessingException if processing should not continue.
 	*/
 	public void broadcast(final FacesEvent event) throws AbortProcessingException
 	{

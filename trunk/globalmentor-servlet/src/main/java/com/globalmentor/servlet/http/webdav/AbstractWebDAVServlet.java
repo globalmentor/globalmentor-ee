@@ -52,8 +52,8 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
   @param method The HTTP method being serviced. 
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -89,8 +89,8 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	/**Services the OPTIONS method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -102,8 +102,8 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	/**Services the COPY method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doCopy(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -152,8 +152,8 @@ Log.trace("is overwrite?", overwrite);
 	/**Services the MOVE method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doMove(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -200,8 +200,8 @@ Log.trace("is overwrite?", overwrite);
 	/**Services the MkCol method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doMkCol(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -228,8 +228,8 @@ Log.trace("is overwrite?", overwrite);
 	/**Services the PROPFIND method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	protected void doPropFind(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -328,7 +328,7 @@ Log.trace("Ready to send back XML:", XML.toString(multistatusDocument));
   @param request The HTTP request indicating the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
   */
 	protected Set<String> getAllowedMethods(final HttpServletRequest request, final URI resourceURI) throws IOException
 	{
@@ -364,7 +364,7 @@ Log.trace("Ready to send back XML:", XML.toString(multistatusDocument));
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
 	@param realm The realm with which the resource is associated, or <code>null</code> if the realm is not known.
 	@return <code>true</code> if the given principal is authorized to perform the given method on the resource represented by the given URI.
-	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
+	@throws HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
 	@see #isReadOnly()
 	*/
 	protected boolean isAuthorized(final HttpServletRequest request, final URI resourceURI, final String method, final Principal principal, final String realm) throws HTTPInternalServerErrorException
@@ -403,8 +403,8 @@ Log.trace("checking authorization for requested destination", requestedDestinati
 	@param webdavXMLGenerator The generator for constructing XML to represent WebDAV information.
 	@see WebDAV#ALL_PROPERTIES
 	@see WebDAV#PROPERTY_NAMES
-	@exception DOMException if there is an error updating the properties element.
-	@exception IOException if there is an error accessing the resource.
+	@throws DOMException if there is an error updating the properties element.
+	@throws IOException if there is an error accessing the resource.
 	*/
 	protected abstract void findProperties(final HttpServletRequest request, final R resource, final Element propertyElement, final DecoratorIDedMappedList<URI, WebDAVPropertyName> properties, final WebDAVXMLGenerator webdavXMLGenerator) throws DOMException, IOException;
 
@@ -413,8 +413,8 @@ Log.trace("checking authorization for requested destination", requestedDestinati
   @param depth The zero-based depth of child resources to retrieve, or
   	<code>-1</code> if all progeny should be included.
   @return A list of resources and optionally children as specified..  
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException if there is an error accessing the resources.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException if there is an error accessing the resources.
   */
 	protected abstract List<R> getResources(final URI resourceURI, final int depth) throws IllegalArgumentException, IOException;
 
@@ -425,10 +425,10 @@ Log.trace("checking authorization for requested destination", requestedDestinati
 	@param depth The zero-based depth of child resources which should
 		recursively be copied, or <code>-1</code> for an infinite depth.
 	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
-	@exception IOException Thrown if there is an error copying the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@throws IOException Thrown if there is an error copying the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
 	*/
 	protected abstract void copyResource(final HttpServletRequest request, final R resource, final URI destinationURI, final int depth, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
 
@@ -437,10 +437,10 @@ Log.trace("checking authorization for requested destination", requestedDestinati
 	@param resource The resource to move.
 	@param destinationURI The destination URI to which the resource should be moved.
 	@param overwrite <code>true</code> if any existing resource at the destination should be overwritten, else <code>false</code>.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
-	@exception IOException Thrown if there is an error moving the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	@exception HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@throws IOException Thrown if there is an error moving the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws HTTPPreconditionFailedException if a resource already exists at the destination and <var>overwrite</var> is <code>false</code>.
 	*/
 	protected abstract void moveResource(final HttpServletRequest request, final R resource, final URI destinationURI, final boolean overwrite) throws IllegalArgumentException, IOException, HTTPConflictException, HTTPPreconditionFailedException;
 

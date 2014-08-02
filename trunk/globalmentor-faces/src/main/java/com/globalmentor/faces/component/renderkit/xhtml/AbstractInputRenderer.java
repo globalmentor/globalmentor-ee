@@ -51,8 +51,8 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	/**Begins encoding the component.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
@@ -112,8 +112,8 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	/**Decodes the component information.
 	@param context The JSF context.
 	@param component The component being decoded.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void decode(final FacesContext context, final UIComponent component)

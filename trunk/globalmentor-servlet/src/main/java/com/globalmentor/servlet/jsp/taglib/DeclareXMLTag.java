@@ -76,7 +76,7 @@ public class DeclareXMLTag extends TagSupport
 		/**@return The document content type object.
 		Defaults to the appropriate content type if a recognized document type is
 			requested; otherwise "text/xml".		
-		@exception IllegalArgumentException Thrown if the string is not a
+		@throws IllegalArgumentException Thrown if the string is not a
 			syntactically correct content type.
 		*/
 		protected ContentType getMediaType() throws IllegalArgumentException

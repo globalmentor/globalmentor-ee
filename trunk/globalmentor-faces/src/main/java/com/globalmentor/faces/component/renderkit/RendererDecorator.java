@@ -85,8 +85,8 @@ public class RendererDecorator extends Renderer
 	This version delegates to the wrapped renderer.
 	@param context The JSF context.
 	@param component The component being decoded.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void decode(final FacesContext context, final UIComponent component)
@@ -98,8 +98,8 @@ public class RendererDecorator extends Renderer
 	This version delegates to the wrapped renderer.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
@@ -111,8 +111,8 @@ public class RendererDecorator extends Renderer
 	This version delegates to the wrapped renderer.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeChildren(final FacesContext context, final UIComponent component) throws IOException
@@ -124,8 +124,8 @@ public class RendererDecorator extends Renderer
 	This version delegates to the wrapped renderer.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException
@@ -138,7 +138,7 @@ public class RendererDecorator extends Renderer
 	This version delegates to the wrapped renderer.
 	@param context The JSF context.
 	@param clientID The client identifier to be converted to client a specific format.
-	@exception NullPointerException if <var>context</var>
+	@throws NullPointerException if <var>context</var>
 		or <var>clientID</var> is <code>null</code>.
 	*/
 	public String convertClientId(final FacesContext context, final String clientID)
@@ -163,9 +163,9 @@ public class RendererDecorator extends Renderer
 	@param component The component to be decoded.
 	@param submittedValue A value stored on the component during
 		<code>decode</code>.
-	@exception ConverterException if the submitted value
+	@throws ConverterException if the submitted value
 		cannot be converted successfully.
-	@exception NullPointerException if <code>context</code>
+	@throws NullPointerException if <code>context</code>
 		or <code>component</code> is <code>null</code>
 	*/
 	public Object getConvertedValue(final FacesContext context, final UIComponent component, final Object submittedValue) throws ConverterException

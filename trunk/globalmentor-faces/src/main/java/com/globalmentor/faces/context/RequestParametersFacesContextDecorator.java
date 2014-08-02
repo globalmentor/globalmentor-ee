@@ -64,7 +64,7 @@ public class RequestParametersFacesContextDecorator extends FacesContextDecorato
      * <p>Return the {@link ExternalContext} instance for this
      * <code>FacesContext</code> instance.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public ExternalContext getExternalContext()

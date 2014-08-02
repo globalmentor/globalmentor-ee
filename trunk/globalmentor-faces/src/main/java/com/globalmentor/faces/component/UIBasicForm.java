@@ -80,8 +80,8 @@ public class UIBasicForm extends UIForm
 
   /**Performs encoding after first initializing the map of encode attributes.
   @param context The JSF context.
-  @exception IOException if There is an error encoding the response.
-  @exception NullPointerException {@inheritDoc}   
+  @throws IOException if There is an error encoding the response.
+  @throws NullPointerException {@inheritDoc}   
   */ 
 	public void encodeBegin(final FacesContext context) throws IOException
 	{
@@ -101,8 +101,8 @@ public class UIBasicForm extends UIForm
 
   /**Finishes encoding and then clears the map of encode attributes.
   @param context The JSF context.
-  @exception IOException if There is an error encoding the response.
-  @exception NullPointerException {@inheritDoc}   
+  @throws IOException if There is an error encoding the response.
+  @throws NullPointerException {@inheritDoc}   
   */ 
   public void encodeEnd(final FacesContext context) throws IOException
 	{
@@ -118,7 +118,7 @@ public class UIBasicForm extends UIForm
 		and if so, processes decodes with a special <code>FacesContext</code> with
 	 the parameters from that multipart form submission.
 	@param context The JSF context for the request being processed.
-	@exception NullPointerException if <code>context</code> is <code>null</code>.
+	@throws NullPointerException if <code>context</code> is <code>null</code>.
 	*/
 	public void processDecodes(final FacesContext context)
 	{

@@ -137,8 +137,8 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 	/**Begins encoding the component.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
@@ -163,8 +163,8 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 	/**Encodes the end of the component.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException

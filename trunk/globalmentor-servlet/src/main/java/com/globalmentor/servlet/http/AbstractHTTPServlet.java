@@ -115,8 +115,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	/**Services the OPTIONS method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -130,8 +130,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	/**Services the HEAD method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doHead(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -141,8 +141,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	/**Services the GET method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -154,8 +154,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	This version delegates to <code>doGet()</code>.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   @see #doGet(HttpServletRequest, HttpServletResponse)
   */
 	public void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
@@ -166,8 +166,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	/**Services the PUT method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -308,8 +308,8 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
 	/**Services the DELETE method.
   @param request The HTTP request.
   @param response The HTTP response.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	public void doDelete(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
 	{
@@ -333,8 +333,8 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
   @param request The HTTP request.
   @param response The HTTP response.
   @param serveContent <code>true</code> if the contents of the resource should be returned.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent) throws ServletException, IOException
 	{
@@ -359,8 +359,8 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
   @param response The HTTP response.
 	@param resource The resource being served.
   @param serveContent <code>true</code> if the contents of the resource should be returned.
-  @exception ServletException if there is a problem servicing the request.
-  @exception IOException if there is an error reading or writing data.
+  @throws ServletException if there is a problem servicing the request.
+  @throws IOException if there is an error reading or writing data.
   */
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final R resource, final boolean serveContent) throws ServletException, IOException
 	{
@@ -474,7 +474,7 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
   @param request The HTTP request indicating the requested resource.
   @return The URI of the requested resource, which may be different from the URL
   	specified in the request.
-  @exception HTTPRedirectException if the request should be redirected to another URI.
+  @throws HTTPRedirectException if the request should be redirected to another URI.
   @see HttpServletRequest#getRequestURL()
   */
 	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
@@ -576,7 +576,7 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
   @param requestedResourceURI The requested absolute URI of the resource.
 	@param substituteResourceURI The URI to the URI which may be substited for the first URI.
 	@return <code>true</code> if the provided URI may be substitued for the requested URI.
-	@exception IOException if there is an error checking whether URI substitution can occur.
+	@throws IOException if there is an error checking whether URI substitution can occur.
 	*/
 	protected boolean canSubstitute(final HttpServletRequest request, final URI requestedResourceURI, final URI substituteResourceURI) throws IOException
 	{
@@ -591,7 +591,7 @@ Log.trace("PUT resource didn't already exist; returning SC_CREATED");
   @param requestURI The absolute URI of the requested resource.
   @return The URI of the requested resource, which may be different from the URI
   	specified in the request.
-  @exception IllegalArgumentException if the given URI is not absolute with an absolute path.
+  @throws IllegalArgumentException if the given URI is not absolute with an absolute path.
   @see HttpServletRequest#getRequestURL()
   */
 /*TODO fix
@@ -633,9 +633,9 @@ Log.trace("sending redirect", redirectURI);
 	@param request The request from which to get the XML document.
 	@param documentBuilder The document builder to use for parsing the XML.
 	@return A document representing the XML information, or <code>null</code> if nothing but whitespace was included in the request.
-	@exception IOException if there is an error reading the XML.
-	@exception DOMException if there is an error creating the document.
-	@exception SAXException if there is an error parsing the document.
+	@throws IOException if there is an error reading the XML.
+	@throws DOMException if there is an error creating the document.
+	@throws SAXException if there is an error parsing the document.
 	*/
 	protected Document getXML(final HttpServletRequest request, final DocumentBuilder documentBuilder) throws IOException, DOMException, SAXException
 	{
@@ -679,7 +679,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The request for which this XML represents a response.
 	@param response The response into which to place the XML document.
 	@param document The XML document to place into the response.
-	@exception IOException if there is an error writing the XML.
+	@throws IOException if there is an error writing the XML.
 	*/
 	protected void setXML(final HttpServletRequest request, final HttpServletResponse response, final Document document) throws IOException
 	{
@@ -713,7 +713,7 @@ Log.trace("sending redirect", redirectURI);
   @param request The HTTP request indicating the requested resource.
   @param resourceURI The URI of a resource for which options should be obtained.
   @return A set of methods allowed for this resource.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
   */
 	protected Set<String> getAllowedMethods(final HttpServletRequest request, final URI resourceURI) throws IOException
 	{
@@ -750,7 +750,7 @@ Log.trace("sending redirect", redirectURI);
 	@param principal The principal requesting authentication, or <code>null</code> if the principal is not known.
 	@param realm The realm with which the resource is associated, or <code>null</code> if the realm is not known.
 	@return <code>true</code> if the given principal is authorized to perform the given method on the resource represented by the given URI.
-	@exception HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
+	@throws HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
 	@see #isReadOnly()
 	*/
 	protected boolean isAuthorized(final HttpServletRequest request, final URI resourceURI, final String method, final Principal principal, final String realm) throws HTTPInternalServerErrorException
@@ -773,7 +773,7 @@ Log.trace("sending redirect", redirectURI);
 	This version returns the local class name of the servlet unless the servlet is read-only, in case it returns <code>null</code>.
 	@param resourceURI The URI of the resource requested.
 	@return The realm appropriate for the resource, or <code>null</code> if the given resource is not in a known realm.
-	@exception HTTPInternalServerErrorException if there is an error getting the realm.
+	@throws HTTPInternalServerErrorException if there is an error getting the realm.
 	@see #isReadOnly()
 	*/
 	protected String getRealm(final URI resourceURI) throws HTTPInternalServerErrorException
@@ -785,7 +785,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
   */
   protected abstract boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException;
 
@@ -793,7 +793,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
   protected abstract boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException;
@@ -803,8 +803,8 @@ Log.trace("sending redirect", redirectURI);
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException if there is an error accessing the resource.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException if there is an error accessing the resource.
   */
 	protected abstract R getResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException;
 
@@ -826,7 +826,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the content length is being retrieved.
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no content length could be determined.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected abstract long getContentLength(final HttpServletRequest request, final R resource) throws IOException;
 
@@ -834,7 +834,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected abstract Date getLastModifiedDate(final HttpServletRequest request, final R resource) throws IOException;
 
@@ -842,7 +842,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource, such as a missing file or a resource that has no contents.
+	@throws IOException Thrown if there is an error accessing the resource, such as a missing file or a resource that has no contents.
 	*/
 	protected abstract InputStream getInputStream(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 
@@ -850,7 +850,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected abstract OutputStream getOutputStream(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 
@@ -860,9 +860,9 @@ Log.trace("sending redirect", redirectURI);
 	For collections, {@link #createCollection(URI)} should be used instead.
 	@param resourceURI The URI of the resource to create.
 	@return An output stream for storing content in the resource.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
 	protected abstract OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
@@ -872,9 +872,9 @@ Log.trace("sending redirect", redirectURI);
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource in a valid burrow.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
 //TODO del when works	protected abstract R createResource(final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
@@ -884,9 +884,9 @@ Log.trace("sending redirect", redirectURI);
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if
 		the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
 	protected abstract R createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException;
@@ -894,7 +894,7 @@ Log.trace("sending redirect", redirectURI);
 	/**Deletes a resource.
 	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
-	@exception IOException Thrown if the resource could not be deleted.
+	@throws IOException Thrown if the resource could not be deleted.
 	*/
 	protected abstract void deleteResource(final HttpServletRequest request, final R resource) throws IOException;
 
@@ -902,7 +902,7 @@ Log.trace("sending redirect", redirectURI);
 	@param request The HTTP request in response to which child resources are being retrieved..
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
-	@exception IOException Thrown if there is an error retrieving the list of child resources.
+	@throws IOException Thrown if there is an error retrieving the list of child resources.
 	*/
 	protected abstract List<R> getChildResources(final HttpServletRequest request, final R resource) throws IOException;	//TODO do we want to pass the resource or just the URI here?
 

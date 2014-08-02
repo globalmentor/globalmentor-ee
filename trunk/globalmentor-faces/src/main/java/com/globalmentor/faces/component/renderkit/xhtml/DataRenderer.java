@@ -83,8 +83,8 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	/**Begins encoding the data.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
@@ -104,8 +104,8 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	/**Encodes the children of the data.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeChildren(final FacesContext context, final UIComponent component) throws IOException
@@ -156,8 +156,8 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	/**Encodes an item in a single column.
 	@param context The JSF context.
 	@param column The column being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>column</var> is <code>null</code>.
 	*/
 	protected void encodeColumn(final FacesContext context, final UIColumn column) throws IOException
@@ -181,8 +181,8 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	/**Encodes the end of the data.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException

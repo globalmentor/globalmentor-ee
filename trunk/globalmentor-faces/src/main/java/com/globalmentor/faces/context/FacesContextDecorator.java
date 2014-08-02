@@ -49,7 +49,7 @@ public class FacesContextDecorator extends FacesContext
      * <p>Return the {@link Application} instance associated with this
      * web application.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public Application getApplication()
@@ -66,7 +66,7 @@ public class FacesContextDecorator extends FacesContext
      * specific client identifier, a <code>null</code> value will be included
      * in the iterated values.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public Iterator getClientIdsWithMessages()
@@ -79,7 +79,7 @@ public class FacesContextDecorator extends FacesContext
      * <p>Return the {@link ExternalContext} instance for this
      * <code>FacesContext</code> instance.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public ExternalContext getExternalContext()
@@ -94,7 +94,7 @@ public class FacesContextDecorator extends FacesContext
      * associated with any specific {@link UIComponent}.  If no such messages
      * have been queued, return <code>null</code>.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public Severity getMaximumSeverity()
@@ -109,7 +109,7 @@ public class FacesContextDecorator extends FacesContext
      * specific client identifier.  If no such messages have been queued,
      * return an empty <code>Iterator</code>.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public Iterator getMessages()
@@ -131,7 +131,7 @@ public class FacesContextDecorator extends FacesContext
      *  requested, or <code>null</code> for messages not associated with
      *  any client identifier
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public Iterator getMessages(String clientId)
@@ -157,7 +157,7 @@ public class FacesContextDecorator extends FacesContext
      * <p>Return <code>true</code> if the <code>renderResponse()</code>
      * method has been called for the current request.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public boolean getRenderResponse()
@@ -170,7 +170,7 @@ public class FacesContextDecorator extends FacesContext
      * <p>Return <code>true</code> if the <code>responseComplete()</code>
      * method has been called for the current request.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public boolean getResponseComplete()
@@ -185,7 +185,7 @@ public class FacesContextDecorator extends FacesContext
      * can use either the ResponseStream or the ResponseWriter,
      * but not both.
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public ResponseStream getResponseStream()
@@ -200,10 +200,10 @@ public class FacesContextDecorator extends FacesContext
      *
      * @param responseStream The new ResponseStream for this response
      *
-     * @exception NullPointerException if <code>responseStream</code>
+     * @throws NullPointerException if <code>responseStream</code>
      *  is <code>null</code>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public void setResponseStream(ResponseStream responseStream)
@@ -218,7 +218,7 @@ public class FacesContextDecorator extends FacesContext
      * components can use either the ResponseStream or the ResponseWriter,
      * but not both.
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public ResponseWriter getResponseWriter()
@@ -233,9 +233,9 @@ public class FacesContextDecorator extends FacesContext
      *
      * @param responseWriter The new ResponseWriter for this response
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
-     * @exception NullPointerException if <code>responseWriter</code>
+     * @throws NullPointerException if <code>responseWriter</code>
      *  is <code>null</code>
      */
     public void setResponseWriter(ResponseWriter responseWriter)
@@ -248,7 +248,7 @@ public class FacesContextDecorator extends FacesContext
      * <p>Return the root component that is associated with the this request.
      * </p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public UIViewRoot getViewRoot()
@@ -265,9 +265,9 @@ public class FacesContextDecorator extends FacesContext
      *
      * @param root The new component {@link UIViewRoot} component
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
-     * @exception NullPointerException if <code>root</code>
+     * @throws NullPointerException if <code>root</code>
      *  is <code>null</code>
      */
     public void setViewRoot(UIViewRoot root)
@@ -290,9 +290,9 @@ public class FacesContextDecorator extends FacesContext
      *  associated (if any)
      * @param message The message to be appended
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
-     * @exception NullPointerException if <code>message</code>
+     * @throws NullPointerException if <code>message</code>
      *  is <code>null</code>
      */
     public void addMessage(String clientId, FacesMessage message)
@@ -316,7 +316,7 @@ public class FacesContextDecorator extends FacesContext
      * passing <code>null</code> to remove the association between this
      * thread and this dead <code>FacesContext</code> instance.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public void release()
@@ -331,7 +331,7 @@ public class FacesContextDecorator extends FacesContext
      * control should be passed to the <em>Render Response</em> phase,
      * bypassing any phases that have not been executed yet.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public void renderResponse()
@@ -346,7 +346,7 @@ public class FacesContextDecorator extends FacesContext
      * and that the request processing lifecycle should be terminated as soon
      * as the current phase is completed.</p>
      *
-     * @exception IllegalStateException if this method is called after
+     * @throws IllegalStateException if this method is called after
      *  this instance has been released
      */
     public void responseComplete()

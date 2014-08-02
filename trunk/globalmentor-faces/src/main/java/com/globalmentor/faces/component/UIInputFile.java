@@ -103,9 +103,9 @@ public class UIInputFile extends UIInput
 	@param context JSF context for the request being processed.
 	@param newSubmittedValue A value stored on the component during
 		<code>decode</code>.
-	@exception ConverterException if the submitted value
+	@throws ConverterException if the submitted value
 		cannot be converted successfully.
-	@exception NullPointerException if <code>context</code>
+	@throws NullPointerException if <code>context</code>
 		or <code>component</code> is <code>null</code>
 	*/
 	protected Object getConvertedValue(final FacesContext context, final Object newSubmittedValue) throws ConverterException

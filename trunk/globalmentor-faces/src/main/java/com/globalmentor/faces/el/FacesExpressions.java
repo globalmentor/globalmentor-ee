@@ -44,7 +44,7 @@ public class FacesExpressions
 	@param application The JSF application.
 	@param The string representing the expression.
 	@return An expression containing a string value or reference.
-	@exception IllegalArgumentException if <var>string</var> does not contain a
+	@throws IllegalArgumentException if <var>string</var> does not contain a
 		valid extended JSF expression language reference.
 	@see #createReferenceExpression(FacesContext, String)
 	@see #isReferenceExpression()
@@ -66,7 +66,7 @@ public class FacesExpressions
 	@param application The JSF application.
 	@param The string representing the expression.
 	@return An expression containing a string value or string reference.
-	@exception IllegalArgumentException if <var>string</var> does not contain a
+	@throws IllegalArgumentException if <var>string</var> does not contain a
 		valid extended JSF expression language reference.
 	@see #createReferenceExpression(FacesContext, String)
 	@see #isReferenceExpression()
@@ -87,7 +87,7 @@ public class FacesExpressions
 	@param application The JSF application.
 	@param The string representing the expression.
 	@return An expression for the appropriate type.
-	@exception IllegalArgumentException if <var>string</var> does not contain a
+	@throws IllegalArgumentException if <var>string</var> does not contain a
 		valid extended JSF expression language reference.
 	@see #isReferenceExpression()
 	*/
@@ -117,7 +117,7 @@ public class FacesExpressions
 	@param application The JSF application.
 	@param The string representing the expression.
 	@return An expression for the appropriate type.
-	@exception IllegalArgumentException if <var>string</var> does not contain a
+	@throws IllegalArgumentException if <var>string</var> does not contain a
 		valid extended JSF expression language method reference.
 	@see #isReferenceExpression()
 	*/
@@ -137,7 +137,7 @@ public class FacesExpressions
 		value binding or method binding expression.
 	@param string The string value of the expression.
 	@return <code>true</code> if the string references a property or method.
-	@exception NullPointerException if <var>string</var> is <code>null</code>.
+	@throws NullPointerException if <var>string</var> is <code>null</code>.
 	*/
 	public static boolean isReferenceExpression(final String string)
 	{
@@ -151,7 +151,7 @@ public class FacesExpressions
 		extended method binding expression.
 	@param string The string value of the expression.
 	@return <code>true</code> if the string references a method.
-	@exception NullPointerException if <var>string</var> is <code>null</code>.
+	@throws NullPointerException if <var>string</var> is <code>null</code>.
 	@see #isReferenceExpression()
 	*/
 	public static boolean isMethodReference(final String string)

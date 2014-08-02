@@ -282,8 +282,8 @@ public class HTTPServlets
 	 * Returns the authorization credentials of a request. This method does not allow the wildcard '*' request-URI for the digest URI parameter.
 	 * @param request The HTTP request object.
 	 * @return The credentials from the authorization header, or <code>null</code> if there is no such header.
-	 * @exception SyntaxException if the given header was not syntactically correct.
-	 * @exception IllegalArgumentException if the authorization information is not supported.
+	 * @throws SyntaxException if the given header was not syntactically correct.
+	 * @throws IllegalArgumentException if the authorization information is not supported.
 	 * @see HTTP#AUTHORIZATION_HEADER
 	 */
 	public static AuthenticateCredentials getAuthorization(final HttpServletRequest request) throws SyntaxException, IllegalArgumentException
@@ -296,7 +296,7 @@ public class HTTPServlets
 	 * Returns the <code>If-Modified-Since</code> date of a request.
 	 * @param request The HTTP request object.
 	 * @return The date representing the last modified date, or <code>null</code> if there is no such header.
-	 * @exception SyntaxException if the given header was not syntactically correct.
+	 * @throws SyntaxException if the given header was not syntactically correct.
 	 * @see HTTP#IF_MODIFIED_SINCE_HEADER
 	 */
 	public static Date getIfModifiedSinceDate(final HttpServletRequest request) throws SyntaxException
@@ -327,7 +327,7 @@ public class HTTPServlets
 	 * Returns the <code>If-Unmodified-Since</code> date of a request.
 	 * @param request The HTTP request object.
 	 * @return The date representing the last modified date, or <code>null</code> if there is no such header.
-	 * @exception SyntaxException if the given header was not syntactically correct.
+	 * @throws SyntaxException if the given header was not syntactically correct.
 	 * @see HTTP#IF_UNMODIFIED_SINCE_HEADER
 	 */
 	public static Date getIfUnmodifiedSinceDate(final HttpServletRequest request) throws SyntaxException
@@ -418,7 +418,7 @@ public class HTTPServlets
 	 * "/" instead of <code>null</code>. This version does not function with encoded servlet paths.
 	 * @param request The HTTP request object.
 	 * @return The unencoded path information, beginning with "/", or simply "/" if there is no path information.
-	 * @exception IllegalArgumentException if the context path is encoded, or if the request URI does not begin with the context path and servlet path.
+	 * @throws IllegalArgumentException if the context path is encoded, or if the request URI does not begin with the context path and servlet path.
 	 */
 	public static String getRawPathInfo(final HttpServletRequest request)
 	{
@@ -458,7 +458,7 @@ public class HTTPServlets
 	 * Returns the header indicating the referring location as a URI.
 	 * @param request The HTTP request object.
 	 * @return The "referer" header, or <code>null</code> if there is no such header.
-	 * @exception IllegalArgumentException if the value of the referrer is not a valid URI.
+	 * @throws IllegalArgumentException if the value of the referrer is not a valid URI.
 	 * @see HttpServletConstants#REFERER_HEADER
 	 */
 	public static URI getRefererURI(final HttpServletRequest request)
@@ -568,7 +568,7 @@ public class HTTPServlets
 	 * @param request The HTTP request object.
 	 * @return The URI indicating the destination of a COPY or MOVE, or <code>null</code> if the Destination header is not present.
 	 * @see WebDAV#DESTINATION_HEADER
-	 * @exception IllegalArgumentException if the Destination header value is not a valid URI or the represented URI is not absolute.
+	 * @throws IllegalArgumentException if the Destination header value is not a valid URI or the represented URI is not absolute.
 	 */
 	public static URI getDestination(final HttpServletRequest request) throws IllegalArgumentException //TODO maybe put this in special WebDAV utilities
 	{
@@ -593,7 +593,7 @@ public class HTTPServlets
 	 * Returns the status of the WebDAV Overwrite header.
 	 * @param request The HTTP request object.
 	 * @return <code>true</code> if the Overwrite header is missing or "T", or <code>false</code> if the value is "F".
-	 * @exception IllegalArgumentException if the overwrite header is present and is not "T" or "F".
+	 * @throws IllegalArgumentException if the overwrite header is present and is not "T" or "F".
 	 * @see WebDAV#OVERWRITE_HEADER
 	 * @see WebDAV#OVERWRITE_FALSE
 	 * @see WebDAV#OVERWRITE_TRUE
@@ -858,7 +858,7 @@ public class HTTPServlets
 	 * Sets the response header indicating the content language.
 	 * @param response The HTTP response.
 	 * @param languages The content languages.
-	 * @exception IllegalArgumentException if no languages are provided.
+	 * @throws IllegalArgumentException if no languages are provided.
 	 */
 	public static void setContentLanguage(final HttpServletResponse response, final Locale... languages)
 	{
@@ -989,7 +989,7 @@ public class HTTPServlets
 	 * @param request The HTTP request.
 	 * @param response The HTTP response.
 	 * @see #getDestinationParameter(HttpServletRequest)
-	 * @exception IOException Thrown if there is a problem reading or writing data.
+	 * @throws IOException Thrown if there is a problem reading or writing data.
 	 */
 	public static void sendDestinationRedirect(final HttpServletRequest request, final HttpServletResponse response) throws IOException
 	{
@@ -1010,7 +1010,7 @@ public class HTTPServlets
 	 * @param response The HTTP response.
 	 * @param defaultDestination The destination to use by default, or <code>null</code> if there should be no default.
 	 * @see #getDestinationParameter(HttpServletRequest)
-	 * @exception IOException Thrown if there is a problem reading or writing data.
+	 * @throws IOException Thrown if there is a problem reading or writing data.
 	 */
 	public static void sendDestinationRedirect(final HttpServletRequest request, final HttpServletResponse response, final String defaultDestination)
 			throws IOException
@@ -1030,7 +1030,7 @@ public class HTTPServlets
 	 * @param contentDispositionType The content disposition type.
 	 * @param filename The disposition filename, or <code>null</code> if there is no filename to suggest.
 	 * @param description The description of the content, or <code>null</code> if there is no description available.
-	 * @exception IOException if there is an error reading the content or writing it to the response.
+	 * @throws IOException if there is an error reading the content or writing it to the response.
 	 * @see #setContentDisposition(HttpServletResponse, ContentDispositionType, String)
 	 * @see #setContentDescription(HttpServletResponse, String)
 	 */
@@ -1070,7 +1070,7 @@ public class HTTPServlets
 	 * </p>
 	 * @param request The HTTP request.
 	 * @param response The HTTP response.
-	 * @exception IOException if there is an error writing the data to the response.
+	 * @throws IOException if there is an error writing the data to the response.
 	 * @see <a href="http://support.microsoft.com/default.aspx?scid=kb;en-us;Q312496">Internet Explorer May Lose the First 2,048 Bytes of Data That Are Sent Back
 	 *      from a Web Server That Uses HTTP Compression</a>
 	 * @see <a href="http://blogs.msdn.com/ie/archive/2004/09/02/224902.aspx">XPSP2 and its slightly updated user agent string</a>

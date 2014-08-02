@@ -66,15 +66,15 @@ public class ExternalContextDecorator extends ExternalContext
      * @param path Context relative path to the specified resource,
      *  which must start with a slash ("/") character
      *
-     * @exception FacesException thrown if a <code>ServletException</code>
+     * @throws FacesException thrown if a <code>ServletException</code>
      *  or <code>PortletException</code> occurs
-     * @exception IllegalArgumentException if no request dispatcher
+     * @throws IllegalArgumentException if no request dispatcher
      *  can be created for the specified path
-     * @exception IllegalStateException if this method is called in a portlet
+     * @throws IllegalStateException if this method is called in a portlet
      *  environment, and the current request is an <code>ActionRequest</code>
      *  instead of a <code>RenderRequest</code>
-     * @exception IOException if an input/output error occurs
-     * @exception NullPointerException if <code>path</code>
+     * @throws IOException if an input/output error occurs
+     * @throws NullPointerException if <code>path</code>
      *  is <code>null</code>
      */
     public void dispatch(String path) throws IOException
@@ -98,7 +98,7 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param url The input URL to be encoded
      *
-     * @exception NullPointerException if <code>url</code>
+     * @throws NullPointerException if <code>url</code>
      *  is <code>null</code>
      */
     public String encodeActionURL(String url)
@@ -121,10 +121,10 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param name Name to be encoded
      *
-     * @exception IllegalStateException if this method is called in a portlet
+     * @throws IllegalStateException if this method is called in a portlet
      *  environment, and the current response is an <code>ActionResponse</code>
      *  instead of a <code>RenderResponse</code>
-     * @exception NullPointerException if <code>name</code>
+     * @throws NullPointerException if <code>name</code>
      *  is <code>null</code>
      */
     public String encodeNamespace(String name)
@@ -148,7 +148,7 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param url The input URL to be encoded
      *
-     * @exception NullPointerException if <code>url</code>
+     * @throws NullPointerException if <code>url</code>
      *  is <code>null</code>
      */
     // PENDING(craigmcc) - Currently identical to encodeActionURL()
@@ -234,7 +234,7 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param name Name of the requested initialization parameter
      *
-     * @exception NullPointerException if <code>name</code>
+     * @throws NullPointerException if <code>name</code>
      *  is <code>null</code>
      */
     public String getInitParameter(String name)
@@ -570,9 +570,9 @@ public class ExternalContextDecorator extends ExternalContext
      * @param path The path to the requested resource, which must
      *  start with a slash ("/" character
      *
-     * @exception MalformedURLException if the specified path
+     * @throws MalformedURLException if the specified path
      *  is not in the correct form
-     * @exception NullPointerException if <code>path</code>
+     * @throws NullPointerException if <code>path</code>
      *  is <code>null</code>
      */
     public URL getResource(String path) throws MalformedURLException
@@ -597,7 +597,7 @@ public class ExternalContextDecorator extends ExternalContext
      * @param path The path to the requested resource, which must
      *  start with a slash ("/" character
      *
-     * @exception NullPointerException if <code>path</code>
+     * @throws NullPointerException if <code>path</code>
      *  is <code>null</code>
      */
     public InputStream getResourceAsStream(String path)
@@ -621,7 +621,7 @@ public class ExternalContextDecorator extends ExternalContext
      * @param path Partial path used to match resources, which must
      *  start with a slash ("/") character
      *
-     * @exception NullPointerException if <code>path</code>
+     * @throws NullPointerException if <code>path</code>
      *  is <code>null</code>
      */
     public Set getResourcePaths(String path)
@@ -736,7 +736,7 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param role Logical role name to be checked
      *
-     * @exception NullPointerException if <code>role</code>
+     * @throws NullPointerException if <code>role</code>
      *  is <code>null</code>
      */
     public boolean isUserInRole(String role)
@@ -758,7 +758,7 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param message Message to be logged
      *
-     * @exception NullPointerException if <code>message</code>
+     * @throws NullPointerException if <code>message</code>
      *  is <code>null</code>
      */
     public void log(String message)
@@ -781,7 +781,7 @@ public class ExternalContextDecorator extends ExternalContext
      * @param message Message to be logged
      * @param exception Exception to be logged
      *
-     * @exception NullPointerException if <code>message</code>
+     * @throws NullPointerException if <code>message</code>
      *  or <code>exception</code> is <code>null</code>
      */
     public void log(String message, Throwable exception)
@@ -805,13 +805,13 @@ public class ExternalContextDecorator extends ExternalContext
      *
      * @param url Absolute URL to which the client should be redirected
      *
-     * @exception IllegalArgumentException if the specified url is relative
-     * @exception IllegalStateException if, in a portlet environment,
+     * @throws IllegalArgumentException if the specified url is relative
+     * @throws IllegalStateException if, in a portlet environment,
      *  the current response object is a <code>RenderResponse</code>
      *  instead of an <code>ActionResponse</code>
-     * @exception IllegalStateException if, in a servlet environment,
+     * @throws IllegalStateException if, in a servlet environment,
      *  the current response has already been committed
-     * @exception IOException if an input/output error occurs
+     * @throws IOException if an input/output error occurs
      */
     public void redirect(String url) throws IOException
 		{

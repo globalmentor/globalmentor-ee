@@ -68,8 +68,8 @@ public class TableRenderer extends DataRenderer
 	This version additionally renders any headers or footers.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
@@ -233,8 +233,8 @@ public class TableRenderer extends DataRenderer
 	This version wraps the table in a <code>tbody</code> element.
 	@param context The JSF context.
 	@param component The component being rendered.
-	@exception IOException Thrown if there is an error writing the output.
-	@exception NullPointerException Thrown if <var>context</var> or
+	@throws IOException Thrown if there is an error writing the output.
+	@throws NullPointerException Thrown if <var>context</var> or
 		<var>component</var> is <code>null</code>.
 	*/
 	public void encodeChildren(final FacesContext context, final UIComponent component) throws IOException
@@ -257,7 +257,7 @@ public class TableRenderer extends DataRenderer
 	@param facet The header or footer being rendered.
 	@param columnCount The number of rendered columns for the column to cover.
 		If <code>1</code> is specified, no attribute is given.
-	@exception IOException Thrown if there is an error writing the output.
+	@throws IOException Thrown if there is an error writing the output.
 	*/
 	protected void encodeHeaderCell(final FacesContext context, final ResponseWriter writer, final UIComponent facet, final int columnCount) throws IOException
 	{
@@ -270,7 +270,7 @@ public class TableRenderer extends DataRenderer
 	@param facet The header or footer being rendered.
 	@param columnCount The number of rendered columns for the column to cover.
 		If <code>1</code> is specified, no attribute is given.
-	@exception IOException Thrown if there is an error writing the output.
+	@throws IOException Thrown if there is an error writing the output.
 	*/
 	protected void encodeFooterCell(final FacesContext context, final ResponseWriter writer, final UIComponent facet, final int columnCount) throws IOException
 	{
@@ -284,7 +284,7 @@ public class TableRenderer extends DataRenderer
 	@param elementName The XML element name to use for the cell. 
 	@param columnCount The number of rendered columns for the column to cover.
 		If <code>1</code> is specified, no attribute is given.
-	@exception IOException Thrown if there is an error writing the output.
+	@throws IOException Thrown if there is an error writing the output.
 	*/
 	protected void encodeCell(final FacesContext context, final ResponseWriter writer, final UIComponent facet, final String elementName, final int columnCount) throws IOException
 	{

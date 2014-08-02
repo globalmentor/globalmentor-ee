@@ -98,7 +98,7 @@ public class UIAssignment extends UIComponentBase
 
 	/**Assigns the value or the method invocation result to the variable.
 	@param context The JSF context.
-	@exception IOException Thrown if there is an error writing to the output.
+	@throws IOException Thrown if there is an error writing to the output.
 	*/
 	public void encodeBegin(final FacesContext context) throws IOException
 	{
@@ -111,7 +111,7 @@ public class UIAssignment extends UIComponentBase
 
   /**Encodes the children of this component.
 	@param context The JSF context.
-	@exception IOException Thrown if there is an error writing to the output.
+	@throws IOException Thrown if there is an error writing to the output.
 	*/ 
   public void encodeChildren(FacesContext context) throws IOException
 	{
@@ -128,7 +128,7 @@ public class UIAssignment extends UIComponentBase
     component, and this component itself.
 	This version performs the requested assignment.
 	@param context The JSF context for the request being processed.
-	@exception NullPointerException if <code>context</code> is <code>null</code>,
+	@throws NullPointerException if <code>context</code> is <code>null</code>,
 		there is neither a value binding or a method binding, or there is no
 		parameter array for the method binding.
 	*/

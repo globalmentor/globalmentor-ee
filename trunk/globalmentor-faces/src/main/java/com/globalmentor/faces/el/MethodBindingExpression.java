@@ -109,7 +109,7 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 	/**Method binding constructor.
 	@param application The JSF application.
 	@param expressionString The lexical form of the expression.
-	@exception IllegalArgumentException if <var>expresionString</var> does not contain a
+	@throws IllegalArgumentException if <var>expresionString</var> does not contain a
 		valid extended JSF expression language method reference.
 	*/
 	public MethodBindingExpression(final Application application, final String expressionString) throws IllegalArgumentException
@@ -153,13 +153,13 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 	/**Determines the value of the expression.
 	@param context The JSF context.
 	@return The value of the expression.
-	@exception EvaluationException if an exception is thrown while getting
+	@throws EvaluationException if an exception is thrown while getting
 		the value (the thrown exception must be included as the
 		<code>cause</code> property of this exception).
-	@exception NullPointerException if <code>context</code> is <code>null</code>.
-	@exception PropertyNotFoundException if the value specifies a property name
+	@throws NullPointerException if <code>context</code> is <code>null</code>.
+	@throws PropertyNotFoundException if the value specifies a property name
 		that does not exist or is not readable.
-	@exception MethodNotFoundException if the value specifies a method that
+	@throws MethodNotFoundException if the value specifies a method that
 		cannot be found.
 	*/
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException
@@ -185,12 +185,12 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 	/**Set the value of the expression.
 	@param context The JSF context for the current request.
 	@param value The new value to be set.
-	@exception EvaluationException if an exception is thrown while setting
+	@throws EvaluationException if an exception is thrown while setting
 		the value (the thrown exception must be included as the
 		<code>cause</code> property of this exception).
-	@exception NullPointerException if <code>context</code>
+	@throws NullPointerException if <code>context</code>
 		is <code>null</code>.
-	@exception PropertyNotFoundException if a specified property name
+	@throws PropertyNotFoundException if a specified property name
 		does not exist, or is not writeable
 	*/
 	public void setValue(final FacesContext context, final T value) throws EvaluationException, PropertyNotFoundException
@@ -200,12 +200,12 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 
 	/**Determines if the expression is immutable.
 	@param context The JSF context for the current request.
-	@exception EvaluationException if an exception is thrown while getting
+	@throws EvaluationException if an exception is thrown while getting
 		the description of the property (the thrown exception must be
 		included as the <code>cause</code> property of this exception).
-	@exception NullPointerException if <code>context</code>
+	@throws NullPointerException if <code>context</code>
 		is <code>null</code>.
-	@exception PropertyNotFoundException if a specified property name
+	@throws PropertyNotFoundException if a specified property name
 		does not exist.
 	*/
 	public boolean isReadOnly(final FacesContext context) throws EvaluationException, PropertyNotFoundException
@@ -216,13 +216,13 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 	/**Returns the type of value represented by this expression.
 	@param context The JSF context.
 	@return The type of object that will be returned as the value.
-	@exception EvaluationException if an exception is thrown while getting
+	@throws EvaluationException if an exception is thrown while getting
 		the value (the thrown exception must be included as the
 		<code>cause</code> property of this exception).
-	@exception NullPointerException if <code>context</code> is <code>null</code>.
-	@exception PropertyNotFoundException if the value specifies a property name
+	@throws NullPointerException if <code>context</code> is <code>null</code>.
+	@throws PropertyNotFoundException if the value specifies a property name
 		that does not exist or is not readable.
-	@exception MethodNotFoundException if the value specifies a method that
+	@throws MethodNotFoundException if the value specifies a method that
 		cannot be found.
 	*/
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException

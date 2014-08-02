@@ -38,7 +38,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which existence of the resource is being determined.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource exists, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
   */
   protected boolean exists(final HttpServletRequest request, final URI resourceURI) throws IOException
   {
@@ -49,7 +49,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which the collection is being checked.
   @param resourceURI The URI of the requested resource.
   @return <code>true</code> if the resource is a collection, else <code>false</code>.
-	@exception IOException if there is an error accessing the resource.
+	@throws IOException if there is an error accessing the resource.
 	@see #exists(URI)
   */
   protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException
@@ -61,8 +61,8 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param resourceURI The URI of the requested resource.
   @return An object providing an encapsulation of the requested resource,
   	but not necessarily the contents of the resource. 
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException if there is an error accessing the resource.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException if there is an error accessing the resource.
   */
 	protected FileResource getResource(final URI resourceURI) throws IllegalArgumentException, IOException
 	{
@@ -75,7 +75,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param resource The resource for which the content length should be determined.
 	@return The content length of the given resource, or <code>-1</code> if no
 		content type could be determined.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected long getContentLength(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
@@ -86,7 +86,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which the last modified date is being retrieved.
 	@param resource The resource for which the last modified date should be determined.
 	@return The last modified date of the given resource, or <code>null</code> if no there is no known last modified date.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected Date getLastModifiedDate(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
@@ -98,7 +98,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which the input stream is being retrieved.
 	@param resource The resource for which an input stream should be retrieved.
 	@return An input stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource,
+	@throws IOException Thrown if there is an error accessing the resource,
 		such as a missing file or a resource that has no contents.
 	*/
 	protected InputStream getInputStream(final HttpServletRequest request, final FileResource resource) throws IOException
@@ -110,7 +110,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which the output stream is being retrieved.
 	@param resource The resource for which an output stream should be retrieved.
 	@return An output stream to the given resource.
-	@exception IOException Thrown if there is an error accessing the resource.
+	@throws IOException Thrown if there is an error accessing the resource.
 	*/
 	protected OutputStream getOutputStream(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
@@ -123,9 +123,9 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which a resource is being created.
 	@param resourceURI The URI of the resource to create.
 	@return An output stream for storing content in the resource.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createCollection(URI)
 	*/
 	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
@@ -144,9 +144,9 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which a collection is being created.
 	@param resourceURI The URI of the resource to create.
 	@return The description of a newly created resource, or <code>null</code> if the resource is not allowed to be created.
-	@exception IllegalArgumentException if the given resource URI does not represent a valid resource.
-	@exception IOException Thrown if there is an error creating the resource.
-	@exception HTTPConflictException if an intermediate collection required for creating this collection does not exist.
+	@throws IllegalArgumentException if the given resource URI does not represent a valid resource.
+	@throws IOException Thrown if there is an error creating the resource.
+	@throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	@see #createResource(URI)
 	*/
 	protected FileResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException, HTTPConflictException
@@ -164,7 +164,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	/**Deletes a resource.
 	@param request The HTTP request in response to which a resource is being deleted.
 	@param resource The resource to delete.
-	@exception IOException Thrown if the resource could not be deleted.
+	@throws IOException Thrown if the resource could not be deleted.
 	*/
 	protected void deleteResource(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
@@ -175,7 +175,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	@param request The HTTP request in response to which a resource is being created.
 	@param resource The resource for which children should be returned.
 	@return A list of child resources.
-	@exception IOException Thrown if there is an error retrieving the list of child resources.
+	@throws IOException Thrown if there is an error retrieving the list of child resources.
 	*/
 	protected List<FileResource> getChildResources(final HttpServletRequest request, final FileResource resource) throws IOException
 	{
