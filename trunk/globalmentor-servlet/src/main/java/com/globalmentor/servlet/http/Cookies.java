@@ -18,34 +18,29 @@ package com.globalmentor.servlet.http;
 
 import javax.servlet.http.*;
 
-/**Cookie manipulator class.
-@author Garret Wilson
-@see Cookie
-@see HttpServletRequest
-*/
-public class Cookies
-{
+/**
+ * Cookie manipulator class.
+ * @author Garret Wilson
+ * @see Cookie
+ * @see HttpServletRequest
+ */
+public class Cookies {
 
-	/**Returns the cookie with the specified name. Created because
-		javax.servlet.http.HttpServletRequest does not have a method to retrieve a
-		specific cookie.
-	@param cookieArray An array of cookies.
-	@param cookieName The name of the cookie to find in the array.
-	@return The cookie with the specified name, or <code>null</code> if no cookie
-		with the specified name exists.
-	*/
-	public static Cookie getCookie(final Cookie[] cookieArray, final String cookieName)
-	{
-		if(cookieArray!=null)	//if they passed us a valid array
-		{
-			for(int i=0; i<cookieArray.length; ++i)	//look at each cookie
-			{
-				final Cookie cookie=cookieArray[i];	//get a reference to this cookie
-				if(cookie.getName().equals(cookieName))	//if this cookie's name matches
-					return cookie;	//return the cookie
+	/**
+	 * Returns the cookie with the specified name. Created because javax.servlet.http.HttpServletRequest does not have a method to retrieve a specific cookie.
+	 * @param cookieArray An array of cookies.
+	 * @param cookieName The name of the cookie to find in the array.
+	 * @return The cookie with the specified name, or <code>null</code> if no cookie with the specified name exists.
+	 */
+	public static Cookie getCookie(final Cookie[] cookieArray, final String cookieName) {
+		if(cookieArray != null) { //if they passed us a valid array
+			for(int i = 0; i < cookieArray.length; ++i) { //look at each cookie
+				final Cookie cookie = cookieArray[i]; //get a reference to this cookie
+				if(cookie.getName().equals(cookieName)) //if this cookie's name matches
+					return cookie; //return the cookie
 			}
 		}
-		return null;	//return null since we couldn't find a cookie with a matching name
+		return null; //return null since we couldn't find a cookie with a matching name
 	}
 
 }

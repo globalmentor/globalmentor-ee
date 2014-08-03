@@ -100,12 +100,10 @@ if (vb != null) {
 //TODO del Log.trace("ready to try to encode button:", clientID);
 
 /*TODO fix without relying on UIBasicForm
-		if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
-		{
+		if(USE_JAVASCRIPT) {	//if we should use JavaScript to compensate for a buggy browser
 			final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				//render the hidden field
-			if(component.isRendered())	//if the component should be rendered
-			{
+			if(component.isRendered()) {	//if the component should be rendered
 				writer.startElement(ELEMENT_INPUT, null);	//<input>
 				writer.writeAttribute(ATTRIBUTE_NAME, hiddenFieldClientID, ATTRIBUTE_NAME);	//name="xxx:button"
 				writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, INPUT_TYPE_HIDDEN, ELEMENT_INPUT_ATTRIBUTE_TYPE);	//type="hidden"
@@ -116,8 +114,7 @@ if (vb != null) {
 		
 //TODO del		renderPopupJavaScript(writer, null);	//TODO testing
 		super.encodeBegin(context, component);	//do the default encoding
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UICommand command=(UICommand)component;	//get the component as a command component
 
 //TODO del Debug.setDebug(true);
@@ -128,69 +125,58 @@ if (vb != null) {
 			writer.writeAttribute(ATTRIBUTE_NAME, clientID, CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			final String type;	//we'll deterine the type to generate
-			if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
-			{
+			if(USE_JAVASCRIPT) {	//if we should use JavaScript to compensate for a buggy browser
 				type=BUTTON_TYPE_BUTTON;	//always use the button type for JavaScript form submission
 			}
-			else	//if we should use normal buttons
-			{
+			else {	//if we should use normal buttons
 				final String typeAttributeValue=(String)attributeMap.get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type attribute
 				type=typeAttributeValue!=null ? typeAttributeValue : BUTTON_TYPE_SUBMIT;	//use the type attribute value, or default to a submit button
 			}
 			writer.writeAttribute(ELEMENT_BUTTON_ATTRIBUTE_TYPE, type, ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//write the type
 			final Object value=command.getValue();	//get the button's value
-			if(value!=null)	//if a value is given
-			{
+			if(value!=null) {	//if a value is given
 				writer.writeAttribute(ATTRIBUTE_VALUE, value, ATTRIBUTE_VALUE);	//write the value
 			}
 /*TODO del
-			else	//TODO testing
-			{
+			else {	//TODO testing
 				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//TODO testing
 			}
 */
 /*TODO del
-			else	//TODO testing
-			{
+			else {	//TODO testing
 				writer.writeAttribute(ATTRIBUTE_VALUE, clientID, ATTRIBUTE_VALUE);	//TODO testing
 			}
 */
 /*TODO del
-			if(value!=null)	//if a value is given, write it as button content TODO testing
-			{
+			if(value!=null) {	//if a value is given, write it as button content TODO testing
 				writer.writeText(value, null);	//TODO testing
 			}
  */
-			if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
-			{
+			if(USE_JAVASCRIPT) {	//if we should use JavaScript to compensate for a buggy browser
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				final UIForm parentForm=(UIForm)FacesComponents.getParent(component, UIForm.class);	//get the parent form, if there is one
 				assert parentForm!=null : getClass().getName()+" is not enclosed in a UIForm component.";
 				final String parentFormID=parentForm.getClientId(context);	//get the ID of the parent form
 				final URI popupURI;	//see if we have a popup URI
-				if(command instanceof UIBasicCommand)	//if this is an extended command component
-				{
+				if(command instanceof UIBasicCommand) {	//if this is an extended command component
 					final UIBasicCommand basicCommand=(UIBasicCommand)command;	//cast the command to a basic command
 					popupURI=basicCommand.getPopupURI();	//get the popup URI, if there is one
 				}
-				else	//if this is a normal command component
-				{
+				else {	//if this is a normal command component
 					popupURI=null;	//we don't have a popup URI
 				}
 //TODO make sure decode knows to check if a custom value was passed
 				final StringBuilder onclickJavaScript=new StringBuilder();	//we'll construct JavaScript code to be executed when the button is clicked
 
 				final Object[] confirms=getParameterValues(component, context, UIBasicCommand.CONFIRM_PARAMETER);	//see if there are any confirmation parameters
-				for(final Object confirm:confirms)	//for each confirmation parameter
-				{
+				for(final Object confirm:confirms) {	//for each confirmation parameter
 					onclickJavaScript.append(createIf(createNot(confirmLiteral(confirm.toString())), returnValue(Boolean.FALSE)));	//if(!confirm(confirmString){return false;}
 //TODO del when works					onclickJavaScript.append("if(!confirm('"+confirm+"')) return false;");	//TODO fix with utilities
 				}
 				
 //TODO fix the window name				public static String createName(final String string)
 				
-				if(popupURI!=null)	//if we have a popup URI
-				{
+				if(popupURI!=null) {	//if we have a popup URI
 					onclickJavaScript.append(popupWindow(popupURI, "popupwindow"));	//TODO fix the window name
 				}
 
@@ -273,13 +259,11 @@ if (vb != null) {
 	*/
 	public void decode(final FacesContext context, UIComponent component)
 	{
-		if(isMutable(component))	//if the component is mutable
-		{
+		if(isMutable(component)) {	//if the component is mutable
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
 			final String clientID=component.getClientId(context);	//get the component's client ID
 			final boolean isClientIDMatch;	//we'll deterine whether there is a client ID match
-			if(USE_JAVASCRIPT)	//if we should use JavaScript to compensate for a buggy browser
-			{
+			if(USE_JAVASCRIPT) {	//if we should use JavaScript to compensate for a buggy browser
 				final String hiddenFieldClientID=getHiddenFieldClientID(context, component);	//get the client ID of the hidden field
 				final String hiddenFieldValue=(String)requestParameterMap.get(hiddenFieldClientID);	//see if there is a value for our hidden field
 /*TODO del
@@ -288,8 +272,7 @@ Log.trace("expecting value of client ID:", clientID);
 */
 				isClientIDMatch=clientID.equals(hiddenFieldValue);	//record whether the the hidden field value contains our client ID
 			}
-			else	//if we're not using JavaScript
-			{
+			else {	//if we're not using JavaScript
 				final String value=(String)requestParameterMap.get(clientID);	//see if there is a value for our component
 				isClientIDMatch=value!=null;	//see if there was a value returned for our client ID
 			}
@@ -304,8 +287,7 @@ Log.trace("expecting value of client ID:", clientID);
 			if(isClientIDMatch || requestParameterMap.get(clientID+".x")!=null || requestParameterMap.get(clientID+".y")!=null)
 			{
 				final String type=(String)component.getAttributes().get(ELEMENT_BUTTON_ATTRIBUTE_TYPE);	//get the type
-				if(BUTTON_TYPE_RESET.equalsIgnoreCase(type))	//if this was the reset button
-				{
+				if(BUTTON_TYPE_RESET.equalsIgnoreCase(type)) {	//if this was the reset button
 					return;	//don't generate an event for the reset button
 				}
 				final ActionEvent actionEvent=new ActionEvent(component);	//create a new action event for our component

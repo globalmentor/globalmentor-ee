@@ -101,16 +101,14 @@ public abstract class AbstractCommandTag extends AbstractXHTMLTag
 		final FacesContext context=getFacesContext();	//get the JSF context
 		final Application application=context.getApplication();	//get the JSF application
 		final UICommand command=(UICommand)component;	//get the component as a command
-		if(getAction()!=null)	//if we have an action
-		{
+		if(getAction()!=null) {	//if we have an action
 				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
 			command.setAction(new ExpressionMethodBinding(createExpression(application, getAction())));
 		}
 		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
 		setBooleanValue(component, IMMEDIATE_ATTRIBUTE, getImmediate());	//set the immediate attribute
 		setMethodBindingAttribute(component, COMMAND_ACTION_LISTENER_ATTRIBUTE, getActionListener(), ActionEvent.class);	//set the action listener attribute
-		if(command instanceof UIBasicCommand)	//if this is one of our special commands with extended functionality
-		{
+		if(command instanceof UIBasicCommand) {	//if this is one of our special commands with extended functionality
 			setURIValue(component, UIBasicCommand.POPUP_URI_PROPERTY, getPopupURI());	//tell the component the popup URI 			
 		}
    }

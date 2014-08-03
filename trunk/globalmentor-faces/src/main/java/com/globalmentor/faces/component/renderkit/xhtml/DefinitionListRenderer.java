@@ -42,16 +42,13 @@ public class DefinitionListRenderer extends ListRenderer
 	*/
 	protected String getItemElementName(final UIColumn column)
 	{
-		if(column instanceof UITerm)	//if this is a term
-		{
+		if(column instanceof UITerm) {	//if this is a term
 			return ELEMENT_DT;	//return the term element
 		}
-		else if(column instanceof UIDefinition)	//if this is a definition
-		{
+		else if(column instanceof UIDefinition) {	//if this is a definition
 			return ELEMENT_DD;	//return the definition element
 		}
-		else	//if we don't recognize the type of column
-		{
+		else {	//if we don't recognize the type of column
 			return super.getItemElementName(column);	//return the default item element name for this column
 		}
 	}

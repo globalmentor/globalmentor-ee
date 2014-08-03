@@ -84,8 +84,7 @@ public abstract class EditBean
 	*/
 	public String actionEdit()
 	{
-		if(load())	//load the object; if we were successful
-		{
+		if(load()) {	//load the object; if we were successful
 			setNew(false);	//show that this information is not for a new object
 			return getNavigationOutcome();	//navigate to the edit page
 		}
@@ -98,12 +97,10 @@ public abstract class EditBean
 	*/
 	public String actionAccept()
 	{
-		if(accept())	//accept the information; if we were successful
-		{
+		if(accept()) {	//accept the information; if we were successful
 			return SUCCESS_OUTCOME;	//show that we were able to accept the object
 		}
-		else	//if something went wrong
-		{
+		else {	//if something went wrong
 			return ERROR_OUTCOME;	//show that there was an error			
 		}
 	}

@@ -69,8 +69,7 @@ public class AssignmentTag extends UIComponentTag
 		final Application application=context.getApplication();	//get the application
 		final UIAssignment assignment=(UIAssignment)component;	//get the component as an assignment component
 		final String var=getVar();	//get the variable name
-		if(var!=null)	//if there is a variable
-		{
+		if(var!=null) {	//if there is a variable
 			assignment.setVar(var);	//tell the assignment which variable to use
 		}
 		setStringValue(component, UIAssignment.VALUE_PROPERTY, getValue());	//set the value

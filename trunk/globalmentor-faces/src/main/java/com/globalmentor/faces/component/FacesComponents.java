@@ -67,8 +67,7 @@ public class FacesComponents
 	public static String createID(final String rootID, final String... postfixes)
 	{
 		final StringBuilder stringBuilder=new StringBuilder(rootID);	//create a string builder starting with the root ID
-		for(final String postfix:postfixes)	//look at each of the following IDs
-		{
+		for(final String postfix:postfixes) {	//look at each of the following IDs
 			stringBuilder.append(NamingContainer.SEPARATOR_CHAR).append(postfix);	//:id
 		}
 		return stringBuilder.toString();	//return the ID we constructed
@@ -87,20 +86,16 @@ public class FacesComponents
 	@return The string modified to be a valid ID.
 	@throws IllegalArgumentException if the string has no characters.
 	*/
-	public static String createValidID(final String string)	//TODO use constants
-	{
-		if(string.length()==0)	//if the string has no characters
-		{
+	public static String createValidID(final String string) {	//TODO use constants
+		if(string.length()==0) {	//if the string has no characters
 			throw new IllegalArgumentException(string);
 		}
 		final StringBuilder stringBuilder=new StringBuilder(string); //create a string builder from the string, so that we can modify it as necessary
 		final char firstChar=stringBuilder.charAt(0);	//get the first character
-	  if(!Character.isLetter(firstChar) && firstChar!='_')	//if the first character isn't valid
-	  {
+	  if(!Character.isLetter(firstChar) && firstChar!='_') {	//if the first character isn't valid
 	  	stringBuilder.setCharAt(0, REPLACEMENT_FIRST_CHAR);	//make the first character valid
 	  }
-		for(int i=stringBuilder.length()-1; i>0; --i)  //look at each character in the string, except the first (which we've already checked)
-		{
+		for(int i=stringBuilder.length()-1; i>0; --i) {	//look at each character in the string, except the first (which we've already checked)
 			final char character=stringBuilder.charAt(i);	//get this character
 			if(!Character.isLetter(character) && !Character.isDigit(character) && character!='-' && character!='_')
 			{
@@ -119,15 +114,12 @@ public class FacesComponents
 	*/
 	public static void encodeTree(final UIComponent component, final FacesContext context) throws IOException
 	{
-		if(component.isRendered())	//if the component is rendered
-		{
+		if(component.isRendered()) {	//if the component is rendered
 			component.encodeBegin(context);	//begin the component
-			if(component.getRendersChildren())	//if the component renders its children
-			{
+			if(component.getRendersChildren()) {	//if the component renders its children
 				component.encodeChildren(context);	//ask the component to render its children
 			}
-			else	//if the component can't render its own children, we'll have to do it instead
-			{
+			else {	//if the component can't render its own children, we'll have to do it instead
 				encodeDescendants(component, context);	//encode the component's children ourselves
 			}
 			component.encodeEnd(context);	//end the component
@@ -143,8 +135,7 @@ public class FacesComponents
 	*/
 	public static void encodeDescendants(final UIComponent component, final FacesContext context) throws IOException
 	{
-		for(Object child:component.getChildren())	//look at each of the component's children
-		{
+		for(Object child:component.getChildren()) {	//look at each of the component's children
 			encodeTree((UIComponent)child, context);	//recursively encode this child and its descendants
 	  }
 	}
@@ -161,8 +152,7 @@ public class FacesComponents
 		do
 		{
 			component=component.getParent();	//look at the component's parent
-			if(parentClass.isInstance(component))	//if the component is an instance of the requested parent class
-			{
+			if(parentClass.isInstance(component)) {	//if the component is an instance of the requested parent class
 				break;	//stop looking for parents
 			}	
 		}
@@ -181,13 +171,10 @@ public class FacesComponents
 	*/
 	public static Object getParameter(final UIComponent component, final FacesContext context, final String name)
 	{
-		for(Object child:component.getChildren())	//look at all children
-		{
-			if(child instanceof UIParameter)	//if this child is a parameter
-			{
+		for(Object child:component.getChildren()) {	//look at all children
+			if(child instanceof UIParameter) {	//if this child is a parameter
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
-				if(Objects.equals(name, parameter.getName()))	//if this parameter has the correct name
-				{
+				if(Objects.equals(name, parameter.getName())) {	//if this parameter has the correct name
 					return parameter.getValue();	//return the parameter value
 				}
 			}
@@ -204,10 +191,8 @@ public class FacesComponents
 	public static NameValuePair<String, Object>[] getParameters(final UIComponent component, final FacesContext context)
 	{
 		final List<NameValuePair<String, Object>> nameValuePairList=new ArrayList<NameValuePair<String, Object>>(component.getChildCount());	//create a list of name-value pairs long enough to store all direct children, if needed
-		for(Object child:component.getChildren())	//look at all children
-		{
-			if(child instanceof UIParameter)	//if this child is a parameter
-			{
+		for(Object child:component.getChildren()) {	//look at all children
+			if(child instanceof UIParameter) {	//if this child is a parameter
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
 				nameValuePairList.add(new NameValuePair<String, Object>(parameter.getName(), parameter.getValue()));	//create a new name-value pair representing this parameter and add it to our list 
 			}
@@ -227,14 +212,11 @@ public class FacesComponents
 	public static Map<String, Object> getParameterMap(final UIComponent component, final FacesContext context)
 	{
 		final Map<String, Object> parameterMap=new HashMap<String, Object>();	//create a map of objects keyed to strings
-		for(Object child:component.getChildren())	//look at all children
-		{
-			if(child instanceof UIParameter)	//if this child is a parameter
-			{
+		for(Object child:component.getChildren()) {	//look at all children
+			if(child instanceof UIParameter) {	//if this child is a parameter
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
 				final String name=parameter.getName();	//get the parameter name
-				if(name!=null && !parameterMap.containsKey(name))	//if this parameter has a name and is not already stored in the map
-				{
+				if(name!=null && !parameterMap.containsKey(name)) {	//if this parameter has a name and is not already stored in the map
 					parameterMap.put(parameter.getName(), parameter.getValue());	//add this name-value pair to the map
 				}
 			}
@@ -269,14 +251,11 @@ public class FacesComponents
 	public static Object[] getParameterValues(final UIComponent component, final FacesContext context, final String name)
 	{
 		final List<Object> valueList=new ArrayList<Object>(component.getChildCount());	//create a list of values long enough to store all direct children, if needed
-		for(Object child:component.getChildren())	//look at all children
-		{
-			if(child instanceof UIParameter)	//if this child is a parameter
-			{
+		for(Object child:component.getChildren()) {	//look at all children
+			if(child instanceof UIParameter) {	//if this child is a parameter
 				final UIParameter parameter=(UIParameter)child;	//cast the child to a parameter
 				final String parameterName=parameter.getName();	//get the parameter name
-				if(ALL_NAMES==name || Objects.equals(name, parameterName))	//if all names should be included, or if the name matches
-				{
+				if(ALL_NAMES==name || Objects.equals(name, parameterName)) {	//if all names should be included, or if the name matches
 					valueList.add(parameter.getValue());	//add the value to our list
 				}
 			}
@@ -309,8 +288,7 @@ public class FacesComponents
 	@param context The JSF context.
 	@param support The support object to make available.
 	*/
-	public static void giveSupport(final UIComponent component, final FacesContext context, final Object support)	//TODO do something to make sure the component ID is taken into account
-	{	
+	public static void giveSupport(final UIComponent component, final FacesContext context, final Object support) {	//TODO do something to make sure the component ID is taken into account	
 		context.getExternalContext().getRequestMap().put(getSupportVariableName(support.getClass()), support);	//put the support in the request map keyed to our special support variable
 	}
 
@@ -356,8 +334,7 @@ public class FacesComponents
 	*/
 	public static void setObjectValue(final UIComponent component, final String attributeName, final Object attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(attributeValue instanceof String && isReferenceExpression((String)attributeValue))	//if the value is a string value reference
 				setValueBinding(component, attributeName, (String)attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -375,12 +352,10 @@ public class FacesComponents
 	*/
 	public static void setValueBindingValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
-      else	//if the string is not a value reference
-      {
+      else {	//if the string is not a value reference
       	throw new IllegalArgumentException("The string \""+attributeValue+"\" is not a value binding expression.");
       }
 		}
@@ -396,8 +371,7 @@ public class FacesComponents
 	*/
 	public static void setStringValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -417,8 +391,7 @@ public class FacesComponents
 	*/
 	public static void setIntegerValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -436,8 +409,7 @@ public class FacesComponents
 	*/
 	public static void setBooleanValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -456,8 +428,7 @@ public class FacesComponents
 	*/
 	public static void setURIValue(final UIComponent component, final String attributeName, final String attributeValue) throws IllegalArgumentException
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -475,8 +446,7 @@ public class FacesComponents
 	*/
 	public static void setFileValue(final UIComponent component, final String attributeName, final String attributeValue)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			if(isReferenceExpression(attributeValue))	//if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue);	//set the value binding of the component
       else	//if the string is not a value reference
@@ -517,18 +487,14 @@ public class FacesComponents
 	*/
 	public static <T> T getValue(final UIComponent component, final FacesContext context, final T value, final String name, final T defaultValue)
 	{
-		if(value!=null)	//if there is a value
-		{
+		if(value!=null) {	//if there is a value
 			return value;	//return the value
 		}
-		else	//if there is no value
-		{
+		else {	//if there is no value
 			final ValueBinding valueBinding=component.getValueBinding(name);	//get a value binding for the given name
-			if(valueBinding!=null)	//if we have a value binding
-			{
+			if(valueBinding!=null) {	//if we have a value binding
 				final T valueBindingValue=(T)valueBinding.getValue(context);	//get the value of the value binding
-				if(valueBindingValue!=null)	//if the value binding has a value
-				{
+				if(valueBindingValue!=null) {	//if the value binding has a value
 					return valueBindingValue;	//return the value from the value binding
 				}
 			}
@@ -559,8 +525,7 @@ public class FacesComponents
 	*/
 	public static void setMethodBindingAttribute(final UIComponent component, final String attributeName, final String attributeValue, final Class... parameterTypes)
 	{
-		if(attributeValue!=null)	//if there is an attribute value
-		{
+		if(attributeValue!=null) {	//if there is an attribute value
 			final Application application=FacesContext.getCurrentInstance().getApplication();	//get the JSF application
 			final MethodBinding methodBinding=application.createMethodBinding(attributeValue, parameterTypes);	//create a method binding for the attribute value
      	component.getAttributes().put(attributeName, methodBinding);	//store the method binding in the component's attributes

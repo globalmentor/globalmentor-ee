@@ -61,8 +61,7 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
  * </dl>
  * @author Garret Wilson
  */
-public class BaseHTTPServlet extends HttpServlet
-{
+public class BaseHTTPServlet extends HttpServlet {
 
 	/**
 	 * The init parameter, {@value #DEBUG_INIT_PARAMETER}, used to specify whether the servlet is in debug mode; should be "true" or "false"; sets the log level
@@ -90,10 +89,8 @@ public class BaseHTTPServlet extends HttpServlet
 	 *           could not be determined.
 	 * @see Servlets#getLogDirectory(ServletContext)
 	 */
-	protected static File getLogFile(final ServletContext context)
-	{
-		if(logFile == null) //if no log file has been determined (there is a benign race condition here)
-		{
+	protected static File getLogFile(final ServletContext context) {
+		if(logFile == null) { //if no log file has been determined (there is a benign race condition here)
 			final DateFormat logFilenameDateFormat = new W3CDateFormat(W3CDateFormat.Style.DATE); //create a formatter for the log filename
 			final String logFilename = addExtension("servlet-" + logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION); //create a filename in the form "servlet-YYYY-MM-DD.log"
 			logFile = new File(getLogDirectory(context), logFilename); //create the log file from the log directory and the log filename
@@ -105,8 +102,7 @@ public class BaseHTTPServlet extends HttpServlet
 	private boolean profiled = false;
 
 	/** @return Whether this servlet is profiled. */
-	protected boolean isProfiled()
-	{
+	protected boolean isProfiled() {
 		return profiled;
 	}
 
@@ -114,8 +110,7 @@ public class BaseHTTPServlet extends HttpServlet
 	private boolean debug = false;
 
 	/** @return Whether debugging is enabled for this servlet. */
-	protected boolean isDebug()
-	{
+	protected boolean isDebug() {
 		return debug;
 	}
 
@@ -123,8 +118,7 @@ public class BaseHTTPServlet extends HttpServlet
 	private DefaultLogConfiguration logConfiguration = null;
 
 	/** @return The log configuration for this servlet, or <code>null</code> if the servlet hasn't yet been initialized. */
-	protected LogConfiguration getLogConfiguration()
-	{
+	protected LogConfiguration getLogConfiguration() {
 		return logConfiguration;
 	}
 
@@ -134,19 +128,13 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param servletConfig The servlet configuration.
 	 * @throws ServletException if there is a problem initializing.
 	 */
-	public final void init(final ServletConfig servletConfig) throws ServletException
-	{
+	public final void init(final ServletConfig servletConfig) throws ServletException {
 		super.init(servletConfig); //do the default initialization
-		try
-		{
+		try {
 			initialize(servletConfig); //perform initialization
-		}
-		catch(final IllegalArgumentException illegalArgumentException)
-		{
+		} catch(final IllegalArgumentException illegalArgumentException) {
 			throw new ServletException(illegalArgumentException);
-		}
-		catch(final IllegalStateException illegalStateException)
-		{
+		} catch(final IllegalStateException illegalStateException) {
 			throw new ServletException(illegalStateException);
 		}
 	}
@@ -157,63 +145,48 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param servletConfig The servlet configuration.
 	 * @throws ServletException if there is a problem initializing.
 	 */
-	public void initialize(final ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException
-	{
+	public void initialize(final ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException {
 		this.debug = Boolean.TRUE.equals(getBooleanInitParameter(servletConfig, DEBUG_INIT_PARAMETER)); //get the debug setting from the init parameters
 		//configure the log level before we do anything else
 		Log.Level logLevel = getEnumInitParameter(servletConfig, LOG_LEVEL_INIT_PARAMETER, Log.Level.class); //get the log level from the init parameters
-		if(logLevel == null && isDebug()) //if no log level is specified but we are in debug mode
-		{
+		if(logLevel == null && isDebug()) { //if no log level is specified but we are in debug mode
 			logLevel = Log.Level.DEBUG; //default to debug log level
 		}
-		try
-		//make sure the log directory exists
-		{
+		try { //make sure the log directory exists
 			ensureDirectoryExists(getLogDirectory(getServletContext())); //make sure the log directory exists
-		}
-		catch(final IOException ioException) //if we can't create the log directory
-		{
+		} catch(final IOException ioException) { //if we can't create the log directory
 			throw new ServletException(ioException);
 		}
 		logConfiguration = new DefaultLogConfiguration(getLogFile(getServletContext()));
-		if(logLevel != null) //configure the log level if given
-		{
+		if(logLevel != null) { //configure the log level if given
 			logConfiguration.setLevel(logLevel);
 		}
 		logConfiguration.setStandardOutput(isDebug()); //if we are debugging, turn on logging to the standard output
 		Log.setDefaultConfiguration(logConfiguration); //set the default log configuration
 		//configure HTTP logging
 		final Boolean logHTTP = getBooleanInitParameter(servletConfig, LOG_HTTP_INIT_PARAMETER); //get the HTTP log setting from the init parameters
-		if(logHTTP != null) //if there is an HTTP log setting specified
-		{
+		if(logHTTP != null) { //if there is an HTTP log setting specified
 			HTTPClient.getInstance().setLogged(logHTTP.booleanValue()); //turn HTTP logging on or off
 		}
 		//configure profiling
 		this.profiled = Boolean.TRUE.equals(getBooleanInitParameter(servletConfig, PROFILE_INIT_PARAMETER)); //get the profile setting from the init parameters
 		Log.info("Initializing servlet", servletConfig.getServletName());
-		if(isProfiled()) //if we are being profiled, configure the stack probe
-		{
+		if(isProfiled()) { //if we are being profiled, configure the stack probe
 			Profiler.setStackProbeOperation(StackProbeOperation.forServer()); //configure the stack probe for use on a server
 		}
 	}
 
 	/** Destroys the servlet. */
-	public void destroy()
-	{
-		if(isProfiled()) //if we are profiling the servlet, print out stack probe counts
-		{
-			try
-			{
+	public void destroy() {
+		if(isProfiled()) { //if we are profiling the servlet, print out stack probe counts
+			try {
 				Profiler.determineStackProbeOperation().printStackProbeCounts(System.out);
-			}
-			catch(final IOException ioException)
-			{
+			} catch(final IOException ioException) {
 				throw unexpected(ioException);
 			}
 		}
 		Log.info("Destroying servlet", getServletConfig().getServletName());
-		if(logConfiguration != null) //if we initialized a log configuration
-		{
+		if(logConfiguration != null) { //if we initialized a log configuration
 			logConfiguration.dispose(); //dispose of the log configuration
 		}
 		super.destroy();
@@ -227,8 +200,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param nonceID The ID of the nonce; usually a hash of the nonce information.
 	 * @param nonce The nonce to store, keyed to its ID.
 	 */
-	protected void storeNonce(final String nonceID, final Nonce nonce)
-	{
+	protected void storeNonce(final String nonceID, final Nonce nonce) {
 		nonceMap.put(nonceID, nonce); //store the nonce in the map
 	}
 
@@ -237,14 +209,11 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param nonceID The ID of the nonce to retrieve.
 	 * @return The nonce with the given ID, or <code>null</code> if there is no matching nonce.
 	 */
-	protected Nonce getNonce(final String nonceID)
-	{
+	protected Nonce getNonce(final String nonceID) {
 		final Nonce nonce = nonceMap.get(nonceID); //get the nonce with the given ID
 		final long currentTimeMillis = System.currentTimeMillis(); //get the current time
-		for(final Map.Entry<String, Nonce> nonceEntry : nonceMap.entrySet()) //for each nonce entry in the map TODO remove old nonces some other way, perhaps in a separate thread
-		{
-			if(currentTimeMillis - nonceEntry.getValue().getTime().getTime() >= 60 * 60 * 1000) //if the nonce has been around for an hour
-			{
+		for(final Map.Entry<String, Nonce> nonceEntry : nonceMap.entrySet()) { //for each nonce entry in the map TODO remove old nonces some other way, perhaps in a separate thread
+			if(currentTimeMillis - nonceEntry.getValue().getTime().getTime() >= 60 * 60 * 1000) { //if the nonce has been around for an hour
 				nonceMap.remove(nonceEntry.getKey()); //remove this ultra-stale nonce
 			}
 		}
@@ -259,8 +228,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param nonce The nonce with which a principal should be associated.
 	 * @param principalID The ID of the principal to associate with the nonce.
 	 */
-	protected void setNoncePrincipalID(final Nonce nonce, final String principalID)
-	{
+	protected void setNoncePrincipalID(final Nonce nonce, final String principalID) {
 		noncePrincipalIDMap.put(nonce, principalID); //associate the principal with the nonce
 	}
 
@@ -269,8 +237,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param nonce The nonce for which a principal should be associated.
 	 * @return The ID of the principal associated with the given nonce, or <code>null</code> if there is no principal associated with the given nonce.
 	 */
-	protected String getNoncePrincipalID(final Nonce nonce)
-	{
+	protected String getNoncePrincipalID(final Nonce nonce) {
 		return noncePrincipalIDMap.get(nonce); //return the ID of the principal associated with this nonce, if there is one
 	}
 
@@ -284,10 +251,8 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return The context path of the servlet: either a string starting with '/' or the empty string.
 	 * @throws IllegalStateException if this servlet has not yet received any requests.
 	 */
-	protected String getContextPath() //TODO determine if this is encoded or not
-	{
-		if(contextPath == null) //if the context path has not been set
-		{
+	protected String getContextPath() { //TODO determine if this is encoded or not
+		if(contextPath == null) { //if the context path has not been set
 			throw new IllegalStateException("Servlet has received no requests and context path has not yet been set.");
 		}
 		return contextPath; //return the servlet's context path
@@ -300,10 +265,8 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return The path of the servlet: either a string starting with '/' or the empty string.
 	 * @throws IllegalStateException if this servlet has not yet received any requests.
 	 */
-	protected String getServletPath()
-	{
-		if(servletPath == null) //if the context path has not been set
-		{
+	protected String getServletPath() {
+		if(servletPath == null) { //if the context path has not been set
 			throw new IllegalStateException("Servlet has received no requests and servlet path has not yet been set.");
 		}
 		return servletPath; //return the servlet path
@@ -316,16 +279,13 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws IllegalArgumentException if the given server absolute path does not begin with the servlet context path.
 	 * @see #getContextPath()
 	 */
-	protected String getResourceContextAbsolutePath(final String resourceServerAbsolutePath)
-	{
+	protected String getResourceContextAbsolutePath(final String resourceServerAbsolutePath) {
 		final String contextPath = getContextPath(); //get the servlet context path
-		if(!resourceServerAbsolutePath.startsWith(contextPath)) //if the server absolute path does not start with the context path
-		{
+		if(!resourceServerAbsolutePath.startsWith(contextPath)) { //if the server absolute path does not start with the context path
 			throw new IllegalArgumentException("Resource server absolute path " + resourceServerAbsolutePath + " is not located under context path " + contextPath);
 		}
 		final String resourceContextAbsolutePath = resourceServerAbsolutePath.substring(contextPath.length()); //remove the context path
-		if(!isAbsolutePath(resourceContextAbsolutePath)) //if the resulting path is not absolute, we split a segment in two
-		{
+		if(!isAbsolutePath(resourceContextAbsolutePath)) { //if the resulting path is not absolute, we split a segment in two
 			throw new IllegalArgumentException("Resource server absolute path " + resourceServerAbsolutePath + " is not located under context path " + contextPath);
 		}
 		return resourceContextAbsolutePath; //create the context-relative absolute path
@@ -337,10 +297,8 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws IllegalStateException if this servlet has already been initialized from a request.
 	 * @throws ServletException if there is a problem initializing.
 	 */
-	public void initialize(final HttpServletRequest request) throws ServletException
-	{
-		if(isInitializedFromRequest) //if we've already initialized from a request
-		{
+	public void initialize(final HttpServletRequest request) throws ServletException {
+		if(isInitializedFromRequest) { //if we've already initialized from a request
 			throw new IllegalStateException("Servlet already initialized from a request.");
 		}
 		contextPath = request.getContextPath(); //set the context path from the request
@@ -357,8 +315,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @see #checkAuthorization(HttpServletRequest)
 	 * @see #doMethod()
 	 */
-	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
-	{
+	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		/*TODO del
 		Log.trace("servicing method", request.getMethod());
 		Log.trace("servlet path:", request.getServletPath());
@@ -367,144 +324,94 @@ public class BaseHTTPServlet extends HttpServlet
 		Log.trace("path info:", request.getPathInfo());
 		*/
 		Log.info("(" + request.getRemoteAddr() + ")", request.getMethod(), request.getRequestURL().toString(), request.getQueryString(), request.getContentType()); //log the request
-		if(!isInitializedFromRequest) //if we haven't initialized from a request, yet TODO fix race condition here
-		{
+		if(!isInitializedFromRequest) { //if we haven't initialized from a request, yet TODO fix race condition here
 			initialize(request); //initialize from this request
 			isInitializedFromRequest = true; //show that we have initialized from a request
-		}
-		else
-		//if we have initialized from a request, make sure the variables are still the same
-		{
+		} else { //if we have initialized from a request, make sure the variables are still the same
 			final String requestContextPath = request.getContextPath(); //get the current context path for this request
-			if(!requestContextPath.equals(contextPath)) //if the context path has changed (we expect the context path to stay the same through the life of this servlet)
-			{
+			if(!requestContextPath.equals(contextPath)) { //if the context path has changed (we expect the context path to stay the same through the life of this servlet)
 				throw new IllegalStateException("Servlet context path changed unexpectedly from " + contextPath + " to " + requestContextPath);
 			}
 			final String requestServletPath = request.getServletPath(); //get the current servlet path for this request
-			if(!requestServletPath.equals(servletPath)) //if the servlet path has changed (we expect the servlet path to stay the same through the life of this servlet)
-			{
+			if(!requestServletPath.equals(servletPath)) { //if the servlet path has changed (we expect the servlet path to stay the same through the life of this servlet)
 				throw new IllegalStateException("Servlet path changed unexpectedly from " + servletPath + " to " + requestServletPath);
 			}
 		}
-		if(isProfiled()) //if we are being profiled, make sure a stack probe is started
-		{
+		if(isProfiled()) { //if we are being profiled, make sure a stack probe is started
 			Profiler.startStackProbe();
 		}
-		try
-		{
-			if(!OPTIONS_METHOD.equals(request.getMethod())) //TODO testing
-			{
+		try {
+			if(!OPTIONS_METHOD.equals(request.getMethod())) { //TODO testing
 				checkAuthorization(request); //check to see if the request is authorized
 			}
 			doMethod(request.getMethod(), request, response); //allow the subclass to do special processing if needed
-		}
-		catch(final OutOfMemoryError outOfMemoryError) //if there was an out-of-memory error, log the info before rethrowing the error
-		{
+		} catch(final OutOfMemoryError outOfMemoryError) { //if there was an out-of-memory error, log the info before rethrowing the error
 			final Runtime runtime = Runtime.getRuntime(); //get the runtime instance
 			Log.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()
 					- runtime.freeMemory());
 			throw outOfMemoryError; //rethrow the error
-		}
-		catch(final AssertionError assertionError) //if there was an assertion error, that's a serious internal server error
-		{
+		} catch(final AssertionError assertionError) { //if there was an assertion error, that's a serious internal server error
 			Log.warn(assertionError); //log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, assertionError.getMessage()); //send back a 500 Internal Server Error			
-		}
-		catch(final NullPointerException nullPointerException) //if there was a null pointer exception, that's a serious internal server error
-		{
+		} catch(final NullPointerException nullPointerException) { //if there was a null pointer exception, that's a serious internal server error
 			Log.warn(nullPointerException); //log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, nullPointerException.getMessage()); //send back a 500 Internal Server Error			
-		}
-		catch(final ClassCastException classCastException) //if there was a class cast exception, that's a serious internal server error
-		{
+		} catch(final ClassCastException classCastException) { //if there was a class cast exception, that's a serious internal server error
 			Log.warn(classCastException); //log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, classCastException.getMessage()); //send back a 500 Internal Server Error			
-		}
-		catch(final IllegalArgumentException illegalArgumentException) //if some method ran into an illegal argument, we assume the client is responsible
-		{
+		} catch(final IllegalArgumentException illegalArgumentException) { //if some method ran into an illegal argument, we assume the client is responsible
 			Log.warn(illegalArgumentException); //log the problem
 			response.sendError(SC_BAD_REQUEST, illegalArgumentException.getMessage()); //send back a 400 Bad Request error
-		}
-		catch(final IllegalStateException illegalStateException) //if there was an illgal state exception, that's a serious internal server error
-		{
+		} catch(final IllegalStateException illegalStateException) { //if there was an illgal state exception, that's a serious internal server error
 			Log.warn(illegalStateException); //log the problem
 			response.sendError(SC_INTERNAL_SERVER_ERROR, illegalStateException.getMessage()); //send back a 500 Internal Server Error			
-		}
-		catch(final UnsupportedOperationException unsupportedOperationException) //if some operation is not supported by the server
-		{
+		} catch(final UnsupportedOperationException unsupportedOperationException) { //if some operation is not supported by the server
 			Log.warn(unsupportedOperationException); //log the problem
 			response.sendError(SC_NOT_IMPLEMENTED, unsupportedOperationException.getMessage()); //send back a 401 Not Implemented error
-		}
-		catch(final HTTPMovedPermanentlyException movedPermanentlyException) //if a permanent redirect was requested (301)
-		{
+		} catch(final HTTPMovedPermanentlyException movedPermanentlyException) { //if a permanent redirect was requested (301)
 			final URI locationURI = movedPermanentlyException.getLocation(); //get the redirect location
-			if(locationURI != null) //if a location was given
-			{
+			if(locationURI != null) { //if a location was given
 				setLocation(response, locationURI); //set the redirect location
 			}
 			response.sendError(movedPermanentlyException.getStatusCode()); //send back the redirect status code as an error
-		}
-		catch(final HTTPMovedTemporarilyException movedTemporarilyException) //if a temporary redirect was requested (302)
-		{
+		} catch(final HTTPMovedTemporarilyException movedTemporarilyException) { //if a temporary redirect was requested (302)
 			final URI locationURI = movedTemporarilyException.getLocation(); //get the redirect location
-			if(locationURI != null) //if a location was given
-			{
+			if(locationURI != null) { //if a location was given
 				setLocation(response, locationURI); //set the redirect location
 			}
 			response.sendError(movedTemporarilyException.getStatusCode()); //send back the redirect status code as an error
-		}
-		catch(final HTTPRedirectException redirectException) //if a general redirect was requested (3xx)
-		{
+		} catch(final HTTPRedirectException redirectException) { //if a general redirect was requested (3xx)
 			response.sendError(redirectException.getStatusCode()); //send back the redirect status code as an error
-		}
-		catch(final HTTPUnauthorizedException unauthorizedException) //401 Unauthorized
-		{
+		} catch(final HTTPUnauthorizedException unauthorizedException) { //401 Unauthorized
 			//TODO testing
 			response.setHeader(DAV_HEADER, "1,2"); //we support WebDAV levels 1 and 2
 			//issue the challenge in the WWW-authenticate header
 			setWWWAuthenticate(response, unauthorizedException.getAuthenticateChallenge());
 			response.sendError(unauthorizedException.getStatusCode()); //send back the status code as an error
-		}
-		catch(final HTTPNotFoundException httpNotFoundException) //404 Not Found
-		{
+		} catch(final HTTPNotFoundException httpNotFoundException) { //404 Not Found
 			response.sendError(httpNotFoundException.getStatusCode(), httpNotFoundException.getMessage()); //send back the status code as an error, but don't bother logging the error
-		}
-		catch(final HTTPMethodNotAllowedException methodNotAllowedException) //405 Method Not Allowed
-		{
+		} catch(final HTTPMethodNotAllowedException methodNotAllowedException) { //405 Method Not Allowed
 			Log.warn(methodNotAllowedException); //log the problem
 			setAllow(response, methodNotAllowedException.getAllowedMethods()); //report the allowed methods
 			response.sendError(methodNotAllowedException.getStatusCode()); //send back the status code as an error
-		}
-		catch(final HTTPException httpException) //if any other HTTP error was encountered
-		{
+		} catch(final HTTPException httpException) { //if any other HTTP error was encountered
 			Log.warn(httpException); //log the problem
 			response.sendError(httpException.getStatusCode(), httpException.getMessage()); //send back the status code as an error
-		}
-		catch(final IOException ioException) //if there is some other I/O error
-		{
+		} catch(final IOException ioException) { //if there is some other I/O error
 			Log.error(ioException); //log the problem
 			throw ioException; //rethrow the exception to let the container handle it
-		}
-		catch(final MissingResourceException missingResourceException) //if there is a resource missing, the server isn't property configured
-		{
+		} catch(final MissingResourceException missingResourceException) { //if there is a resource missing, the server isn't property configured
 			Log.warn(missingResourceException); //log the problem
 			//TODO find out why this isn't working with Tomcat 5.5.9
 			response.sendError(SC_INTERNAL_SERVER_ERROR, missingResourceException.getMessage()); //send back a 500 Internal Server Error			
-		}
-		catch(final RuntimeException runtimeException) //if there are any other runtime exceptions
-		{
+		} catch(final RuntimeException runtimeException) { //if there are any other runtime exceptions
 			Log.error(runtimeException); //log the error
 			throw runtimeException; //let the container take care of the error
-		}
-		catch(final Error error) //if there are any other errors
-		{
+		} catch(final Error error) { //if there are any other errors
 			Log.error(error); //log the error
 			throw error; //let the container take care of the error
-		}
-		finally
-		{
-			if(isProfiled()) //if we are being profiled, make sure we stop the stack probe (if no other stack probes are running)
-			{
+		} finally {
+			if(isProfiled()) { //if we are being profiled, make sure we stop the stack probe (if no other stack probes are running)
 				Profiler.stopStackProbe();
 			}
 		}
@@ -519,8 +426,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws ServletException if there is a problem servicing the request.
 	 * @throws IOException if there is an error reading or writing data.
 	 */
-	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
-	{
+	protected void doMethod(final String method, final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		super.service(request, response); //do the default servicing of this method
 	}
 
@@ -536,8 +442,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws HTTPRedirectException if the request should be redirected to another URI.
 	 * @see HttpServletRequest#getRequestURL()
 	 */
-	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException
-	{
+	protected URI getResourceURI(final HttpServletRequest request) throws HTTPRedirectException {
 		final String requestURIString = request.getRequestURL().toString(); //get the requested URI string
 		return URI.create(requestURIString); //create a URI from the full request URL
 	}
@@ -545,14 +450,12 @@ public class BaseHTTPServlet extends HttpServlet
 	/**
 	 * @return A private key used in generating and validating nonces. This implementation returns the name of the servlet class.
 	 */
-	protected String getNoncePrivateKey()
-	{
+	protected String getNoncePrivateKey() {
 		return getClass().getName(); //return the name of the implementing servlet class
 	}
 
 	/** @return A newly generated nonce. */
-	protected Nonce createNonce()
-	{
+	protected Nonce createNonce() {
 		return new DefaultNonce(getNoncePrivateKey()); //create a default nonce using our private key
 	}
 
@@ -583,8 +486,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return <code>true</code> if the nonce is not valid.
 	 * @see #getNoncePrivateKey()
 	 */
-	protected boolean isValid(final HttpServletRequest request, final Nonce nonce)
-	{
+	protected boolean isValid(final HttpServletRequest request, final Nonce nonce) {
 		return getNoncePrivateKey().equals(nonce.getPrivateKey()); //check for an identical key
 	}
 
@@ -594,8 +496,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return <code>true</code> if the nonce time has lapsed beyond the maximum allowed.
 	 * @see #NONCE_EXPIRATION_DURATION
 	 */
-	protected boolean isStale(final Nonce nonce)
-	{
+	protected boolean isStale(final Nonce nonce) {
 		//TODO del Log.trace("checking staleness of nonce", nonce, "with time", nonce.getTime().getTime());
 		return System.currentTimeMillis() - nonce.getTime().getTime() > NONCE_EXPIRATION_DURATION; //see if the difference between now and then is longer than we allow
 	}
@@ -611,16 +512,12 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @see #checkAuthorization(HttpServletRequest, URI, String, String, AuthenticateCredentials)
 	 */
 	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPBadRequestException, HTTPRedirectException,
-			HTTPForbiddenException, HTTPUnauthorizedException
-	{
-		try
-		{
+			HTTPForbiddenException, HTTPUnauthorizedException {
+		try {
 			final URI resourceURI = getResourceURI(request); //get the requested URI
 			final AuthenticateCredentials credentials = getAuthorization(request); //get the credentials from this request, if any
 			checkAuthorization(request, resourceURI, request.getMethod(), request.getRequestURI(), credentials); //check authorization for these credentials
-		}
-		catch(final SyntaxException syntaxException) //if the credentials weren't syntactically correct
-		{
+		} catch(final SyntaxException syntaxException) { //if the credentials weren't syntactically correct
 			throw new HTTPBadRequestException(syntaxException);
 		}
 	}
@@ -641,35 +538,26 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @see #createAuthenticateChallenge(URI, String, Principal, String, AuthenticateCredentials, Nonce, boolean)
 	 */
 	protected void checkAuthorization(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI,
-			final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException
-	{
+			final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException, HTTPForbiddenException, HTTPUnauthorizedException {
 		final Principal principal = getPrincipal(credentials); //get the principal providing credentials
 		final String realm = getRealm(resourceURI); //get the realm for this resource
 		boolean isAuthenticated = false; //every principal by default is unauthenticated
-		if(isAuthenticated(request, resourceURI, method, requestURI, principal, realm, credentials)) //if this principal is authenticated
-		{
+		if(isAuthenticated(request, resourceURI, method, requestURI, principal, realm, credentials)) { //if this principal is authenticated
 			isAuthenticated = true; //the request is authenticated
 		}
 		authenticated(request, resourceURI, method, requestURI, principal, realm, credentials, isAuthenticated); //indicate whether the principal has been authenticated
 		boolean isAuthorized = false; //every principal by default is unauthorized
-		if(isAuthenticated && isAuthorized(request, resourceURI, method, principal, realm)) //if this principal is authorized
-		{
+		if(isAuthenticated && isAuthorized(request, resourceURI, method, principal, realm)) { //if this principal is authorized
 			isAuthorized = true; //the request is both authenticated and authorized
 		}
-		if(credentials != null) //if credentials were provided
-		{
+		if(credentials != null) { //if credentials were provided
 			Log.info("authorized", isAuthorized, resourceURI, method, principal, realm); //log the authorization result
 		}
-		if(!isAuthorized) //if authentication and authorization didn't succeed, throw an exception
-		{
-			if(realm != null) //if we have a realm to authenticate
-			{
+		if(!isAuthorized) { //if authentication and authorization didn't succeed, throw an exception
+			if(realm != null) { //if we have a realm to authenticate
 				final AuthenticateChallenge challenge = createAuthenticateChallenge(resourceURI, method, principal, realm, credentials, createNonce(), false); //create an authenticate challenge with a newly created nonce
 				throw new HTTPUnauthorizedException(challenge); //throw an unauthorized exception with the challenge
-			}
-			else
-			//if the requested resource is not within a realm
-			{
+			} else { //if the requested resource is not within a realm
 				throw new HTTPForbiddenException(resourceURI.toString()); //the request is forbidden for this resource
 			}
 		}
@@ -687,8 +575,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @param authenticated <code>true</code> if the principal succeeded in authentication, else <code>false</code>.
 	 */
 	protected void authenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI,
-			final Principal principal, final String realm, final AuthenticateCredentials credentials, final boolean authenticated)
-	{
+			final Principal principal, final String realm, final AuthenticateCredentials credentials, final boolean authenticated) {
 	}
 
 	/**
@@ -698,24 +585,16 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws HTTPInternalServerErrorException if there is an error getting the principal.
 	 * @see #getPrincipal(String)
 	 */
-	protected Principal getPrincipal(final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException
-	{
-		if(credentials != null) //if we have credentials
-		{
+	protected Principal getPrincipal(final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException {
+		if(credentials != null) { //if we have credentials
 			final String principalID = credentials.getPrincipalID(); //get the ID of the principal
 			final int separatorIndex = CharSequences.indexOf(principalID, '\\'); //TODO testing
-			if(separatorIndex >= 0)
-			{
+			if(separatorIndex >= 0) {
 				return getPrincipal(principalID.substring(separatorIndex + 1)); //TODO testing
-			}
-			else
-			{
+			} else {
 				return getPrincipal(principalID);
 			}
-		}
-		else
-		//if we have no credentials
-		{
+		} else { //if we have no credentials
 			return null; //there is no principal
 		}
 		//TODO del		return credentials!=null ? getPrincipal(credentials.getPrincipalID()) : null;	//get the principal providing credentials, if there are credentials
@@ -727,8 +606,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return The principal corresponding to the given ID, or <code>null</code> if no principal could be determined.
 	 * @throws HTTPInternalServerErrorException if there is an error getting the principal.
 	 */
-	protected Principal getPrincipal(final String id) throws HTTPInternalServerErrorException
-	{
+	protected Principal getPrincipal(final String id) throws HTTPInternalServerErrorException {
 		return null; //the basic HTTP servlet doesn't know any principals
 	}
 
@@ -738,8 +616,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return The password associated with the given principal, or <code>null</code> if no password is associated with the given principal.
 	 * @throws HTTPInternalServerErrorException if there is an error getting the principal's password.
 	 */
-	protected char[] getPassword(final Principal principal) throws HTTPInternalServerErrorException
-	{
+	protected char[] getPassword(final Principal principal) throws HTTPInternalServerErrorException {
 		return null; //the basic HTTP servlet doesn't know any passwords
 	}
 
@@ -764,47 +641,38 @@ public class BaseHTTPServlet extends HttpServlet
 	 */
 	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI,
 			final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException,
-			HTTPUnauthorizedException
-	{
+			HTTPUnauthorizedException {
 		//TODO del Log.trace("authenticating");
 		final String credentialsRealm = credentials != null ? credentials.getRealm() : null; //see if the credentials reports the realm, if we have credentials
 		//TODO del Log.trace("got realm", realm);
-		if(credentialsRealm != null && !credentialsRealm.equals(realm)) //if a realm is given but it doesn't equal the expected realm for the requested resource
-		{
+		if(credentialsRealm != null && !credentialsRealm.equals(realm)) { //if a realm is given but it doesn't equal the expected realm for the requested resource
 			//TODO del Log.trace("realm doesn't match", getRealm(resourceURI));
 			return false; //don't allow credentials marked for one realm to be used for another realm
 		}
-		if(credentials != null) //if there are credentials given
-		{
-			if(credentials instanceof DigestAuthenticateCredentials) //if these are digest credentials, make sure they are valid
-			{
+		if(credentials != null) { //if there are credentials given
+			if(credentials instanceof DigestAuthenticateCredentials) { //if these are digest credentials, make sure they are valid
 				final DigestAuthenticateCredentials digestCredentials = (DigestAuthenticateCredentials)credentials; //get the credentials as digest credentials
 				//TODO del Log.trace("comparing credentials URI", digestCredentials.getURI(), "against request URI", requestURI);
-				if(!requestURI.equals(digestCredentials.getURI().toString())) //if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
-				{
+				if(!requestURI.equals(digestCredentials.getURI().toString())) { //if the request is for some other resource than the credentials indicate	//TODO remove toString() when we downgrade digest-uri to a String
 					return false; //don't allow authentication for other resources
 				}
 				//			TODO del Log.trace("getting nonce for credentials nonce ID", digestCredentials.getNonce());
 				final Nonce nonce = getNonce(digestCredentials.getNonce()); //get the nonce the request is using
-				if(nonce == null || !isValid(request, nonce)) //if we have no knowledge of this nonce or the nonce is invalid
-				{
+				if(nonce == null || !isValid(request, nonce)) { //if we have no knowledge of this nonce or the nonce is invalid
 					//				TODO del Log.trace("nonce is not valid", nonce);
 					return false; //the nonce is either very old or an incorrect nonce altogether
 				}
-				if(principal == null) //if no principal was given
-				{
+				if(principal == null) { //if no principal was given
 					return false; //an anonymous principal cannot authenticate against given credentials
 				}
 				final char[] password = getPassword(principal); //get the password for the principal
 				//TODO del Log.trace("got password for credentials", new String(password));
-				if(password == null || !digestCredentials.isValid(method, password)) //see if the credentials are valid for this principal's password
-				{
+				if(password == null || !digestCredentials.isValid(method, password)) { //see if the credentials are valid for this principal's password
 					return false; //indicate that the credentials have an invalid password
 				}
 				setNoncePrincipalID(nonce, principal.getName()); //associate this principal with the nonce
 				//			TODO del Log.trace("checking staleness");
-				if(isStale(nonce)) //if the nonce is stale
-				{
+				if(isStale(nonce)) { //if the nonce is stale
 					//				TODO del Log.trace("nonce is stale");
 					final Nonce newNonce = createNonce(); //create a new, unstale nonce
 					setNoncePrincipalID(newNonce, principal.getName()); //associate this principal with the new nonce
@@ -812,16 +680,10 @@ public class BaseHTTPServlet extends HttpServlet
 					throw new HTTPUnauthorizedException(challenge); //throw an unauthorized exception with the challenge
 				}
 				return true; //the credentials passed all the requirements
-			}
-			else
-			//if we don't recognize the credentials
-			{
+			} else { //if we don't recognize the credentials
 				return false; //we can't authenticate credentials we don't recognize				
 			}
-		}
-		else
-		//if no credentials were given
-		{
+		} else { //if no credentials were given
 			//TODO del Log.trace("there were no credentials given, and principal is", principal);
 			return principal == null; //only anonymous principals can authenticate against missing credentials
 		}
@@ -839,8 +701,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws HTTPInternalServerErrorException if there is an error determining if the principal is authorized.
 	 */
 	protected boolean isAuthorized(final HttpServletRequest request, final URI resourceURI, final String method, final Principal principal, final String realm)
-			throws HTTPInternalServerErrorException
-	{
+			throws HTTPInternalServerErrorException {
 		return true; //default to authorizing access
 	}
 
@@ -858,16 +719,12 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @throws HTTPInternalServerErrorException if there is an error creating the authenticate challenge.
 	 */
 	protected AuthenticateChallenge createAuthenticateChallenge(final URI resourceURI, final String method, final Principal principal, final String realm,
-			final AuthenticateCredentials credentials, final Nonce nonce, final boolean stale) throws HTTPInternalServerErrorException
-	{
-		try
-		{
+			final AuthenticateCredentials credentials, final Nonce nonce, final boolean stale) throws HTTPInternalServerErrorException {
+		try {
 			final DigestAuthenticateChallenge challenge = new DigestAuthenticateChallenge(realm, nonce.toString(), stale); //create a new digest authenticate challenge for the resource's realm, using the given nonce
 			storeNonce(challenge.getNonceDigest(), nonce); //store the nonce under its digest value
 			return challenge; //return the challenge
-		}
-		catch(final NoSuchAlgorithmException noSuchAlgorithmException) //if the default algorithm (MD5) is not supported
-		{
+		} catch(final NoSuchAlgorithmException noSuchAlgorithmException) { //if the default algorithm (MD5) is not supported
 			throw new HTTPInternalServerErrorException(noSuchAlgorithmException); //indicate that we don't support the algorithm
 		}
 	}
@@ -878,8 +735,7 @@ public class BaseHTTPServlet extends HttpServlet
 	 * @return The realm appropriate for the resource, or <code>null</code> if the given resource is not in a known realm.
 	 * @throws HTTPInternalServerErrorException if there is an error getting the realm.
 	 */
-	protected String getRealm(final URI resourceURI) throws HTTPInternalServerErrorException
-	{
+	protected String getRealm(final URI resourceURI) throws HTTPInternalServerErrorException {
 		return null;
 	}
 

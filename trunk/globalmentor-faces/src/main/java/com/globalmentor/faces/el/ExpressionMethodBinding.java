@@ -41,8 +41,7 @@ public class ExpressionMethodBinding extends MethodBinding
 	public ExpressionMethodBinding(final Expression<?> expression)
 	{
 		this.expression=expression;	//save the expression
-		if(expression==null)	//if there is no expression
-		{
+		if(expression==null) {	//if there is no expression
 			throw new NullPointerException("No expression provided.");
 		}
 	}

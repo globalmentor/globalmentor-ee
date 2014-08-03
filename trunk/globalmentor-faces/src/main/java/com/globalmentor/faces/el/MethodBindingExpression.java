@@ -62,8 +62,7 @@ public class MethodBindingExpression<T> implements Expression<T>
 			{
 				final Expression<?>[] parameterExpressions=getParameterExpressions();	//get the parameter expressions
 				final Class[] parameterTypes=new Class[parameterExpressions.length];	//create an array of classes, indicating parameter types
-				for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
-				{
+				for(int i=0; i<parameterExpressions.length; ++i) {	//look at each parameter expression
 					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
 /*TODO fix
 Log.trace("*****does this fix the type bug? parameter type for expression", parameterExpressions[i].getExpressionString(), "is", parameterTypes[i]);	//get the type of this parameter
@@ -124,21 +123,18 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 		final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
 			//tokenize the parameters by commas, grouping by reference groups and quotes
 		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, TRIM_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR, String.valueOf(REFERENCE_EXPRESSION_END_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR);
-		while(tokenizer.hasNext())	//if there are more tokens
-		{
+		while(tokenizer.hasNext()) {	//if there are more tokens
 			final String param=tokenizer.next();	//get the next parameter
 			final int length=param.length();	//get the length of the parameter
 			assert param.length()>0 : "Unexpected empty parameter.";	//tokenizers should never return empty strings
 			final char firstChar=param.charAt(0);	//get the first character
 			final Expression<?> parameterExpression;	//we'll determine if this is a literal expression or a value-binding expression
-			if(length>1 && (firstChar==QUOTATION_MARK_CHAR || firstChar==APOSTROPHE_CHAR) && firstChar==param.charAt(length-1))	//if the parameter is at least two characters, with beginning and ending quotes
-			{
+			if(length>1 && (firstChar==QUOTATION_MARK_CHAR || firstChar==APOSTROPHE_CHAR) && firstChar==param.charAt(length-1)) {	//if the parameter is at least two characters, with beginning and ending quotes
 				final String string=param.substring(1, length-1);	//get the string between the quotes
 				parameterExpression=new LiteralExpression<String>(string);	//create a literal expression from the string
 
 			}
-			else	//if this is not a literal expression, assume it's a reference expression
-			{
+			else {	//if this is not a literal expression, assume it's a reference expression
 				parameterExpression=createReferenceExpression(application, param);	//create an expression for the parameter
 			}
 //TODO fix Log.trace("created parameter expression of type: ", parameterExpression.getType(context));
@@ -168,8 +164,7 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 //TODO del		getMethodBinding(context);	//TODO del
 		final Expression<?>[] parameterExpressions=getParameterExpressions();	//get the parameter expressions
 		final Object[] parameterValues=new Object[parameterExpressions.length];	//create an array of objects to hold the actual parameter values
-		for(int i=0; i<parameterExpressions.length; ++i)	//look at each parameter expression
-		{
+		for(int i=0; i<parameterExpressions.length; ++i) {	//look at each parameter expression
 			parameterValues[i]=parameterExpressions[i].getValue(context);	//get this parameter value
 //TODO del Log.trace("just got value for parameter", i, parameterValues[i], "of type", parameterExpressions[i].getType(context));
 		}

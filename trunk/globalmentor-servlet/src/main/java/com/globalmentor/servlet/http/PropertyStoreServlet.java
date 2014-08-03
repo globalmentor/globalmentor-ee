@@ -66,8 +66,7 @@ import com.globalmentor.util.PropertiesUtilities;
  * 
  * @author Garret Wilson
  */
-public class PropertyStoreServlet extends BaseHTTPServlet
-{
+public class PropertyStoreServlet extends BaseHTTPServlet {
 
 	/** The maximum length for a property value, 1024. This may be configurable in a future version. */
 	public final static int MAX_PROPERTY_VALUE_LENGTH = 1 << 10;
@@ -79,8 +78,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	private final Set<String> supportedPropertyNames = new HashSet<String>();
 
 	/** @return The supported property names. */
-	protected Set<String> getSupportedPropertyNames()
-	{
+	protected Set<String> getSupportedPropertyNames() {
 		return unmodifiableSet(supportedPropertyNames);
 	}
 
@@ -89,8 +87,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	 * @throws IllegalStateException if the {@link #PROPERTY_NAMES_INIT_PARAMETER} init parameter does not exist.
 	 */
 	@Override
-	public void initialize(ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException
-	{
+	public void initialize(ServletConfig servletConfig) throws ServletException, IllegalArgumentException, IllegalStateException {
 		super.initialize(servletConfig);
 		final String propertyNames = servletConfig.getInitParameter(PROPERTY_NAMES_INIT_PARAMETER);
 		checkState(propertyNames != null, "No property names configuration.");
@@ -104,8 +101,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	private final ReadWriteLockMap<String, String> propertyMap = new DecoratorReadWriteLockMap<String, String>(new HashMap<String, String>());
 
 	/** @return The map of properties and values. */
-	protected ReadWriteLockMap<String, String> getPropertyMap()
-	{
+	protected ReadWriteLockMap<String, String> getPropertyMap() {
 		return propertyMap;
 	}
 
@@ -115,15 +111,12 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	 * @param request The servlet request potentially with property name/value pairs in its URL or POST body.
 	 * @throws IllegalArgumentException if the one or more of the specified properties are not supported.
 	 */
-	protected void updateProperties(final HttpServletRequest request)
-	{
+	protected void updateProperties(final HttpServletRequest request) {
 		final Set<String> supportedPropertyNames = getSupportedPropertyNames(); //get the property names we support
 		final Map<String, String> propertyUpdate = new HashMap<String, String>(); //create a map for updating the properties
-		for(final Map.Entry<String, String[]> parameterEntry : request.getParameterMap().entrySet()) //look at all the entries
-		{
+		for(final Map.Entry<String, String[]> parameterEntry : request.getParameterMap().entrySet()) { //look at all the entries
 			final String propertyName = parameterEntry.getKey();
-			if(!supportedPropertyNames.contains(propertyName)) //make sure we support this property
-			{
+			if(!supportedPropertyNames.contains(propertyName)) { //make sure we support this property
 				throw new IllegalArgumentException("Unsupported property: " + propertyName);
 			}
 			propertyUpdate.put(propertyName, formatList(COMMA_CHAR, parameterEntry.getValue())); //combine the values into a single comma-separated value and store it
@@ -136,8 +129,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	 * @throws IllegalArgumentException if the one or more of the specified properties are not supported.
 	 */
 	@Override
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
-	{
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		updateProperties(request); //update the properties as requested
 		doGet(request, response); //output the current values
 	}
@@ -146,44 +138,33 @@ public class PropertyStoreServlet extends BaseHTTPServlet
 	 * {@inheritDoc} This version returns all currently stored properties in the requested format.
 	 */
 	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException
-	{
+	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		setNoCache(request, response); //turn off caching of the response
 		final ReadWriteLockMap<String, String> propertyMap = getPropertyMap();
 		propertyMap.readLock().lock(); //lock our property map for reading
-		try
-		{
+		try {
 			//see what content type is accepted by the client
-			if(isAcceptedContentType(request, JSON.CONTENT_TYPE)) //JSON
-			{
+			if(isAcceptedContentType(request, JSON.CONTENT_TYPE)) { //JSON
 				response.setContentType(JSON.CONTENT_TYPE.toString()); //use JSON
 				response.setCharacterEncoding(UTF_8_CHARSET.name()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
 				JSON.appendValue(writer, propertyMap); //append the property map to the output
-			}
-			else if(isAcceptedContentType(request, XML.CONTENT_TYPE)) //XML
-			{
+			} else if(isAcceptedContentType(request, XML.CONTENT_TYPE)) { //XML
 				response.setContentType(XML.CONTENT_TYPE.toString()); //use JSON
 				response.setCharacterEncoding(UTF_8_CHARSET.name()); //encode in UTF-8
 				final OutputStream outputStream = response.getOutputStream(); //get an output stream to return the response
 				final Properties properties = PropertiesUtilities.toProperties(propertyMap); //convert the map to a properties object
 				properties.storeToXML(outputStream, null, UTF_8_CHARSET.name());
-			}
-			else
-			//plain text (default)
-			{
+			} else { //plain text (default)
 				response.setContentType(Text.PLAIN_CONTENT_TYPE.toString()); //use text/plain
 				response.setCharacterEncoding(UTF_8_CHARSET.toString()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
-				for(final Map.Entry<String, String> propertyEntry : propertyMap.entrySet())
-				{
+				for(final Map.Entry<String, String> propertyEntry : propertyMap.entrySet()) {
 					writer.append(propertyEntry.getKey()).append(EQUALS_SIGN_CHAR).append(propertyEntry.getValue()).append(CARRIAGE_RETURN_CHAR).append(LINE_FEED_CHAR); //property=valueCRLF
 
 				}
 			}
-		}
-		finally
-		{
+		} finally {
 			propertyMap.readLock().unlock(); //always release our read lock
 		}
 	}

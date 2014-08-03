@@ -41,11 +41,9 @@ public class FacesRender
 	public static void renderPassthroughAttributes(final ResponseWriter writer, final UIComponent component, final String[] attributes) throws IOException
 	{
 		final Map attributeMap=component.getAttributes();	//get the map of component attributes
-		for(final String attribute:attributes)	//look at each of the passed attributes
-		{
+		for(final String attribute:attributes) {	//look at each of the passed attributes
 			final Object value=attributeMap.get(attribute);	//get this attribute
-			if(value!=null)	//if we have a value TODO check to see if we should render the value, according to the special wrapper type MIN_VALUEs
-			{
+			if(value!=null) {	//if we have a value TODO check to see if we should render the value, according to the special wrapper type MIN_VALUEs
 				if(value instanceof Integer && ((Integer)value).intValue()==Integer.MIN_VALUE)
 				{
 					continue;	//TODO testing; fix correctly

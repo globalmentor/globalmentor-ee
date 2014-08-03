@@ -144,15 +144,13 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
 		super.encodeBegin(context, component);	//do the default encoding
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			writer.startElement(getComponentElementName(), component);	//write the starting tag
 			writeIDAttribute(context, writer, component);	//write the ID attribute
 			final String styleClass=(String)attributeMap.get(STYLE_CLASS_ATTRIBUTE);	//get the style class, if there is one
-			if(styleClass!=null)	//if there is a style class attribute
-			{
+			if(styleClass!=null) {	//if there is a style class attribute
 				writer.writeAttribute(ATTRIBUTE_CLASS, styleClass, STYLE_CLASS_ATTRIBUTE);	//write the style class attribute
 			}
 			renderPassthroughAttributes(writer, component, (String[])getPassthroughAttributeSet().toArray(new String[getPassthroughAttributeSet().size()]));	//render the XHTML passthrough attributes
@@ -169,8 +167,7 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 	*/
 	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException
 	{
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			writer.endElement(getComponentElementName());	//write the ending tag
 			writer.write('\n');	//write a newline after the ending tag
@@ -193,8 +190,7 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 	*/
 	protected void writeIDAttribute(final FacesContext context, ResponseWriter writer, UIComponent component)
 	{
-		if(hasCustomID(component))	//if this component has a custom ID
-		{
+		if(hasCustomID(component)) {	//if this component has a custom ID
 			try
 			{
 				writer.writeAttribute(ATTRIBUTE_ID, component.getClientId(context), ATTRIBUTE_ID);	//write the ID

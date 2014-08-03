@@ -51,12 +51,10 @@ public class FacesExpressions
 	*/
 	public static Expression<?> createExpression(final Application application, final String string)
 	{
-		if(isReferenceExpression(string))	//if this is a reference expression
-		{
+		if(isReferenceExpression(string)) {	//if this is a reference expression
 			return createReferenceExpression(application, string);	//create a reference expression
 		}
-		else	//if this is not a reference expression
-		{
+		else {	//if this is not a reference expression
 			return new LiteralExpression<String>(string);	//use the string as-is
 		}
 	}
@@ -73,12 +71,10 @@ public class FacesExpressions
 	*/
 	public static Expression<String> createStringExpression(final Application application, final String string)
 	{
-		if(isReferenceExpression(string))	//if this is a reference expression
-		{
+		if(isReferenceExpression(string)) {	//if this is a reference expression
 			return createReferenceExpression(application, string);	//create a reference expression
 		}
-		else	//if this is not a reference expression
-		{
+		else {	//if this is not a reference expression
 			return new LiteralExpression<String>(string);	//use the string as-is
 		}
 	}
@@ -93,22 +89,18 @@ public class FacesExpressions
 	*/
 	public static <T> Expression<T> createReferenceExpression(final Application application, final String string)
 	{
-		if(isReferenceExpression(string))	//if this is a reference expression
-		{
-			if(isMethodReference(string))	//if this is a method reference
-			{
+		if(isReferenceExpression(string)) {	//if this is a reference expression
+			if(isMethodReference(string)) {	//if this is a method reference
 				return createMethodBindingExpression(application, string);	//create a method binding expression
 			}
-			else	//if this is not a method reference, it must be a value reference
-			{
+			else {	//if this is not a method reference, it must be a value reference
 //TODO del Log.trace("creating value-binding expression for string: ", string);
 				final ValueBinding valueBinding=application.createValueBinding(string);	//create a value binding for the string
 //TODO Log.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
 				return new ValueBindingExpression(valueBinding);	//create and return a value binding expression from the value binding we created
 			}
 		}
-		else	//if this is not a reference expression
-		{
+		else {	//if this is not a reference expression
 			throw new IllegalArgumentException(string);
 		}
 	}
@@ -123,12 +115,10 @@ public class FacesExpressions
 	*/
 	public static <T> Expression<T> createMethodBindingExpression(final Application application, final String string)
 	{
-		if(isMethodReference(string))	//if this is a method reference
-		{
+		if(isMethodReference(string)) {	//if this is a method reference
 			return new MethodBindingExpression(application, string);	//create a method binding reference
 		}
-		else	//if this is not a reference expression
-		{
+		else {	//if this is not a reference expression
 			throw new IllegalArgumentException(string);
 		}
 	}
@@ -156,8 +146,7 @@ public class FacesExpressions
 	*/
 	public static boolean isMethodReference(final String string)
 	{
-		if(isReferenceExpression(string))	//if the string is a reference
-		{
+		if(isReferenceExpression(string)) {	//if the string is a reference
 			final int groupBeginIndex=string.indexOf(FacesExpressions.GROUP_BEGIN_CHAR);	//find out where this group begins
 			return groupBeginIndex>=0 && groupBeginIndex<string.indexOf(FacesExpressions.GROUP_END_CHAR);	//see if there are group characters in order (...)
 		}

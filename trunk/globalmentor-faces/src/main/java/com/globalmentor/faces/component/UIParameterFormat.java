@@ -41,16 +41,14 @@ public class UIParameterFormat extends UIParameter
 	public Object getValue()
 	{
 		final Object value=super.getValue();	//get the assigned value, if any
-		if(value instanceof String)	//if the value is a string
-		{
+		if(value instanceof String) {	//if the value is a string
 			final FacesContext context=getFacesContext();	//get our context
 			final String pattern=(String)value;	//get the formatting pattern
 			final MessageFormat messageFormat=new MessageFormat(pattern, context.getViewRoot().getLocale());	//create a message formatter using the correct locale
 			final Object[] parameterValues=getParameterValues(this, context);	//get all our parameters
 			return messageFormat.format(parameterValues);	//format the value based upon the parameters and return the result	
 		}
-		else	//if the value isn't a string
-		{
+		else {	//if the value isn't a string
 			return value;	//return the value normally
 		}
   }

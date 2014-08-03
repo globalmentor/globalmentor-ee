@@ -72,14 +72,12 @@ public class InputCheckboxRenderer extends AbstractInputRenderer
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
 		super.encodeBegin(context, component);	//do the default encoding
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UIInput input=(UIInput)component;	//get the component as an input component
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Object intendedValue=getIntendedValue(input);	//get the intended render value 
 			final boolean checked=Boolean.valueOf(intendedValue.toString()).booleanValue();	//convert the intended value to a boolean
-			if(checked)	//if the checkbox is checked
-			{
+			if(checked) {	//if the checkbox is checked
 				writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_CHECKED, INPUT_CHECKED_CHECKED, ATTRIBUTE_VALUE);	//checked="checked"				
 			}
 		}

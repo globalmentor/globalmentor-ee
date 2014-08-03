@@ -37,8 +37,7 @@ public class FacesValues
   public static boolean getBooleanValue(final FacesContext facesContext, final String valueString)
   {
   	final Boolean booleanObject;
-  	if(UIComponentTag.isValueReference(valueString))	//if the string is a JSF value reference
-  	{
+  	if(UIComponentTag.isValueReference(valueString)) {	//if the string is a JSF value reference
   			//get the value from the reference, assuming it's a Boolean value
       booleanObject=(Boolean)facesContext.getApplication().createValueBinding(valueString).getValue(facesContext);
   	}

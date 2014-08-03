@@ -53,8 +53,7 @@ public class EnumConverter<T extends Enum<T>> implements Converter
 		{
 			return value!=null ? Enum.valueOf(enumType, value) : null;	//if there is a value, convert it
 		}
-		catch(final IllegalArgumentException illegalArgumentException)	//if the value is not valid
-		{
+		catch(final IllegalArgumentException illegalArgumentException) {	//if the value is not valid
 			throw new ConverterException(illegalArgumentException);
 		}
 	}
@@ -73,8 +72,7 @@ public class EnumConverter<T extends Enum<T>> implements Converter
 		{
 			return value!=null ? enumType.cast(value).toString() : "";	//if there is a value, return its string form, casting it to make sure its of the correct type
 		}
-		catch(final ClassCastException classCastException)	//if the value is not valid
-		{
+		catch(final ClassCastException classCastException) {	//if the value is not valid
 			throw new ConverterException(classCastException);
 		}
 	}		

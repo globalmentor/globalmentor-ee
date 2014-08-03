@@ -82,16 +82,14 @@ public class RedirectTag extends FacesTagSupport
 	{
 		final FacesContext facesContext=getFacesContext();	//get the faces context
 		final String when=getWhen();	//see when we should redirect; if there is no value, we should always redirect
-		if(when==null || FacesValues.getBooleanValue(facesContext, when))	//if we should redirect
-		{
+		if(when==null || FacesValues.getBooleanValue(facesContext, when)) {	//if we should redirect
 //TODO make sure this is an absolute URL
 			final ExternalContext externalContext=facesContext.getExternalContext();	//get a context to the outside world
 			try
 			{
 				externalContext.redirect(externalContext.encodeResourceURL(externalContext.getRequestContextPath()+getUrl()));	//redirect to the URL, relative to the request context path TODO allow full absolute URIs, maybe
 			}
-			catch(IOException ioException)	//if there is an error
-			{
+			catch(IOException ioException) {	//if there is an error
 				throw new JspException(ioException);	//pass the exception back
 			}
 		}

@@ -58,16 +58,14 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
 		super.encodeBegin(context, component);	//do the default encoding
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UIInput input=(UIInput)component;	//get the component as an input component
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			final Map attributeMap=component.getAttributes();	//get the map of attributes
 			writer.writeAttribute(ATTRIBUTE_NAME, component.getClientId(context), CLIENT_ID_ATTRIBUTE);	//write the client ID as the name
 			writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, getType(), null);	//write the input type
 			final Object renderValue=getRenderValue(input);	//get the current value to be rendered
-			if(renderValue!=null)	//if there is a current value
-			{
+			if(renderValue!=null) {	//if there is a current value
 				writer.writeAttribute(ATTRIBUTE_VALUE, renderValue, ATTRIBUTE_VALUE);	//write the current value
 			}
 		}
@@ -81,12 +79,10 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	protected Object getIntendedValue(final UIInput input)
 	{
 		final Object submittedValue=input.getSubmittedValue();	//get the current submitted value
-		if(submittedValue!=null)	//if there is a submitted value
-		{
+		if(submittedValue!=null) {	//if there is a submitted value
 			return submittedValue;	//return the submitted value
 		}
-		else	//if there is not a submitted value
-		{
+		else {	//if there is not a submitted value
 			return input.getValue();	//return the currently set value TODO maybe eventually do formatting and conversion; see Sun HtmlBasicInputRenderer.java
 		}
 	}
@@ -99,12 +95,10 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	protected Object getRenderValue(final UIInput input)
 	{
 		final Object submittedValue=input.getSubmittedValue();	//get the current submitted value
-		if(submittedValue!=null)	//if there is a submitted value
-		{
+		if(submittedValue!=null) {	//if there is a submitted value
 			return submittedValue;	//return the submitted value
 		}
-		else	//if there is not a submitted value
-		{
+		else {	//if there is not a submitted value
 			return input.getValue();	//return the currently set value TODO maybe eventually do formatting and conversion; see Sun HtmlBasicInputRenderer.java
 		}
 	}
@@ -119,8 +113,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer
 	public void decode(final FacesContext context, final UIComponent component)
 	{
 			//TODO this code should go in a generic AbstractInputRenderer---or maybe even something more general than that
-		if(isMutable(component))	//if the component is mutable
-		{
+		if(isMutable(component)) {	//if the component is mutable
 			final Map requestParameterMap=context.getExternalContext().getRequestParameterMap();	//get the request parameters
 			final String clientID=component.getClientId(context);	//get the component's client ID
 			final Object value=requestParameterMap.get(clientID);	//see if there is a value for our component

@@ -110,10 +110,8 @@ Log.trace("variable is now:", requestMap.get(getVar()));
 	*/
 	public void broadcast(final FacesEvent event) throws AbortProcessingException
 	{
-		if(FacesComponents.getParent(this, UIData.class)!=null)	//if we're nested within another UIData
-		{
-			if(getValueBinding("value")!=null)	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
-			{
+		if(FacesComponents.getParent(this, UIData.class)!=null) {	//if we're nested within another UIData
+			if(getValueBinding("value")!=null) {	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
 				setValue(null);	//remove our local value, uncaching the data model in the process
 			}
 		}

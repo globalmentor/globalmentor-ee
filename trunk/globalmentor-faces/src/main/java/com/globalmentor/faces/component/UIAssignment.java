@@ -103,8 +103,7 @@ public class UIAssignment extends UIComponentBase
 	public void encodeBegin(final FacesContext context) throws IOException
 	{
 		super.encodeBegin(context);	//do the default encoding
-		if(isRendered())	//if this component is rendered
-		{
+		if(isRendered()) {	//if this component is rendered
 			performAssignment(context);	//perform the assignment
 		}
 	}
@@ -116,8 +115,7 @@ public class UIAssignment extends UIComponentBase
   public void encodeChildren(FacesContext context) throws IOException
 	{
 		super.encodeBegin(context);	//do the default child encoding
-		if(isRendered())	//if this component is rendered
-		{
+		if(isRendered()) {	//if this component is rendered
 			encodeDescendants(this, context);	//encode our descendants
 		}
   }
@@ -134,8 +132,7 @@ public class UIAssignment extends UIComponentBase
 	*/
 	public void processDecodes(final FacesContext context)
 	{
-		if(isRendered())	//if this component is rendered
-		{
+		if(isRendered()) {	//if this component is rendered
 			performAssignment(context);	//perform the assignment
 		}
 		super.processDecodes(context);	//do the default decoding
@@ -147,8 +144,7 @@ public class UIAssignment extends UIComponentBase
 	protected void performAssignment(final FacesContext context)
 	{
 		final Object value=getValue();	//get our value
-		if(value!=null)	//if we have a value
-		{
+		if(value!=null) {	//if we have a value
 /*TODO del
 			ValueBinding vb = getValueBinding("value");
     	if(vb!=null)

@@ -37,8 +37,7 @@ public class FacesApplications
 	@param application The current JSF application
 	@return A new <code>UIColumn</code> component.
 	*/
-	public static UIColumn createColumn(final Application application)	//TODO probably require a unique ID here, too
-	{
+	public static UIColumn createColumn(final Application application) {	//TODO probably require a unique ID here, too
 		final String id=FacesContext.getCurrentInstance().getViewRoot().createUniqueId();	//TODO testing
 		final UIColumn column=(UIColumn)createComponent(application, UIColumn.COMPONENT_TYPE, id);	//create a column component
 /*TODO del
@@ -92,8 +91,7 @@ Log.trace("created column with ID", id);
 	public static UICommand createCommand(final Application application, final String id, final String action)
 	{
 		final UICommand command=(UICommand)createComponent(application, UICommand.COMPONENT_TYPE, id);	//create a command component
-		if(action!=null)	//if we have an action
-		{
+		if(action!=null) {	//if we have an action
 				//create an expression from the action, and wrap it in a method-binding subclass so that UICommand will recognize it
 			command.setAction(new ExpressionMethodBinding(createExpression(application, action)));
 		}

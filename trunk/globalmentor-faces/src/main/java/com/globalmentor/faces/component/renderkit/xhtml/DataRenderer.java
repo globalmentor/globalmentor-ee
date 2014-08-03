@@ -90,8 +90,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	public void encodeBegin(final FacesContext context, final UIComponent component) throws IOException
 	{
 		super.encodeBegin(context, component);	//do the default encoding
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UIData data=(UIData)component;	//get the component as a data component
 			data.setRowIndex(-1);	//start before the beginning of the data
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
@@ -110,41 +109,33 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeChildren(final FacesContext context, final UIComponent component) throws IOException
 	{
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UIData data=(UIData)component;	//get the component as a data component
 			final ResponseWriter writer=context.getResponseWriter();	//get the response writer
 			int rowsProcessed=0;	//the number of rows processed
 			int rowIndex=data.getFirst()-1;	//the current row index
 			int rowCount=data.getRows();	//the number of rows
-			while(rowCount==0 || rowsProcessed<rowCount)	//if we should process all rows, or we should only process some rows and we haven't processed them all
-			{
+			while(rowCount==0 || rowsProcessed<rowCount) {	//if we should process all rows, or we should only process some rows and we haven't processed them all
 				data.setRowIndex(++rowIndex);	//go to the next row and select it
-				if(data.isRowAvailable())	//if this row is available
-				{
+				if(data.isRowAvailable()) {	//if this row is available
 					writer.write('\t');	//write a tab before the row
 					final String rowElementName=getRowElementName(rowIndex);	//get the element name for this row
-					if(rowElementName!=null)	//if there is an element name for this row
-					{
+					if(rowElementName!=null) {	//if there is an element name for this row
 						writer.startElement(rowElementName, component);	//start the element for the row
 					}
 					final Iterator childIterator=component.getChildren().iterator();	//get an iterator to the children
-					while(childIterator.hasNext())	//while there are more children
-					{
+					while(childIterator.hasNext()) {	//while there are more children
 						final UIComponent child=(UIComponent)childIterator.next();	//get the next child
-						if(child instanceof UIColumn)	//if the child is a column
-						{
+						if(child instanceof UIColumn) {	//if the child is a column
 							encodeColumn(context, (UIColumn)child);	//encode this column child
 						}
 					}
-					if(rowElementName!=null)	//if there is an element name for this row
-					{
+					if(rowElementName!=null) {	//if there is an element name for this row
 						writer.endElement(rowElementName);	//end the element for the row
 					}
 					writer.writeText("\n", null);	//write a newline after the row
 				}
-				else	//if this row isn't available
-				{
+				else {	//if this row isn't available
 					break;	//stop processing rows
 				}
 				++rowsProcessed;	//show that we processed another row
@@ -163,16 +154,13 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	protected void encodeColumn(final FacesContext context, final UIColumn column) throws IOException
 	{
 		final ResponseWriter writer=context.getResponseWriter();	//get the response writer
-		if(column.isRendered())	//if the column is rendered
-		{
+		if(column.isRendered()) {	//if the column is rendered
 			final String itemElementName=getItemElementName(column);	//get the element name for this item
-			if(itemElementName!=null)	//if there is an element name for an item in this column
-			{
+			if(itemElementName!=null) {	//if there is an element name for an item in this column
 				writer.startElement(itemElementName, column);	//start the element for the item
 			}
 			encodeTree(column, context);	//encode this column and all its descendants 
-			if(itemElementName!=null)	//if there is an element name for an item in this column
-			{
+			if(itemElementName!=null) {	//if there is an element name for an item in this column
 				writer.endElement(itemElementName);	//end the element for the item
 			}
 		}		
@@ -187,8 +175,7 @@ public class DataRenderer extends AbstractXHTMLRenderer
 	*/
 	public void encodeEnd(final FacesContext context, final UIComponent component) throws IOException
 	{
-		if(component.isRendered())	//if the component should be rendered
-		{
+		if(component.isRendered()) {	//if the component should be rendered
 			final UIData data=(UIData)component;	//get the component as a data component
 			data.setRowIndex(-1);	//make sure we note that we're not using the data anymore
     }
