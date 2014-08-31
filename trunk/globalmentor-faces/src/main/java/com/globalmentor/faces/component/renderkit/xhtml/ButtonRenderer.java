@@ -44,10 +44,10 @@ public class ButtonRenderer extends AbstractXHTMLRenderer
 {
 
 	/**Whether JavaScript should be used to compensate for a buggy browser.*/
-	protected final static boolean USE_JAVASCRIPT=true;
+	protected static final boolean USE_JAVASCRIPT=true;
 
 	/**The ID of the hidden field used to hold the button value.*/
-	protected final static String HIDDEN_FIELD_ID="button";
+	protected static final String HIDDEN_FIELD_ID="button";
 
 	/**@return The name of the XML element for the component.*/
 //TODO del	protected String getComponentElementName() {return ELEMENT_BUTTON;}

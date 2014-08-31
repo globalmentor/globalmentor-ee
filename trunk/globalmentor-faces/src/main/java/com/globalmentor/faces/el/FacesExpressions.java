@@ -27,17 +27,17 @@ public class FacesExpressions
 {
 
 	/**The JSF EL '#' character, indicating a reference.*/
-	public final static char REFERENCE_CHAR='#';
+	public static final char REFERENCE_CHAR='#';
 	/**The JSF EL '{' character, indicating the start of a reference expression.*/
-	public final static char REFERENCE_EXPRESSION_BEGIN_CHAR='{';
+	public static final char REFERENCE_EXPRESSION_BEGIN_CHAR='{';
 	/**The JSF EL '}' character, indicating the end of a reference expression.*/
-	public final static char REFERENCE_EXPRESSION_END_CHAR='}';
+	public static final char REFERENCE_EXPRESSION_END_CHAR='}';
 	/**The extended JSF EL '(' character, indicating the start of a group.*/
-	public final static char GROUP_BEGIN_CHAR='(';
+	public static final char GROUP_BEGIN_CHAR='(';
 	/**The extended JSF EL ')' character, indicating the end of a group.*/
-	public final static char GROUP_END_CHAR=')';
+	public static final char GROUP_END_CHAR=')';
 	/**The extended JSF EL ',' character, which separates parameters.*/
-	public final static char PARAMETER_SEPARATOR_CHAR=',';
+	public static final char PARAMETER_SEPARATOR_CHAR=',';
 
 	/**Creates an expression representing either a reference of unknown type or
 		a literal string value if no reference is present.

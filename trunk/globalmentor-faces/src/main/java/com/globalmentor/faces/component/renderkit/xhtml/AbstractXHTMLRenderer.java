@@ -38,7 +38,7 @@ public abstract class AbstractXHTMLRenderer extends Renderer
 {
 
 	/**Default XHTML attributes to pass through when rendering.*/
-	public final static String[] DEFAULT_PASSTHROUGH_ATTRIBUTES=new String[]	//TODO use constants
+	public static final String[] DEFAULT_PASSTHROUGH_ATTRIBUTES=new String[]	//TODO use constants
 			{
         "accept",
         "accesskey",

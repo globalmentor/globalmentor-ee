@@ -60,21 +60,21 @@ public class HTTPServlets {
 	 * The parameter that indicates the destination to which a series of web pages is progressing (e.g. the web page to which the user should be transferred after
 	 * login is complete).
 	 */
-	public final static String DESTINATION_PARAMETER = "destination"; //TODO move this to somewhere appropriate
+	public static final String DESTINATION_PARAMETER = "destination"; //TODO move this to somewhere appropriate
 
 	/** The custom attribute that indicates the exception that has occurred. */
-	public final static String EXCEPTION_ATTRIBUTE = "exception"; //TODO move this to somewhere appropriate
+	public static final String EXCEPTION_ATTRIBUTE = "exception"; //TODO move this to somewhere appropriate
 
 	/** The name of the session tracking cookie (SRV.7.1.1). */
-	public final static String SESSION_ID_COOKIE_NAME = "JSESSIONID";
+	public static final String SESSION_ID_COOKIE_NAME = "JSESSIONID";
 
 	/** The name of the session identifier URL parameter used in URL rewriting (SRV.7.1.3). */
-	public final static String SESSION_ID_URL_PARAMETER = "jsessionid";
+	public static final String SESSION_ID_URL_PARAMETER = "jsessionid";
 
 	/**
 	 * The private, static date format for reading and writing HTTP dates. Access to this object's methods should be synchronized on the object.
 	 */
-	private final static DateFormat HTTP_DATE_FORMAT = new HTTPDateFormat();
+	private static final DateFormat HTTP_DATE_FORMAT = new HTTPDateFormat();
 
 	/**
 	 * Returns the headers indicating the accepted content types.
@@ -546,82 +546,82 @@ public class HTTPServlets {
 	}
 
 	/** The name of the user agent, such as "Mozilla" or "MSIE". */
-	public final static String USER_AGENT_NAME_PROPERTY = "user.agent.name";
+	public static final String USER_AGENT_NAME_PROPERTY = "user.agent.name";
 
 	/** The Firefox user agent name. */
-	public final static String USER_AGENT_NAME_FIREFOX = "Firefox";
+	public static final String USER_AGENT_NAME_FIREFOX = "Firefox";
 	/** The Microsoft Internet Explorer user agent name. */
-	public final static String USER_AGENT_NAME_MSIE = "MSIE";
+	public static final String USER_AGENT_NAME_MSIE = "MSIE";
 	/** The Mozilla user agent name. */
-	public final static String USER_AGENT_NAME_MOZILLA = "Mozilla";
+	public static final String USER_AGENT_NAME_MOZILLA = "Mozilla";
 	/** The Opera user agent name. */
-	public final static String USER_AGENT_NAME_OPERA = "Opera";
+	public static final String USER_AGENT_NAME_OPERA = "Opera";
 	/** The wget user agent name. */
-	public final static String USER_AGENT_NAME_WGET = "Wget";
+	public static final String USER_AGENT_NAME_WGET = "Wget";
 
 	//spiders; see http://en.wikipedia.org/wiki/User-agent
 
 	/** The Alexa user agent name. */
-	public final static String USER_AGENT_NAME_ALEXA = "ia_archiver";
+	public static final String USER_AGENT_NAME_ALEXA = "ia_archiver";
 	/** The Baidu spider user agent name. */
-	public final static String USER_AGENT_NAME_BAIDU_SPIDER = "Baiduspider";
+	public static final String USER_AGENT_NAME_BAIDU_SPIDER = "Baiduspider";
 	/** The Gigabot spider user agent name. */
-	public final static String USER_AGENT_NAME_GIGABOT = "Gigabot";
+	public static final String USER_AGENT_NAME_GIGABOT = "Gigabot";
 	/** The Googlebot spider user agent name. */
-	public final static String USER_AGENT_NAME_GOOGLEBOT = "Googlebot";
+	public static final String USER_AGENT_NAME_GOOGLEBOT = "Googlebot";
 	/** The Googlebot Image spider user agent name. */
-	public final static String USER_AGENT_NAME_GOOGLEBOT_IMAGE = "Googlebot-Image";
+	public static final String USER_AGENT_NAME_GOOGLEBOT_IMAGE = "Googlebot-Image";
 	/**
 	 * The Apache Jakarta JMeter load tester user agent name. Although JMeter by default does not actually use this user agent name, it is included here for
 	 * consistency in custom load-testing.
 	 */
-	public final static String USER_AGENT_NAME_JMETER = "JMeter";
+	public static final String USER_AGENT_NAME_JMETER = "JMeter";
 	/** The MSNbot spider user agent name. */
-	public final static String USER_AGENT_NAME_MSNBOT = "msnbot";
+	public static final String USER_AGENT_NAME_MSNBOT = "msnbot";
 	/** The AltaVista Scooter spider user agent name. */
-	public final static String USER_AGENT_NAME_SCOOTER = "Scooter-3.2.EX";
+	public static final String USER_AGENT_NAME_SCOOTER = "Scooter-3.2.EX";
 	/** The W3C Validator user agent name. */
-	public final static String USER_AGENT_NAME_W3C_VALIDATOR = "W3C_Validator";
+	public static final String USER_AGENT_NAME_W3C_VALIDATOR = "W3C_Validator";
 	/** The Yahoo! MMCrawler spider user agent name. */
-	public final static String USER_AGENT_NAME_YAHOO_MMCRAWLER = "Yahoo!-MMCrawler";
+	public static final String USER_AGENT_NAME_YAHOO_MMCRAWLER = "Yahoo!-MMCrawler";
 
 	/** The read-only set of spiders that do not support sessions. */
-	public final static Set<String> UNSESSIONED_SPIDER_USER_AGENT_NAMES = unmodifiableSet(new HashSet<String>(asList(USER_AGENT_NAME_ALEXA,
+	public static final Set<String> UNSESSIONED_SPIDER_USER_AGENT_NAMES = unmodifiableSet(new HashSet<String>(asList(USER_AGENT_NAME_ALEXA,
 			USER_AGENT_NAME_BAIDU_SPIDER, USER_AGENT_NAME_GIGABOT, USER_AGENT_NAME_GOOGLEBOT, USER_AGENT_NAME_GOOGLEBOT_IMAGE, USER_AGENT_NAME_JMETER,
 			USER_AGENT_NAME_MSNBOT, USER_AGENT_NAME_SCOOTER, USER_AGENT_NAME_W3C_VALIDATOR, USER_AGENT_NAME_YAHOO_MMCRAWLER)));
 
 	/** The Microsoft Internet Explorer 6 Security Version 1 identifier. */
-	public final static String USER_AGENT_MSIE6_SV1 = "SV1";
+	public static final String USER_AGENT_MSIE6_SV1 = "SV1";
 
 	/** The version of the user agent, stored as a string. */
-	public final static String USER_AGENT_VERSION_PROPERTY = "user.agent.version";
+	public static final String USER_AGENT_VERSION_PROPERTY = "user.agent.version";
 
 	/** The version number of the user agent, stored as a {@link Double}. */
-	public final static String USER_AGENT_VERSION_NUMBER_PROPERTY = "user.agent.version.number";
+	public static final String USER_AGENT_VERSION_NUMBER_PROPERTY = "user.agent.version.number";
 
 	/** The version numbers of the user agent, stored as an array of ints (<code>int[]</code>). */
-	public final static String USER_AGENT_VERSION_NUMBERS_PROPERTY = "user.agent.version.numbers";
+	public static final String USER_AGENT_VERSION_NUMBERS_PROPERTY = "user.agent.version.numbers";
 
 	/**
 	 * The pattern for matching a general user agent. The user agent name is the first matching group, and the entire version number is the second matching group.
 	 */
-	private final static Pattern USER_AGENT_PATTERN = Pattern.compile("([\\S&&[^/]]+)(?:/(" + PRODUCT_VERSION_REGEX + "))?");
+	private static final Pattern USER_AGENT_PATTERN = Pattern.compile("([\\S&&[^/]]+)(?:/(" + PRODUCT_VERSION_REGEX + "))?");
 
 	/** The pattern for matching the Firefox user agent. The entire version number is the first matching group. */
-	private final static Pattern FIREFOX_PATTERN = Pattern.compile("Firefox/(" + PRODUCT_VERSION_REGEX + ")");
+	private static final Pattern FIREFOX_PATTERN = Pattern.compile("Firefox/(" + PRODUCT_VERSION_REGEX + ")");
 
 	/**
 	 * The pattern for matching the Opera user agent. The entire version number is the first matching group. This pattern recognizes, for example, both
 	 * "Opera/7.54" and "Opera 7.54".
 	 */
-	private final static Pattern OPERA_PATTERN = Pattern.compile("Opera[/ ](" + PRODUCT_VERSION_REGEX + ")");
+	private static final Pattern OPERA_PATTERN = Pattern.compile("Opera[/ ](" + PRODUCT_VERSION_REGEX + ")");
 
 	/**
 	 * The pattern for matching the MSIE user agent. The entire version number is the first matching group. Microsoft recommended regular expression:
 	 * "MSIE ([0-9]{1,}[\\.0-9]{0,})"
 	 * @see <a href="http://msdn.microsoft.com/workshop/author/dhtml/overview/browserdetection.asp">Detecting Internet Explorer More Effectively</a>
 	 */
-	private final static Pattern MSIE_PATTERN = Pattern.compile("MSIE (" + PRODUCT_VERSION_REGEX + ")");
+	private static final Pattern MSIE_PATTERN = Pattern.compile("MSIE (" + PRODUCT_VERSION_REGEX + ")");
 
 	/**
 	 * Retrieves a map of properties describing user agent information. For known browsers, the user agent string will be parsed with specific knowledge of the

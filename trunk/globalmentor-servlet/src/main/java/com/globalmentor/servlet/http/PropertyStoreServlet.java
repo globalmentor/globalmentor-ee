@@ -69,7 +69,7 @@ import com.globalmentor.util.PropertiesUtilities;
 public class PropertyStoreServlet extends BaseHTTPServlet {
 
 	/** The maximum length for a property value, 1024. This may be configurable in a future version. */
-	public final static int MAX_PROPERTY_VALUE_LENGTH = 1 << 10;
+	public static final int MAX_PROPERTY_VALUE_LENGTH = 1 << 10;
 
 	/** The comma-separated list of supported property names. */
 	public final String PROPERTY_NAMES_INIT_PARAMETER = "propertyNames";

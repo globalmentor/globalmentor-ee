@@ -29,10 +29,10 @@ public class UIBasicCommand extends UICommand
 {
 
 	/**The confirmation message to display before processing the command.*/
-	public final static String CONFIRM_PARAMETER="commandConfirm";
+	public static final String CONFIRM_PARAMETER="commandConfirm";
 	
 	/**The alert message to display after confirmation but before processing the command.*/
-	public final static String ALERT_PARAMETER="commandAlert";
+	public static final String ALERT_PARAMETER="commandAlert";
 	
 	/**The popup URI value binding variable name.*/
 	public static String POPUP_URI_PROPERTY="popupURI";

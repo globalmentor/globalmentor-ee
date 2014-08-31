@@ -50,7 +50,7 @@ public class UIBasicForm extends UIForm
 {
 
 	/**The ID of the hidden field used to hold the button value.*/
-	protected final static String HIDDEN_FIELD_ID="button";
+	protected static final String HIDDEN_FIELD_ID="button";
 
 	/**The map of encode-scope variables and values.*/
 	private final Map<?, ?> encodeMap=new HashMap(); 

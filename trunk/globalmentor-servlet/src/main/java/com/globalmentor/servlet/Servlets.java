@@ -37,43 +37,43 @@ import static com.globalmentor.net.URIs.*;
 public class Servlets {
 
 	/** The name of the servlet "WEB-INF" directory. */
-	public final static String WEB_INF_DIRECTORY_NAME = "WEB-INF";
+	public static final String WEB_INF_DIRECTORY_NAME = "WEB-INF";
 
 	/** The absolute path, relative to the servlet context and ending with a slash, of the WEB-INF directory. */
-	public final static String WEB_INF_DIRECTORY_PATH = ROOT_PATH + WEB_INF_DIRECTORY_NAME + PATH_SEPARATOR;
+	public static final String WEB_INF_DIRECTORY_PATH = ROOT_PATH + WEB_INF_DIRECTORY_NAME + PATH_SEPARATOR;
 
 	/** The init parameter of the data directory. */
-	public final static String DATA_DIRECTORY_INIT_PARAMETER = "dataDirectory";
+	public static final String DATA_DIRECTORY_INIT_PARAMETER = "dataDirectory";
 
 	/** The init parameter of the log directory. */
-	public final static String LOG_DIRECTORY_INIT_PARAMETER = "logDirectory";
+	public static final String LOG_DIRECTORY_INIT_PARAMETER = "logDirectory";
 
 	/** The init parameter of the temp directory. */
-	public final static String TEMP_DIRECTORY_INIT_PARAMETER = "tempDirectory";
+	public static final String TEMP_DIRECTORY_INIT_PARAMETER = "tempDirectory";
 
 	/**
 	 * The custom parameter that can be used to override the locale with a locale string.
 	 * @deprecated
 	 */
-	public final static String LOCALE_PARAMETER = "locale";
+	public static final String LOCALE_PARAMETER = "locale";
 
 	/**
 	 * The custom attribute that can be used to store a specified locale object.
 	 * @deprecated
 	 */
-	public final static String LOCALE_ATTRIBUTE = LOCALE_PARAMETER;
+	public static final String LOCALE_ATTRIBUTE = LOCALE_PARAMETER;
 
 	/**
 	 * The custom cookie that can be used to store a locale with a locale string.
 	 * @deprecated
 	 */
-	public final static String LOCALE_COOKIE = LOCALE_PARAMETER;
+	public static final String LOCALE_COOKIE = LOCALE_PARAMETER;
 
 	/**
 	 * The absolute application context-based base directory for icons.
 	 * @deprecated
 	 */
-	public final static String ICON_DIRECTORY = "/images/icons/";
+	public static final String ICON_DIRECTORY = "/images/icons/";
 
 	/**
 	 * Retrieves the configured init parameter, if any. First an init parameter of the {@link ServletConfig} is searched for, followed by an init parameter of the

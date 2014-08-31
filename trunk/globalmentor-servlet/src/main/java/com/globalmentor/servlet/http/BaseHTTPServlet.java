@@ -67,16 +67,16 @@ public class BaseHTTPServlet extends HttpServlet {
 	 * The init parameter, {@value #DEBUG_INIT_PARAMETER}, used to specify whether the servlet is in debug mode; should be "true" or "false"; sets the log level
 	 * to debug if not explicitly set.
 	 */
-	public final static String DEBUG_INIT_PARAMETER = "debug";
+	public static final String DEBUG_INIT_PARAMETER = "debug";
 
 	/** The init parameter, {@value #LOG_LEVEL_INIT_PARAMETER}, used to specify the level of logging for the JVM of type {@link Log.Level}. */
-	public final static String LOG_LEVEL_INIT_PARAMETER = "logLevel";
+	public static final String LOG_LEVEL_INIT_PARAMETER = "logLevel";
 
 	/** The init parameter, {@value #LOG_HTTP_INIT_PARAMETER}, used to specify whether HTTP communication should be logged; should be "true" or "false". */
-	public final static String LOG_HTTP_INIT_PARAMETER = "logHTTP";
+	public static final String LOG_HTTP_INIT_PARAMETER = "logHTTP";
 
 	/** The init parameter, {@value #PROFILE_INIT_PARAMETER}, used to specify whether profiling should occur; should be "true" or "false". */
-	public final static String PROFILE_INIT_PARAMETER = "profile";
+	public static final String PROFILE_INIT_PARAMETER = "profile";
 
 	/** The cached shared default log file, or <code>null</code> if it has not yet been initialized. */
 	private static File logFile = null;

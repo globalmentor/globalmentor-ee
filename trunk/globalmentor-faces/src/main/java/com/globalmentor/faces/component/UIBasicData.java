@@ -31,7 +31,7 @@ public class UIBasicData extends UIData
 {
 
 	/**The attribute for storing the variable name.*/
-	public final static String VAR_ATTRIBUTE="var";
+	public static final String VAR_ATTRIBUTE="var";
 
 	/**Default constructor.*/
 	public UIBasicData()

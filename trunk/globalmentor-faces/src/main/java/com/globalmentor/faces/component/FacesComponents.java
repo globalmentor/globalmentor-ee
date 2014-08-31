@@ -74,10 +74,10 @@ public class FacesComponents
 	}
 
 	/**The character to replace the first character if needed.*/
-	protected final static char REPLACEMENT_FIRST_CHAR='x';
+	protected static final char REPLACEMENT_FIRST_CHAR='x';
 
 	/**The character to use to replace any other character.*/
-	protected final static char REPLACEMENT_CHAR='_';
+	protected static final char REPLACEMENT_CHAR='_';
 
 	/**Creates a valid ID segmeent by replacing every non-ID character with an underscore
 		('_') character. If the first character of the string cannot begin a valid ID
@@ -225,7 +225,7 @@ public class FacesComponents
 	}
 
 	/**The constant string indicating all names should be retrieved.*/
-	public final static String ALL_NAMES=new String();
+	public static final String ALL_NAMES=new String();
 
 	/**Retrieves the values of all direct <code>UIParameter</code>
 		children.

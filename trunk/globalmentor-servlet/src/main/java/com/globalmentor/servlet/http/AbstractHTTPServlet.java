@@ -59,7 +59,7 @@ import org.xml.sax.SAXException;
 public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPServlet //TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
 
-	protected final static boolean LIST_DIRECTORIES = false; //TODO fix
+	protected static final boolean LIST_DIRECTORIES = false; //TODO fix
 
 	/** Whether access is restricted to read methods. */
 	private boolean readOnly = false;
@@ -83,7 +83,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @see http://purl.org/NET/http-errata#saferedirect
 	 * @see http://httpd.apache.org/docs-2.0/env.html#special
 	 */
-	private final static Pattern[] REDIRECT_UNSUPPORTED_AGENTS = new Pattern[] { Pattern.compile("^gnome-vfs.*"), //Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
+	private static final Pattern[] REDIRECT_UNSUPPORTED_AGENTS = new Pattern[] { Pattern.compile("^gnome-vfs.*"), //Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
 			//TODO del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
 			Pattern.compile("Microsoft Data Access Internet Publishing Provider.*"), //http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 			Pattern.compile("Microsoft-WebDAV-MiniRedir/5\\.1\\.2600.*"), //http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html

@@ -22,7 +22,7 @@ package com.globalmentor.faces.taglib.xhtml;
 public class XHTMLTags
 {
 	/**The style class XHTML attribute.*/
-	public final static String STYLE_CLASS_ATTRIBUTE="styleClass";
+	public static final String STYLE_CLASS_ATTRIBUTE="styleClass";
 	/**The client ID XHTML attribute.*/
-	public final static String CLIENT_ID_ATTRIBUTE="clientId";
+	public static final String CLIENT_ID_ATTRIBUTE="clientId";
 }

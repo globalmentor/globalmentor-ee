@@ -24,39 +24,39 @@ public class Faces
 
 			//common navigation outcomes, some from Mann, <cite>JavaServer Faces in Action</cite>, 130.
 	/**Navigation outcome string indicating the operation completed successfully. Move to the next logical page.*/
-	public final static String SUCCESS_OUTCOME="success";
+	public static final String SUCCESS_OUTCOME="success";
 	/**Navigation outcome string indicating the operation did not complete successfully. Show a page that tells users why and what they can do about it.*/
-	public final static String FAILURE_OUTCOME="failure";
+	public static final String FAILURE_OUTCOME="failure";
 	/**Navigation outcome string indicating there was a system error of some sort. Show a system error page.*/
-	public final static String ERROR_OUTCOME="error";
+	public static final String ERROR_OUTCOME="error";
 	/**The user needs to log in first. Show the login page.*/
-	public final static String LOGIN_OUTCOME="login";
+	public static final String LOGIN_OUTCOME="login";
 	/**Log out of the application. Show the logout page.*/
-	public final static String LOGOUT_OUTCOME="logout";
+	public static final String LOGOUT_OUTCOME="logout";
 	/**Cancel current action and move the logical cancel page.*/
-	public final static String CANCEL_OUTCOME="cancel";
+	public static final String CANCEL_OUTCOME="cancel";
 
 		//component families
-	public final static String DATA_COMPONENT_FAMILY="javax.faces.Data";
+	public static final String DATA_COMPONENT_FAMILY="javax.faces.Data";
 		//render types
-	public final static String BUTTON_RENDER_TYPE="javax.faces.Button";
-	public final static String CHECKBOX_RENDER_TYPE="javax.faces.Checkbox";
-	public final static String FORM_RENDER_TYPE="javax.faces.Form";
-	public final static String FORMAT_RENDER_TYPE="javax.faces.Format";
-	public final static String GRID_RENDER_TYPE="javax.faces.Grid";
-	public final static String GROUP_RENDER_TYPE="javax.faces.Group";
-	public final static String HIDDEN_RENDER_TYPE="javax.faces.Hidden";
-	public final static String IMAGE_RENDER_TYPE="javax.faces.Image";
-	public final static String LABEL_RENDER_TYPE="javax.faces.Label";
-	public final static String LINK_RENDER_TYPE="javax.faces.Link";
-	public final static String LISTBOX_RENDER_TYPE="javax.faces.Listbox";
-	public final static String MENU_RENDER_TYPE="javax.faces.Menu";
-	public final static String MESSAGE_RENDER_TYPE="javax.faces.Message";
-	public final static String MESSAGES_RENDER_TYPE="javax.faces.Messages";
-	public final static String RADIO_RENDER_TYPE="javax.faces.Radio";
-	public final static String SECRET_RENDER_TYPE="javax.faces.Secret";
-	public final static String TABLE_RENDER_TYPE="javax.faces.Table";
-	public final static String TEXT_RENDER_TYPE="javax.faces.Text";
-	public final static String TEXTAREA_RENDER_TYPE="javax.faces.Textarea";
+	public static final String BUTTON_RENDER_TYPE="javax.faces.Button";
+	public static final String CHECKBOX_RENDER_TYPE="javax.faces.Checkbox";
+	public static final String FORM_RENDER_TYPE="javax.faces.Form";
+	public static final String FORMAT_RENDER_TYPE="javax.faces.Format";
+	public static final String GRID_RENDER_TYPE="javax.faces.Grid";
+	public static final String GROUP_RENDER_TYPE="javax.faces.Group";
+	public static final String HIDDEN_RENDER_TYPE="javax.faces.Hidden";
+	public static final String IMAGE_RENDER_TYPE="javax.faces.Image";
+	public static final String LABEL_RENDER_TYPE="javax.faces.Label";
+	public static final String LINK_RENDER_TYPE="javax.faces.Link";
+	public static final String LISTBOX_RENDER_TYPE="javax.faces.Listbox";
+	public static final String MENU_RENDER_TYPE="javax.faces.Menu";
+	public static final String MESSAGE_RENDER_TYPE="javax.faces.Message";
+	public static final String MESSAGES_RENDER_TYPE="javax.faces.Messages";
+	public static final String RADIO_RENDER_TYPE="javax.faces.Radio";
+	public static final String SECRET_RENDER_TYPE="javax.faces.Secret";
+	public static final String TABLE_RENDER_TYPE="javax.faces.Table";
+	public static final String TEXT_RENDER_TYPE="javax.faces.Text";
+	public static final String TEXTAREA_RENDER_TYPE="javax.faces.Textarea";
 
 }

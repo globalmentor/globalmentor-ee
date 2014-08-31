@@ -313,7 +313,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	{
 
 		/** The non-standard "content/unknown" string returned by {@link URLConnection} when the content is unknown. */
-		private final static String CONTENT_UNKNOWN_CONTENT_TYPE_STRING = ContentType.toString(ContentType.CONTENT_PRIMARY_TYPE, ContentType.UNKNOWN_SUBTYPE);
+		private static final String CONTENT_UNKNOWN_CONTENT_TYPE_STRING = ContentType.toString(ContentType.CONTENT_PRIMARY_TYPE, ContentType.UNKNOWN_SUBTYPE);
 
 		/** The URL of the resource. */
 		private final URL url;
