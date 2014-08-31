@@ -79,7 +79,7 @@ public class DeclareXMLTag extends TagSupport {
 		} else { //if there is no content type string
 			final String publicID = getPublicID(); //get the public ID
 			if(publicID != null) { //if there is a document type public ID
-				mediaType = XML.getContentType(publicID); //get the content type for this doctype public ID
+				mediaType = XML.getContentTypeForPublicID(publicID); //get the content type for this doctype public ID
 			}
 			if(mediaType == null) { //if we still couldn't find a content type
 				mediaType = CONTENT_TYPE; //use the generic "text/xml" content type
