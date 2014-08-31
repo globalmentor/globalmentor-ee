@@ -191,7 +191,7 @@ public class DeclareXMLTag extends TagSupport {
 			writer.write(DOUBLE_QUOTE_CHAR); //"
 			//TODO implement the encoding declaration			writer.write(SPACE_CHAR);	//TODO make the last space conditional
 			//TODO implement the encoding declaration			ENCODINGDECL_NAME+EQUAL_CHAR+DOUBLE_QUOTE_CHAR+encoding+DOUBLE_QUOTE_CHAR+
-			//G***fix standalone writing here
+			//TODO fix standalone writing here
 			writer.write(XML_DECL_END); //?>
 			writer.newLine();
 			//write the document type declaration
