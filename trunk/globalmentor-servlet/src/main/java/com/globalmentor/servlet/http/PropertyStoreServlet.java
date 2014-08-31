@@ -16,11 +16,11 @@
 
 package com.globalmentor.servlet.http;
 
-import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Conditions.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.TextFormatter.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.util.Collections.*;
 
 import java.io.*;
@@ -146,18 +146,18 @@ public class PropertyStoreServlet extends BaseHTTPServlet {
 			//see what content type is accepted by the client
 			if(isAcceptedContentType(request, JSON.CONTENT_TYPE)) { //JSON
 				response.setContentType(JSON.CONTENT_TYPE.toString()); //use JSON
-				response.setCharacterEncoding(UTF_8_CHARSET.name()); //encode in UTF-8
+				response.setCharacterEncoding(UTF_8.name()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
 				JSON.appendValue(writer, propertyMap); //append the property map to the output
 			} else if(isAcceptedContentType(request, XML.CONTENT_TYPE)) { //XML
 				response.setContentType(XML.CONTENT_TYPE.toString()); //use JSON
-				response.setCharacterEncoding(UTF_8_CHARSET.name()); //encode in UTF-8
+				response.setCharacterEncoding(UTF_8.name()); //encode in UTF-8
 				final OutputStream outputStream = response.getOutputStream(); //get an output stream to return the response
 				final Properties properties = PropertiesUtilities.toProperties(propertyMap); //convert the map to a properties object
-				properties.storeToXML(outputStream, null, UTF_8_CHARSET.name());
+				properties.storeToXML(outputStream, null, UTF_8.name());
 			} else { //plain text (default)
 				response.setContentType(Text.PLAIN_CONTENT_TYPE.toString()); //use text/plain
-				response.setCharacterEncoding(UTF_8_CHARSET.toString()); //encode in UTF-8
+				response.setCharacterEncoding(UTF_8.toString()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
 				for(final Map.Entry<String, String> propertyEntry : propertyMap.entrySet()) {
 					writer.append(propertyEntry.getKey()).append(EQUALS_SIGN_CHAR).append(propertyEntry.getValue()).append(CARRIAGE_RETURN_CHAR).append(LINE_FEED_CHAR); //property=valueCRLF

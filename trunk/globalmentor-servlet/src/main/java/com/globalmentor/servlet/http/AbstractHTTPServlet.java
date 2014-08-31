@@ -26,7 +26,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.xml.parsers.DocumentBuilder;
 
-import static com.globalmentor.io.Charsets.*;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
@@ -36,6 +35,7 @@ import static com.globalmentor.net.http.HTTP.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.Text.*;
+import static java.nio.charset.StandardCharsets.*;
 
 import com.globalmentor.collections.Collections;
 import com.globalmentor.io.*;
@@ -606,11 +606,11 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	protected void setXML(final HttpServletRequest request, final HttpServletResponse response, final Document document) throws IOException {
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); //create a byte array output stream to hold our outgoing data
 		try {
-			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET); //serialize the document to the byte array with no byte order mark
+			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8); //serialize the document to the byte array with no byte order mark
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER,
-					UTF_8_NAME)));
+			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE,
+					new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8.name())));
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
