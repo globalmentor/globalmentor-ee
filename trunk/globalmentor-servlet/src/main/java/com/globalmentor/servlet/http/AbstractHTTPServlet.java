@@ -35,7 +35,6 @@ import static com.globalmentor.net.URIs.*;
 import static com.globalmentor.net.http.HTTP.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
-import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
 import com.globalmentor.collections.Collections;
@@ -186,7 +185,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			try {
 				outputStream = createResource(request, resourceURI); //create a new resource
 			} catch(final IllegalArgumentException illegalArgumentException) { //if this is an invalid resource URI
-			//			TODO del Log.warn(illegalArgumentException);
+				//			TODO del Log.warn(illegalArgumentException);
 				throw new HTTPForbiddenException(illegalArgumentException); //forbid creation of resources with invalid URIs
 			}
 		}
@@ -315,7 +314,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
 		//	TODO del Log.trace("serving resource", resourceURI);
 		if(exists(request, resourceURI)) { //if this resource exists
-		//TODO del Log.trace("resource exists", resourceURI);
+			//TODO del Log.trace("resource exists", resourceURI);
 			//TODO check if headers
 			final R resource = getResource(request, resourceURI); //get a resource description
 			serveResource(request, response, resource, serveContent); //serve the resource
@@ -336,7 +335,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final R resource, final boolean serveContent)
 			throws ServletException, IOException {
 		if(isCollection(request, resource.getURI())) { //if the resource is a collection
-		//TODO del Log.trace("is collection", resourceURI);
+			//TODO del Log.trace("is collection", resourceURI);
 			if(LIST_DIRECTORIES) { //if we should list directories
 				final Writer writer = response.getWriter();
 				response.setContentType("text/plain");
@@ -358,7 +357,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			//TODO del Log.trace("is not a collection; ready to send back file", resourceURI);
 			final Date lastModifiedDate = getLastModifiedDate(request, resource); //get the last modified date of the resource
 			if(lastModifiedDate != null) { //if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
-			//TODO del Log.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
+				//TODO del Log.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
 				final Date roundedLastModifiedDate = new Date((lastModifiedDate.getTime() / 1000) * 1000); //round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
 				try {
 					final Date ifModifiedSinceDate = getIfModifiedSinceDate(request); //get the If-Modified-Since date
@@ -370,7 +369,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 						}
 					*/
 					if(ifModifiedSinceDate != null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate) <= 0) { //if there is an If-Modified-Since date and the resource was not modified since that date
-					//TODO del Log.trace("Not modified---use the value in the cache!");
+						//TODO del Log.trace("Not modified---use the value in the cache!");
 						throw new HTTPNotModifiedException(); //stop serving content and indicate that the resource has not been modified
 					}
 					//TODO add support for If-Unmodified-Since
@@ -381,14 +380,14 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			//    	TODO del Log.trace("ready to send back a file");
 			final ContentType contentType = getContentType(request, resource); //get the content type of the resource
 			if(contentType != null) { //if we know the content type
-			//      	TODO del Log.trace("setting content type to:", contentType);
-			//TODO del Log.trace("setting content type to:", contentType);	//TODO del
+				//      	TODO del Log.trace("setting content type to:", contentType);
+				//TODO del Log.trace("setting content type to:", contentType);	//TODO del
 				response.setContentType(contentType.toString()); //tell the response which content type we're serving
 			}
 			if(HEAD_METHOD.equals(request.getMethod())) { //if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
 				final long contentLength = getContentLength(request, resource); //get the content length of the resource
 				if(contentLength >= 0) { //if we found a content length for the resource
-				//      	TODO del Log.trace("setting content length to:", contentLength);
+					//      	TODO del Log.trace("setting content length to:", contentLength);
 					assert contentLength < Integer.MAX_VALUE : "Resource size " + contentLength + " is too large.";
 					response.setContentLength((int)contentLength); //tell the response the size of the resource      		
 				}
@@ -400,10 +399,10 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				//TODO fix ranges
 				final OutputStream outputStream; //we'll determine the output stream
 				if(contentType != null && isText(contentType)) { //if this is a text content type TODO later add other content types, if they can be compressed
-				//TODO del      			Log.trace("compressing content type:", contentType);
+					//TODO del      			Log.trace("compressing content type:", contentType);
 					outputStream = getCompressedOutputStream(request, response); //get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
 				} else { //if we don't know the content type, or it isn't text
-				//TODO del      			Log.trace("not compressing content type:", contentType);
+					//TODO del      			Log.trace("not compressing content type:", contentType);
 					outputStream = response.getOutputStream(); //get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
 				}
 				final InputStream inputStream = new BufferedInputStream(getInputStream(request, resource)); //get an input stream to the resource
@@ -610,8 +609,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8_CHARSET); //serialize the document to the byte array with no byte order mark
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
-			response
-					.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8)));
+			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER,
+					UTF_8_NAME)));
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
@@ -647,7 +646,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				allowedMethods.add(PUT_METHOD); //allow saving a resource to this location  			
 			}
 		} else { //if the resource does not exist
-		//  	TODO implement  		methodSet.add(LOCK);
+			//  	TODO implement  		methodSet.add(LOCK);
 			allowedMethods.add(PUT_METHOD);
 		}
 		//	TODO implement  		methodSet.add(TRACE);
