@@ -30,7 +30,7 @@ import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
 import com.globalmentor.net.http.webdav.*;
 
-import static com.globalmentor.net.http.HTTP.*;
+import static com.globalmentor.net.HTTP.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 

@@ -31,7 +31,7 @@ import javax.servlet.http.*;
 
 import com.globalmentor.collections.*;
 import com.globalmentor.javascript.JSON;
-import com.globalmentor.net.http.HTTP;
+import com.globalmentor.net.HTTP;
 import com.globalmentor.text.Text;
 import com.globalmentor.text.xml.XML;
 import com.globalmentor.util.PropertiesUtilities;
