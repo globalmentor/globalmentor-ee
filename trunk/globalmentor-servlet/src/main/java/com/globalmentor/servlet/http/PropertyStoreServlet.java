@@ -33,8 +33,8 @@ import com.globalmentor.collections.*;
 import com.globalmentor.javascript.JSON;
 import com.globalmentor.net.HTTP;
 import com.globalmentor.text.Text;
-import com.globalmentor.text.xml.XML;
 import com.globalmentor.util.PropertiesUtilities;
+import com.globalmentor.w3c.spec.XML;
 
 /**
  * A servlet that acts as a property/value storage.

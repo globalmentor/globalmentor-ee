@@ -29,6 +29,7 @@ import static com.globalmentor.java.Characters.SPACE_CHAR;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 import static com.globalmentor.text.xml.XML.*;
 import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.XML.*;
 
 /**
  * A tag for declaring a JSP to be XML.
