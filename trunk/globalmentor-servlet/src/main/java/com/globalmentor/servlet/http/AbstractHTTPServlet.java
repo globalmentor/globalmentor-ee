@@ -44,7 +44,7 @@ import com.globalmentor.log.Log;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.*;
 import com.globalmentor.text.SyntaxException;
-import com.globalmentor.text.xml.XMLSerializer;
+import com.globalmentor.xml.XMLSerializer;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

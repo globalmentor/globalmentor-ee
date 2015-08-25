@@ -35,7 +35,7 @@ import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 
 import com.globalmentor.servlet.http.AbstractHTTPServlet;
-import com.globalmentor.text.xml.XML;
+import com.globalmentor.xml.XML;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
