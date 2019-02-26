@@ -24,7 +24,7 @@ import javax.faces.context.*;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
 import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element.
 @author Garret Wilson

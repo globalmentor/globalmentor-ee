@@ -16,7 +16,7 @@
 
 package com.globalmentor.faces.component.renderkit.xhtml;
 
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>text</code>.
 @author Garret Wilson

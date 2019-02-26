@@ -20,7 +20,7 @@ import javax.faces.component.*;
 
 import static com.globalmentor.faces.Faces.*;
 import static com.globalmentor.faces.component.FacesComponents.*;
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**A tag representing a form component.
 @author Garret Wilson

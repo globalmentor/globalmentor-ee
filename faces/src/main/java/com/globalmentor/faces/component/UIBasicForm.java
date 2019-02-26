@@ -19,7 +19,6 @@ package com.globalmentor.faces.component;
 import java.io.*;
 import java.util.*;
 
-import javax.activation.MimeTypeParseException;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIForm;
 import javax.faces.context.FacesContext;
@@ -29,12 +28,14 @@ import javax.servlet.http.HttpServletRequest;
 import com.globalmentor.faces.context.RequestParametersFacesContextDecorator;
 import com.globalmentor.io.*;
 import com.globalmentor.log.Log;
-import com.globalmentor.text.xml.xhtml.XHTML;
+import com.globalmentor.net.ContentType;
+import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.util.*;
+import com.globalmentor.w3c.spec.HTML;
 
 import org.apache.commons.fileupload.*;
 
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**Basic form component with enhanced functionality to process multipart form
 	submissions.
@@ -125,7 +126,7 @@ public class UIBasicForm extends UIForm
 		final String enctype=(String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE);	//get the enctype
 		try
 		{
-			if(enctype!=null && XHTML.MULTIPART_FORM_DATA_CONTENT_TYPE.match(enctype)) {	//if our form was multipart-encoded, see if this is a multipart submission
+			if(enctype != null && HTML.MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.create(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
 				if(context.getExternalContext().getRequest() instanceof HttpServletRequest) {	//if this is an HTTP request
 					final HttpServletRequest request=(HttpServletRequest)context.getExternalContext().getRequest();	//get the HTTP request
 					if(FileUpload.isMultipartContent(request)) {	//if this is multipart content			
@@ -192,7 +193,7 @@ public class UIBasicForm extends UIForm
 				}
 			}
 		}
-		catch(final MimeTypeParseException mimeTypeParseException)
+		catch(final ArgumentSyntaxException mimeTypeParseException)
 		{
 			Log.warn(mimeTypeParseException);	//just warn about the incorrect MIME type format
 		}

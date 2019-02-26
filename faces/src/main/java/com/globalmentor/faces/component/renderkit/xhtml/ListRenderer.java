@@ -20,7 +20,7 @@ import javax.faces.component.*;
 
 import com.globalmentor.faces.component.UIList;
 
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**The default renderer for an XHTML ordered list
 @author Garret Wilson

@@ -24,7 +24,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.convert.ConverterException;
 
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**Renders a <code>UIInput</code> as an XHTML input element of type <code>checkbox</code>.
 @author Garret Wilson

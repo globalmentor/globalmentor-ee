@@ -16,7 +16,10 @@
 
 package com.globalmentor.faces.component;
 
+import static java.nio.charset.StandardCharsets.*;
+
 import java.io.*;
+import java.nio.charset.Charset;
 
 import javax.faces.component.*;
 import javax.faces.context.*;
@@ -33,7 +36,6 @@ import com.globalmentor.text.ArgumentSyntaxException;
 import org.apache.commons.fileupload.*;
 
 import static com.globalmentor.io.Files.*;
-import static com.globalmentor.text.CharacterEncoding.*;
 import static com.globalmentor.text.Text.*;
 
 /**Input component for uploading files.
@@ -155,11 +157,11 @@ Log.error(exception);
 				try
 				{
 					final byte[] bytes=fileItem.get();	//get the bytes of the file
-					final ContentType contentType=ContentType.getInstance(fileItem.getContentType());	//get the content type of the file
+					final ContentType contentType = ContentType.create(fileItem.getContentType()); //get the content type of the file
 //TODO del Log.trace("uploaded file content type", contentType);
 					if(isText(contentType)) {	//if this is a text file
 //TODO del Log.trace("is text type");
-						final String encoding=UTF_8;	//TODO get the encoding from the file if we can; look at the content type, test a text file, and look into an XML file
+						final Charset encoding = UTF_8; //TODO get the encoding from the file if we can; look at the content type, test a text file, and look into an XML file
 						final String string=new String(bytes, encoding);	//convert the bytes to a string using the correct encoding
 						return string;	//return the string representation of the file contents
 					}
@@ -169,9 +171,6 @@ Log.error(exception);
 				}
 				catch(final ArgumentSyntaxException argumentSyntaxException) {	//if there is a problem parsing the content type
 					throw new ConverterException(argumentSyntaxException);
-				}
-				catch(final UnsupportedEncodingException unsupportedEncodingException) {	//if we don't recognize the file encoding
-					throw new ConverterException(unsupportedEncodingException);
 				}
 			}
 			convertedValue=null;	//if we process the file item, we'll always return nothing by default unless we decided to return the contents of the file

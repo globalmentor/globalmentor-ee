@@ -25,7 +25,7 @@ import javax.faces.context.ResponseWriter;
 import com.globalmentor.faces.component.UIColumnFacet;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
-import static com.globalmentor.text.xml.xhtml.XHTML.*;
+import static com.globalmentor.w3c.spec.HTML.*;
 
 /**The renderer for an XHTML table based upon a <code>UIData</code> component.
 @author Garret Wilson

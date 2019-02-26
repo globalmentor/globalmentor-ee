@@ -122,7 +122,9 @@ Log.trace("parameter expression type: ", parameterExpressions[i].getType(context
 		final List<Expression<?>> parameterExpressionList=new ArrayList<Expression<?>>();	//create a new list for the parameter expressions
 		final Reader paramsReader=new StringReader(params);	//create a reader for our parameters
 			//tokenize the parameters by commas, grouping by reference groups and quotes
-		final ReaderTokenizer tokenizer=new ReaderTokenizer(paramsReader, TRIM_CHARS+PARAMETER_SEPARATOR_CHAR, String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR, String.valueOf(REFERENCE_EXPRESSION_END_CHAR)+QUOTATION_MARK_CHAR+APOSTROPHE_CHAR);
+		final ReaderTokenizer tokenizer = new ReaderTokenizer(paramsReader, TRIM_CHARACTERS.add(PARAMETER_SEPARATOR_CHAR),
+				String.valueOf(REFERENCE_EXPRESSION_BEGIN_CHAR) + QUOTATION_MARK_CHAR + APOSTROPHE_CHAR,
+				String.valueOf(REFERENCE_EXPRESSION_END_CHAR) + QUOTATION_MARK_CHAR + APOSTROPHE_CHAR);
 		while(tokenizer.hasNext()) {	//if there are more tokens
 			final String param=tokenizer.next();	//get the next parameter
 			final int length=param.length();	//get the length of the parameter
