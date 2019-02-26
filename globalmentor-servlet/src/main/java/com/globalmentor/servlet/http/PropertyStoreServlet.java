@@ -50,13 +50,12 @@ import com.globalmentor.w3c.spec.XML;
  * comma-separate value. If an unsupported property name is sent, {@value HTTP#SC_BAD_REQUEST} is returned. The most recent values are then returned in the body
  * of the response, according to the accepted content type of the client. Supported content types are:
  * </p>
- * </p>
  * <dl>
- * <dt>{@value Text#PLAIN_CONTENT_TYPE}</dt>
+ * <dt>{@link Text#PLAIN_CONTENT_TYPE}</dt>
  * <dd>(default) Returns the properties in line-separated <code><var>property</var>=<var>value</var>CRLF</code> format using the UTF-8 charset.</dd>
- * <dt>{@value JSON#CONTENT_TYPE}</dt>
+ * <dt>{@link JSON#CONTENT_TYPE}</dt>
  * <dd>Returns the properties in JSON using the UTF-8 charset.</dd>
- * <dt>{@value XML#CONTENT_TYPE}</dt>
+ * <dt>{@link XML#CONTENT_TYPE}</dt>
  * <dd>Returns the properties in Java {@link Properties} XML format using the UTF-8 charset.</dd>
  * </dl>
  * 

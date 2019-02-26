@@ -34,6 +34,7 @@ import com.globalmentor.model.Locales;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.net.HTTP;
 import com.globalmentor.net.http.*;
+import com.globalmentor.net.http.webdav.WebDAV;
 import com.globalmentor.net.mime.*;
 import com.globalmentor.servlet.Servlets;
 import com.globalmentor.text.ArgumentSyntaxException;
@@ -345,6 +346,7 @@ public class HTTPServlets {
 
 	/**
 	 * Sets the locale by storing it in the session and saving it as a cookie so that it will persist past the current session.
+	 * @param locale The locale to be set.
 	 * @param request The HTTP request object from which to retrieve the current session.
 	 * @param response The HTTP response.
 	 * @see Servlets#LOCALE_ATTRIBUTE
@@ -389,7 +391,7 @@ public class HTTPServlets {
 	 * Returns the header indicating the referring location.
 	 * @param request The HTTP request object.
 	 * @return The "referer" header, or <code>null</code> if there is no such header.
-	 * @see HttpServletConstants#REFERER_HEADER
+	 * @see HTTP#REFERER_HEADER
 	 */
 	public static String getReferer(final HttpServletRequest request) {
 		return request.getHeader(REFERER_HEADER); //return the referring location header
@@ -400,7 +402,7 @@ public class HTTPServlets {
 	 * @param request The HTTP request object.
 	 * @return The "referer" header, or <code>null</code> if there is no such header.
 	 * @throws IllegalArgumentException if the value of the referrer is not a valid URI.
-	 * @see HttpServletConstants#REFERER_HEADER
+	 * @see HTTP#REFERER_HEADER
 	 */
 	public static URI getRefererURI(final HttpServletRequest request) {
 		final String referrer = getReferer(request); //get the referrer string
@@ -463,7 +465,7 @@ public class HTTPServlets {
 	 * <li>The destination parameter is used, if available.</li>
 	 * <li>The referring location is used as the destination, if available.</li>
 	 * <li>The default destination is used, if provided.</li>
-	 * <ol>
+	 * </ol>
 	 * @param request The HTTP request object.
 	 * @param defaultDestination The destination to use by default, or <code>null</code> if there should be no default.
 	 * @return The appriate destination, or <code>null</code> if the destination could not be determined.
@@ -540,7 +542,7 @@ public class HTTPServlets {
 	 * Returns the headers indicating the user agent.
 	 * @param request The HTTP request object.
 	 * @return An enumeration of "UserAgent" headers.
-	 * @see HttpServletConstants#ACCEPT_HEADER
+	 * @see HTTP#ACCEPT_HEADER
 	 */
 	public static String getUserAgent(final HttpServletRequest request) { //TODO change to enumeration---or concatenate all user agents
 		return request.getHeader(USER_AGENT_HEADER); //return the user agent
@@ -781,7 +783,7 @@ public class HTTPServlets {
 	/**
 	 * Sets the appropriate response headers to prevent the user agent from caching the response content. This method sends appropriate headers based upon the
 	 * browser type.
-	 * @param response The HTTP request.
+	 * @param request The HTTP request.
 	 * @param response The HTTP response.
 	 * @see HTTP#PRAGMA_HEADER
 	 * @see HTTP#CACHE_CONTROL_HEADER
@@ -863,7 +865,7 @@ public class HTTPServlets {
 	 * <ol>
 	 * <li>The destination parameter is used, if available.</li>
 	 * <li>The root path ("/") is used.</li>
-	 * <ol>
+	 * </ol>
 	 * @param request The HTTP request.
 	 * @param response The HTTP response.
 	 * @see #getDestinationParameter(HttpServletRequest)
@@ -882,7 +884,7 @@ public class HTTPServlets {
 	 * <li>The destination parameter is used, if available.</li>
 	 * <li>The default destination is used, if provided.</li>
 	 * <li>The root path ("/") is used.</li>
-	 * <ol>
+	 * </ol>
 	 * @param request The HTTP request.
 	 * @param response The HTTP response.
 	 * @param defaultDestination The destination to use by default, or <code>null</code> if there should be no default.
@@ -947,6 +949,7 @@ public class HTTPServlets {
 	 *      from a Web Server That Uses HTTP Compression</a>
 	 * @see <a href="http://blogs.msdn.com/ie/archive/2004/09/02/224902.aspx">XPSP2 and its slightly updated user agent string</a>
 	 * @see <a href="http://www-128.ibm.com/developerworks/web/library/wa-httpcomp/">Speed Web delivery with HTTP compression</a>
+	 * @return The compressed output stream to the HTTP response.
 	 */
 	public static OutputStream getCompressedOutputStream(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 		OutputStream outputStream = response.getOutputStream(); //default to the response's normal output stream

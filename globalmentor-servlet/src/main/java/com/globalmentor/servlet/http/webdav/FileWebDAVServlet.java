@@ -51,7 +51,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	 * @param resourceURI The URI of the requested resource.
 	 * @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	 * @throws IOException if there is an error accessing the resource.
-	 * @see #exists(URI)
+	 * @see #exists(HttpServletRequest, URI)
 	 */
 	protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException {
 		return getResource(resourceURI).getFile().isDirectory(); //return whether the file is a directory
@@ -116,14 +116,14 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 
 	/**
 	 * Creates a resource and returns an output stream for storing content. If the resource already exists, it will be replaced. For collections,
-	 * {@link #createCollection(URI)} should be used instead.
+	 * {@link #createCollection(HttpServletRequest, URI)} should be used instead.
 	 * @param request The HTTP request in response to which a resource is being created.
 	 * @param resourceURI The URI of the resource to create.
 	 * @return An output stream for storing content in the resource.
 	 * @throws IllegalArgumentException if the given resource URI does not represent a valid resource.
 	 * @throws IOException Thrown if there is an error creating the resource.
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	 * @see #createCollection(URI)
+	 * @see #createCollection(HttpServletRequest, URI)
 	 */
 	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
 			HTTPConflictException {
@@ -144,7 +144,7 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	 * @throws IllegalArgumentException if the given resource URI does not represent a valid resource.
 	 * @throws IOException Thrown if there is an error creating the resource.
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	 * @see #createResource(URI)
+	 * @see #createCollection(HttpServletRequest, URI)
 	 */
 	protected FileResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
 			HTTPConflictException {

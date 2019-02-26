@@ -26,11 +26,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.urframework.*;
 import org.urframework.content.Content;
 
-import static com.globalmentor.java.Objects.*;
-
 import com.globalmentor.iso.datetime.ISODateTime;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.HTTPConflictException;
+
+import static java.util.Objects.*;
 
 /**
  * The default implementation of an HTTP servlet that accesses files in the web application. This servlet may access files within a War file because it uses
@@ -67,7 +67,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	 * @param resourceURI The URI of the requested resource.
 	 * @return <code>true</code> if the resource is a collection, else <code>false</code>.
 	 * @throws IOException if there is an error accessing the resource.
-	 * @see #exists(URI)
+	 * @see #exists(HttpServletRequest, URI)
 	 */
 	protected boolean isCollection(final HttpServletRequest request, final URI resourceURI) throws IOException {
 		final String resourceContextAbsolutePath = getResourceContextAbsolutePath(resourceURI.getPath()); //get the absolute path relative to the context
@@ -150,14 +150,14 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 
 	/**
 	 * Creates a resource and returns an output stream for storing content. If the resource already exists, it will be replaced. For collections,
-	 * {@link #createCollection(URI)} should be used instead.
+	 * {@link #createCollection(HttpServletRequest, URI)} should be used instead.
 	 * @param request The HTTP request in response to which a resource is being created.
 	 * @param resourceURI The URI of the resource to create.
 	 * @return An output stream for storing content in the resource.
 	 * @throws IllegalArgumentException if the given resource URI does not represent a valid resource.
 	 * @throws IOException Thrown if there is an error creating the resource.
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	 * @see #createCollection(URI)
+	 * @see #createCollection(HttpServletRequest, URI)
 	 */
 	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
 			HTTPConflictException {
@@ -172,7 +172,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	 * @throws IllegalArgumentException if the given resource URI does not represent a valid resource.
 	 * @throws IOException Thrown if there is an error creating the resource.
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
-	 * @see #createResource(URI)
+	 * @see #createResource(HttpServletRequest, URI)
 	 */
 	protected HTTPServletResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
 			HTTPConflictException {
@@ -244,9 +244,9 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	/**
 	 * A resource that has retrieves its properties, if possible, from a given RDF description. Recognized properties are:
 	 * <ul>
-	 * <li>{@value Content#TYPE_PROPERTY_URI} TODO implement</li>
-	 * <li>{@value Content#LENGTH_PROPERTY_URI}</li>
-	 * <li>{@value Content#MODIFIED_PROPERTY_URI}</li>
+	 * <li>{@link Content#TYPE_PROPERTY_URI} TODO implement</li>
+	 * <li>{@link Content#LENGTH_PROPERTY_URI}</li>
+	 * <li>{@link Content#MODIFIED_PROPERTY_URI}</li>
 	 * </ul>
 	 * @author Garret Wilson
 	 */
@@ -299,8 +299,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @throws NullPointerException if the reference URI and/or resource description is <code>null</code>.
 		 */
 		public AbstractDescriptionResource(final URI referenceURI, final URFResource resourceDescription) {
-			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null.")); //construct the parent class
-			this.resourceDescription = checkInstance(resourceDescription, "Resource description cannot be null."); //save the description
+			super(requireNonNull(referenceURI, "HTTP resource reference URI cannot be null.")); //construct the parent class
+			this.resourceDescription = requireNonNull(resourceDescription, "Resource description cannot be null."); //save the description
 		}
 
 	}
@@ -394,8 +394,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @throws NullPointerException if the reference URI and/or URL <code>null</code>.
 		 */
 		public AbstractURLHTTPServletResource(final URI referenceURI, final URL resourceURL) {
-			super(checkInstance(referenceURI, "HTTP resource reference URI cannot be null.")); //construct the parent class
-			this.url = checkInstance(resourceURL, "HTTP resource URL cannot be null.");
+			super(requireNonNull(referenceURI, "HTTP resource reference URI cannot be null.")); //construct the parent class
+			this.url = requireNonNull(resourceURL, "HTTP resource URL cannot be null.");
 		}
 	}
 
@@ -511,7 +511,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @throws IllegalArgumentException if the given resource is <code>null</code>.
 		 */
 		public AbstractByteCacheDecoratorResource(final HTTPServletResource resource) {
-			super(checkInstance(resource, "Resource cannot be null.").getURI()); //construct the parent class
+			super(requireNonNull(resource, "Resource cannot be null.").getURI()); //construct the parent class
 			this.resource = resource; //save the decorated resource
 		}
 	}

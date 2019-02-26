@@ -99,7 +99,7 @@ public class Servlets {
 	 * @return The configured Boolean init parameter, either from the servlet config or the servlet context, or <code>null</code> if the indicated init param was
 	 *         not found.
 	 * @throws NullPointerException if the given servlet config and/or name is <code>null</code>.
-	 * @throws IllegalArgumentException if the stored value is not {@value Boolean#TRUE} or {@value Boolean#FALSE}.
+	 * @throws IllegalArgumentException if the stored value is not {@link Boolean#TRUE} or {@link Boolean#FALSE}.
 	 * @see #getStringInitParameter(ServletConfig, String)
 	 */
 	public static Boolean getBooleanInitParameter(final ServletConfig servletConfig, final String name) {

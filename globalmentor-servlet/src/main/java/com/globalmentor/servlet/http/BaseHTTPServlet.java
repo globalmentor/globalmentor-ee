@@ -34,6 +34,7 @@ import com.globalmentor.management.profile.StackProbeOperation;
 import com.globalmentor.net.http.*;
 
 import com.globalmentor.security.*;
+import com.globalmentor.servlet.Servlets;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
 
@@ -48,7 +49,7 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
 /**
  * An HTTP servlet with extended functionality. This servlet supports the following initialization parameters:
  * <dl>
- * <dt>{@value Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt>
+ * <dt>{@link Servlets#LOG_DIRECTORY_INIT_PARAMETER}</dt>
  * <dd>The directory for storing logs.</dd>
  * <dt>{@value #DEBUG_INIT_PARAMETER}</dt>
  * <dd>Whether the servlet is in debug mode; should be "true" or "false"; sets the log level to debug if not explicitly set.</dd>
@@ -89,7 +90,7 @@ public class BaseHTTPServlet extends HttpServlet {
 	 *           could not be determined.
 	 * @see Servlets#getLogDirectory(ServletContext)
 	 */
-	protected static File getLogFile(final ServletContext context) {
+	protected static File getLogFile(final ServletContext context) throws ServletException {
 		if(logFile == null) { //if no log file has been determined (there is a benign race condition here)
 			final DateFormat logFilenameDateFormat = new W3CDateFormat(W3CDateFormat.Style.DATE); //create a formatter for the log filename
 			final String logFilename = addExtension("servlet-" + logFilenameDateFormat.format(new Date()), Log.NAME_EXTENSION); //create a filename in the form "servlet-YYYY-MM-DD.log"
@@ -313,7 +314,7 @@ public class BaseHTTPServlet extends HttpServlet {
 	 * @throws ServletException if there is a problem servicing the request.
 	 * @throws IOException if there is an error reading or writing data.
 	 * @see #checkAuthorization(HttpServletRequest)
-	 * @see #doMethod()
+	 * @see #doMethod(String, HttpServletRequest, HttpServletResponse)
 	 */
 	protected final void service(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		/*TODO del
