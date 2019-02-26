@@ -21,39 +21,45 @@ import javax.faces.component.*;
 import static com.globalmentor.faces.component.FacesComponentConstants.*;
 import static com.globalmentor.faces.component.FacesComponents.*;
 
-/**An abstract base class for output component and renderer tags.
-@author Garret Wilson
-*/
-public abstract class AbstractOutputTag extends AbstractXHTMLTag
-{
+/**
+ * An abstract base class for output component and renderer tags.
+ * @author Garret Wilson
+ */
+public abstract class AbstractOutputTag extends AbstractXHTMLTag {
 
-	/**@return The type of the component to use for this tag.*/
-	public String getComponentType() {return UIOutput.COMPONENT_TYPE;}
+	/** @return The type of the component to use for this tag. */
+	public String getComponentType() {
+		return UIOutput.COMPONENT_TYPE;
+	}
 
-	/**The value of the component.*/
+	/** The value of the component. */
 	private String value;
 
-		/**@return The value of the component.*/
-		public String getValue() {return value;}
+	/** @return The value of the component. */
+	public String getValue() {
+		return value;
+	}
 
-		/**Sets the value of the component.
-		@param value The value of the component.
-		*/
-		public void setValue(final String value) {this.value=value;}
+	/**
+	 * Sets the value of the component.
+	 * @param value The value of the component.
+	 */
+	public void setValue(final String value) {
+		this.value = value;
+	}
 
-	/**Sets the component properties from the tag's attributes.
-	@param component The component the properties of which should be set.
-	*/
-	protected void setProperties(final UIComponent component)
-	{
-		super.setProperties(component);	//set the default properties
-		setStringValue(component, VALUE_ATTRIBUTE, getValue());	//set the value
-   }
+	/**
+	 * Sets the component properties from the tag's attributes.
+	 * @param component The component the properties of which should be set.
+	 */
+	protected void setProperties(final UIComponent component) {
+		super.setProperties(component); //set the default properties
+		setStringValue(component, VALUE_ATTRIBUTE, getValue()); //set the value
+	}
 
-	/**Release our resources.*/
-	public void release()
-	{
-		super.release();	//release the default resources
-		value=null;
+	/** Release our resources. */
+	public void release() {
+		super.release(); //release the default resources
+		value = null;
 	}
 }

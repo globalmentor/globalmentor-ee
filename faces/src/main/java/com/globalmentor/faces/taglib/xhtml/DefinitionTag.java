@@ -18,18 +18,22 @@ package com.globalmentor.faces.taglib.xhtml;
 
 import com.globalmentor.faces.component.UIDefinition;
 
-/**A tag representing a definition in a list.
-@author Garret Wilson
-@see DefinitionListTag
-@see TermTag
-*/
-public class DefinitionTag extends AbstractXHTMLTag
-{
+/**
+ * A tag representing a definition in a list.
+ * @author Garret Wilson
+ * @see DefinitionListTag
+ * @see TermTag
+ */
+public class DefinitionTag extends AbstractXHTMLTag {
 
-	/**@return <code>null</code> indicating no default renderer.*/
-	public String getRendererType() {return null;}
+	/** @return <code>null</code> indicating no default renderer. */
+	public String getRendererType() {
+		return null;
+	}
 
-	/**@return The type of the component to use for this tag.*/
-	public String getComponentType() {return UIDefinition.COMPONENT_TYPE;}
+	/** @return The type of the component to use for this tag. */
+	public String getComponentType() {
+		return UIDefinition.COMPONENT_TYPE;
+	}
 
 }

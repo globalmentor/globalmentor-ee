@@ -22,36 +22,40 @@ import javax.faces.webapp.UIComponentTag;
 import static com.globalmentor.faces.component.FacesComponents.*;
 import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
 
-/**The abstract base class for XHTML tags.
-@author Garret Wilson
-*/
-public abstract class AbstractXHTMLTag extends UIComponentTag
-{
+/**
+ * The abstract base class for XHTML tags.
+ * @author Garret Wilson
+ */
+public abstract class AbstractXHTMLTag extends UIComponentTag {
 
-	/**The style class.*/
+	/** The style class. */
 	private String styleClass;
 
-		/**@return The style class.*/
-		public String getStyleClass() {return styleClass;}
+	/** @return The style class. */
+	public String getStyleClass() {
+		return styleClass;
+	}
 
-		/**Sets the style class.
-		@param styleClass The style class.
-		*/
-		public void setStyleClass(final String styleClass) {this.styleClass=styleClass;}
+	/**
+	 * Sets the style class.
+	 * @param styleClass The style class.
+	 */
+	public void setStyleClass(final String styleClass) {
+		this.styleClass = styleClass;
+	}
 
-	/**Sets the component properties from the tag's attributes.
-	@param component The component the properties of which should be set.
-	*/
-	protected void setProperties(final UIComponent component)
-	{
-		super.setProperties(component);	//set the default properties
-		setStringValue(component, STYLE_CLASS_ATTRIBUTE, getStyleClass());	//store the style class
-   }
+	/**
+	 * Sets the component properties from the tag's attributes.
+	 * @param component The component the properties of which should be set.
+	 */
+	protected void setProperties(final UIComponent component) {
+		super.setProperties(component); //set the default properties
+		setStringValue(component, STYLE_CLASS_ATTRIBUTE, getStyleClass()); //store the style class
+	}
 
-	/**Release our resources.*/
-	public void release()
-	{
-		super.release();	//release the default resources
-		styleClass=null;
+	/** Release our resources. */
+	public void release() {
+		super.release(); //release the default resources
+		styleClass = null;
 	}
 }

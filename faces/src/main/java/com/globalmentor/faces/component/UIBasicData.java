@@ -22,100 +22,96 @@ import javax.faces.context.*;
 import javax.faces.component.*;
 import javax.faces.event.*;
 
-/**Basic data component with enhanced functionality.
-This class also creates a work-around for the JSF RI bug that erroneously
-	keeps a cached data model when broadcasting commands in nested UIData.
-@author Garret Wilson
-*/
-public class UIBasicData extends UIData
-{
+/**
+ * Basic data component with enhanced functionality. This class also creates a work-around for the JSF RI bug that erroneously keeps a cached data model when
+ * broadcasting commands in nested UIData.
+ * @author Garret Wilson
+ */
+public class UIBasicData extends UIData {
 
-	/**The attribute for storing the variable name.*/
-	public static final String VAR_ATTRIBUTE="var";
+	/** The attribute for storing the variable name. */
+	public static final String VAR_ATTRIBUTE = "var";
 
-	/**Default constructor.*/
-	public UIBasicData()
-	{
-		super();	//construct the parent class
+	/** Default constructor. */
+	public UIBasicData() {
+		super(); //construct the parent class
 	}
 
-
-/*TODO del
-    public void setRowIndex(int rowIndex)
+	/*TODO del
+	  public void setRowIndex(int rowIndex)
+			{
+				Log.trace("basic data setting row index:", rowIndex);
+				super.setRowIndex(rowIndex);
+	Log.trace("row index set, var:", getVar());
+	Log.trace("row data available:", isRowAvailable());
+	if(isRowAvailable())
+	{
+		Log.trace("row data is:", getRowData());
+	}
+	else
+	{
+		Log.trace("row data not available; let's find out why.");
+		final Object value=getValue();
+		Log.trace("value is: ", value);
+	//TODO del	Log.trace("data model is:", getDataModel());
+		if(value instanceof Object[])
 		{
-			Log.trace("basic data setting row index:", rowIndex);
-			super.setRowIndex(rowIndex);
-Log.trace("row index set, var:", getVar());
-Log.trace("row data available:", isRowAvailable());
-if(isRowAvailable())
-{
-	Log.trace("row data is:", getRowData());
-}
-else
-{
-	Log.trace("row data not available; let's find out why.");
-	final Object value=getValue();
-	Log.trace("value is: ", value);
-//TODO del	Log.trace("data model is:", getDataModel());
-	if(value instanceof Object[])
-	{
-		final Object[] objects=(Object[])value;
-		Log.trace("This is an array of length: ", objects.length);
-	}
-Map requestMap =getFacesContext().getExternalContext().getRequestMap();
-Log.trace("variable is now:", requestMap.get(getVar()));
-
+			final Object[] objects=(Object[])value;
+			Log.trace("This is an array of length: ", objects.length);
 		}
-*/
-
-	/**Updates values based upon the current settings.
-	@param context The JSF context.
-	*/
-	protected void updateValue(final FacesContext context)
-	{
-	}
+	Map requestMap =getFacesContext().getExternalContext().getRequestMap();
+	Log.trace("variable is now:", requestMap.get(getVar()));
 	
-	/**Prepares the component for encoding.
-	@param context The JSF context.
-	@throws IOException if there is an error encoding the information.
+			}
 	*/
-	public void encodeBegin(final FacesContext context) throws IOException
-	{
-		updateValue(context);	//update our value before further processing
-		super.encodeBegin(context);	//do the default encoding
+
+	/**
+	 * Updates values based upon the current settings.
+	 * @param context The JSF context.
+	 */
+	protected void updateValue(final FacesContext context) {
 	}
 
-	/**Finishes component for encoding.
-	@param context The JSF context.
-	@throws IOException if there is an error encoding the information.
-	*/
-	public void encodeEnd(final FacesContext context) throws IOException
-	{
-		super.encodeEnd(context);	//do the default end encoding
+	/**
+	 * Prepares the component for encoding.
+	 * @param context The JSF context.
+	 * @throws IOException if there is an error encoding the information.
+	 */
+	public void encodeBegin(final FacesContext context) throws IOException {
+		updateValue(context); //update our value before further processing
+		super.encodeBegin(context); //do the default encoding
 	}
 
-  /**Processes the decoding for this component and children.
-	@param context The JSF context.
-	*/	 
-	public void processDecodes(final FacesContext context)
-	{
-		updateValue(context);	//update our value before further processing
+	/**
+	 * Finishes component for encoding.
+	 * @param context The JSF context.
+	 * @throws IOException if there is an error encoding the information.
+	 */
+	public void encodeEnd(final FacesContext context) throws IOException {
+		super.encodeEnd(context); //do the default end encoding
+	}
+
+	/**
+	 * Processes the decoding for this component and children.
+	 * @param context The JSF context.
+	 */
+	public void processDecodes(final FacesContext context) {
+		updateValue(context); //update our value before further processing
 		super.processDecodes(context);
 	}
 
-	/**Broadcasts an event to interested components.
-	This version fixes a bug in JSF RI that keeps a cached data data model in nested UIData.
-	@param event The event to broadcast.
-	@throws AbortProcessingException if processing should not continue.
-	*/
-	public void broadcast(final FacesEvent event) throws AbortProcessingException
-	{
-		if(FacesComponents.getParent(this, UIData.class)!=null) {	//if we're nested within another UIData
-			if(getValueBinding("value")!=null) {	//if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
-				setValue(null);	//remove our local value, uncaching the data model in the process
+	/**
+	 * Broadcasts an event to interested components. This version fixes a bug in JSF RI that keeps a cached data data model in nested UIData.
+	 * @param event The event to broadcast.
+	 * @throws AbortProcessingException if processing should not continue.
+	 */
+	public void broadcast(final FacesEvent event) throws AbortProcessingException {
+		if(FacesComponents.getParent(this, UIData.class) != null) { //if we're nested within another UIData
+			if(getValueBinding("value") != null) { //if our value depends on a value binding (this won't work if we have a local value, too) TODO use a constant
+				setValue(null); //remove our local value, uncaching the data model in the process
 			}
 		}
-		super.broadcast(event);	//do the default broadcasting
+		super.broadcast(event); //do the default broadcasting
 	}
-	
+
 }

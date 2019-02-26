@@ -16,13 +16,13 @@
 
 package com.globalmentor.faces.taglib.xhtml;
 
-/**Constant values for use in XHTML tags.
-@author Garret Wilson
-*/
-public class XHTMLTags
-{
-	/**The style class XHTML attribute.*/
-	public static final String STYLE_CLASS_ATTRIBUTE="styleClass";
-	/**The client ID XHTML attribute.*/
-	public static final String CLIENT_ID_ATTRIBUTE="clientId";
+/**
+ * Constant values for use in XHTML tags.
+ * @author Garret Wilson
+ */
+public class XHTMLTags {
+	/** The style class XHTML attribute. */
+	public static final String STYLE_CLASS_ATTRIBUTE = "styleClass";
+	/** The client ID XHTML attribute. */
+	public static final String CLIENT_ID_ATTRIBUTE = "clientId";
 }

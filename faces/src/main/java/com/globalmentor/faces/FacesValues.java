@@ -19,43 +19,36 @@ package com.globalmentor.faces;
 import javax.faces.context.FacesContext;
 import javax.faces.webapp.UIComponentTag;
 
-/**Utility methods for working with JavaServer Faces value.
-@author Garret Wilson
-*/
-public class FacesValues
-{
+/**
+ * Utility methods for working with JavaServer Faces value.
+ * @author Garret Wilson
+ */
+public class FacesValues {
 
-  /**Retrieves a boolean value from the string, whether it's a literal value
-   	or a value-binding expression.
-  @param facesContext The JSF context.
-  @param valueString The string representing the value or a value-binding
-  	expression.
-  @return The boolean value represented by the string.
-  @throws ClassCastException if the value is not a valid <code>Boolean</code>
-  	value, or the bound expression is not a <code>Boolean</code> value.
-	*/
-  public static boolean getBooleanValue(final FacesContext facesContext, final String valueString)
-  {
-  	final Boolean booleanObject;
-  	if(UIComponentTag.isValueReference(valueString)) {	//if the string is a JSF value reference
-  			//get the value from the reference, assuming it's a Boolean value
-      booleanObject=(Boolean)facesContext.getApplication().createValueBinding(valueString).getValue(facesContext);
-  	}
-  	else
-  	{
-  		booleanObject=Boolean.valueOf(valueString);	//convert the string to a Boolean
-  	}
-  	return booleanObject.booleanValue();	//return the boolean value
-  }
+	/**
+	 * Retrieves a boolean value from the string, whether it's a literal value or a value-binding expression.
+	 * @param facesContext The JSF context.
+	 * @param valueString The string representing the value or a value-binding expression.
+	 * @return The boolean value represented by the string.
+	 * @throws ClassCastException if the value is not a valid <code>Boolean</code> value, or the bound expression is not a <code>Boolean</code> value.
+	 */
+	public static boolean getBooleanValue(final FacesContext facesContext, final String valueString) {
+		final Boolean booleanObject;
+		if(UIComponentTag.isValueReference(valueString)) { //if the string is a JSF value reference
+			//get the value from the reference, assuming it's a Boolean value
+			booleanObject = (Boolean)facesContext.getApplication().createValueBinding(valueString).getValue(facesContext);
+		} else {
+			booleanObject = Boolean.valueOf(valueString); //convert the string to a Boolean
+		}
+		return booleanObject.booleanValue(); //return the boolean value
+	}
 
-	/**Determines if the object is the string "true" or the object
-		<code>Boolean.TRUE</code>.
-	@param object The object to checks.
-	@return <code>true</code> if the object is <code>Boolean.TRUE</code>
-		or the string "true".
-	*/
-	public static boolean isTrueObject(final Object object)
-	{
-		return Boolean.TRUE.equals(object) || Boolean.TRUE.toString().equals(object);	//see if this is a boolean true or a "true" string
+	/**
+	 * Determines if the object is the string "true" or the object <code>Boolean.TRUE</code>.
+	 * @param object The object to checks.
+	 * @return <code>true</code> if the object is <code>Boolean.TRUE</code> or the string "true".
+	 */
+	public static boolean isTrueObject(final Object object) {
+		return Boolean.TRUE.equals(object) || Boolean.TRUE.toString().equals(object); //see if this is a boolean true or a "true" string
 	}
 }

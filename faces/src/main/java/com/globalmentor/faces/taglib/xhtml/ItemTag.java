@@ -18,20 +18,21 @@ package com.globalmentor.faces.taglib.xhtml;
 
 import com.globalmentor.faces.component.UIItem;
 
-/**TODO comment
+/**
+ * TODO comment
  * 
  * @author Garret Wilson
  *
  */
-public class ItemTag extends AbstractXHTMLTag
-{
+public class ItemTag extends AbstractXHTMLTag {
 
-    public String getRendererType() {
-        return null;
-    }
+	public String getRendererType() {
+		return null;
+	}
 
-	/**@return The type of the component to use for this tag.*/
-	public String getComponentType() {return UIItem.COMPONENT_TYPE;}
+	/** @return The type of the component to use for this tag. */
+	public String getComponentType() {
+		return UIItem.COMPONENT_TYPE;
+	}
 
 }
-

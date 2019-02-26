@@ -20,24 +20,23 @@ import javax.faces.application.FacesMessage;
 
 import com.globalmentor.log.Log;
 
-/**Utilities for working with the JavaServer Faces messages.
-@author Garret Wilson
-*/
-public class FacesMessages
-{
+/**
+ * Utilities for working with the JavaServer Faces messages.
+ * @author Garret Wilson
+ */
+public class FacesMessages {
 
-	/**Creates a message based upon a throwable error.
-	An error is logged based upon the throwable object.
-	@param throwable The error on which to base the message.
-	@return A Faces message appropriate for the error. 
-	*/
-	public static FacesMessage createMessage(final Throwable throwable)
-	{
-		Log.error(throwable);	//log the error
-		final String messageString=throwable.getMessage();	//get the throwable's message
-		final FacesMessage message=new FacesMessage(messageString!=null ? messageString : throwable.toString());	//create a new faces message from the message string
-    message.setSeverity(FacesMessage.SEVERITY_ERROR);	//show that this was an error		
-		return message;	//return the message we created
+	/**
+	 * Creates a message based upon a throwable error. An error is logged based upon the throwable object.
+	 * @param throwable The error on which to base the message.
+	 * @return A Faces message appropriate for the error.
+	 */
+	public static FacesMessage createMessage(final Throwable throwable) {
+		Log.error(throwable); //log the error
+		final String messageString = throwable.getMessage(); //get the throwable's message
+		final FacesMessage message = new FacesMessage(messageString != null ? messageString : throwable.toString()); //create a new faces message from the message string
+		message.setSeverity(FacesMessage.SEVERITY_ERROR); //show that this was an error		
+		return message; //return the message we created
 	}
 
 }

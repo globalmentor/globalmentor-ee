@@ -24,48 +24,43 @@ import javax.faces.event.FacesEvent;
 import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.model.NameValuePair;
 
-/**Utilities for working with JavaServer Faces events.
-@author Garret Wilson
-*/
-public class FacesEvents
-{
+/**
+ * Utilities for working with JavaServer Faces events.
+ * @author Garret Wilson
+ */
+public class FacesEvents {
 
-	/**Retrieves the values of the first direct <code>UIParameter</code>
-	 	children of the event's component with the given name.
-	@param event The JSF event for which a parameter should be retrieved.
-	@param context The JSF context.
-	@param name The name of the parameter to retrieve.
-	@return The parameter value, or <code>null</code> if no parameter with the
-		given name exists.
-	*/
-	public static Object getParameter(final FacesEvent event, final FacesContext context, final String name)
-	{
-		return FacesComponents.getParameter(event.getComponent(), context, name);	//get the parameters for the event's component
-	}
-	/**Retrieves the parameters of a given event, derived from the names and
-	 	values of all direct <code>UIParameter</code> children of the comopnent of
-	 	the given component.
-	@param event The JSF event for which parameters should be retrieved.
-	@param context The JSF context.
-	@return A non-<code>null</code> array of parameters.
-	*/
-	public static NameValuePair<String, Object>[] getParameters(final FacesEvent event, final FacesContext context)
-	{
-		return FacesComponents.getParameters(event.getComponent(), context);	//get all the parameters for the event's component
+	/**
+	 * Retrieves the values of the first direct <code>UIParameter</code> children of the event's component with the given name.
+	 * @param event The JSF event for which a parameter should be retrieved.
+	 * @param context The JSF context.
+	 * @param name The name of the parameter to retrieve.
+	 * @return The parameter value, or <code>null</code> if no parameter with the given name exists.
+	 */
+	public static Object getParameter(final FacesEvent event, final FacesContext context, final String name) {
+		return FacesComponents.getParameter(event.getComponent(), context, name); //get the parameters for the event's component
 	}
 
-	/**Creates and returns a map of the names and values of all direct
-	 	<code>UIParameter</code> children of the event's component.
-	If multiple parameters with the same name exist, only the first one will be
-		returned. Parameters with no name will be ignored.
-	@param event The JSF event for which parameters should be retrieved.
-	@param context The JSF context.
-	@return A non-<code>null</code> map of parameter values, keyed to parameter
-		names.
-	*/
-	public static Map<String, Object> getParameterMap(final FacesEvent event, final FacesContext context)
-	{
-		return FacesComponents.getParameterMap(event.getComponent(), context);	//get the parameters for the event's component		
+	/**
+	 * Retrieves the parameters of a given event, derived from the names and values of all direct <code>UIParameter</code> children of the comopnent of the given
+	 * component.
+	 * @param event The JSF event for which parameters should be retrieved.
+	 * @param context The JSF context.
+	 * @return A non-<code>null</code> array of parameters.
+	 */
+	public static NameValuePair<String, Object>[] getParameters(final FacesEvent event, final FacesContext context) {
+		return FacesComponents.getParameters(event.getComponent(), context); //get all the parameters for the event's component
+	}
+
+	/**
+	 * Creates and returns a map of the names and values of all direct <code>UIParameter</code> children of the event's component. If multiple parameters with the
+	 * same name exist, only the first one will be returned. Parameters with no name will be ignored.
+	 * @param event The JSF event for which parameters should be retrieved.
+	 * @param context The JSF context.
+	 * @return A non-<code>null</code> map of parameter values, keyed to parameter names.
+	 */
+	public static Map<String, Object> getParameterMap(final FacesEvent event, final FacesContext context) {
+		return FacesComponents.getParameterMap(event.getComponent(), context); //get the parameters for the event's component		
 	}
 
 }
