@@ -37,6 +37,7 @@ public class FacesRender {
 	 * @param writer The writer rendering the component.
 	 * @param component The component being rendered.
 	 * @param attributes The names of the attributes to render
+	 * @throws IOException if an I/O error occurs.
 	 */
 	public static void renderPassthroughAttributes(final ResponseWriter writer, final UIComponent component, final String[] attributes) throws IOException {
 		final Map attributeMap = component.getAttributes(); //get the map of component attributes
@@ -56,9 +57,9 @@ public class FacesRender {
 	 * @param writer The writer rendering the component.
 	 * @param component The component being rendered, if any.
 	 * @param javascript The text of the JavaScript code to render
+	 * @throws IOException if an I/O exception occurs.
 	 */
 	public static void renderJavaScript(final ResponseWriter writer, final UIComponent component, final String javascript) throws IOException {
-
 		writer.startElement(ELEMENT_SCRIPT, component); //<script>
 		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, JAVASCRIPT_OBSOLETE_CONTENT_TYPE.toString(), ELEMENT_SCRIPT_ATTRIBUTE_TYPE); //type="text/javascript"
 		writer.writeText("<!--", null); //<!--

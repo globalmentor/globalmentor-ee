@@ -131,7 +131,10 @@ public abstract class AbstractXHTMLRenderer extends Renderer {
 		super.encodeEnd(context, component); //do the default encoding
 	}
 
-	/** @return <code>true</code> if the component has an <code>id</code> attribute that isn't automatically generated. */
+	/**
+	 * @param component The component being rendered.
+	 * @return <code>true</code> if the component has an <code>id</code> attribute that isn't automatically generated.
+	 */
 	protected boolean hasCustomID(final UIComponent component) {
 		final String id = component.getId(); //get the component's ID
 		return id != null && !id.startsWith(UIViewRoot.UNIQUE_ID_PREFIX); //see if there is an ID that wasn't generated

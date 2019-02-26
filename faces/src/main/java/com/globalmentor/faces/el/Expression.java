@@ -21,6 +21,7 @@ import javax.faces.el.*;
 
 /**
  * The representation of a value, possibly bound to a property or method.
+ * @param <T> The type of expression value.
  * @author Garret Wilson
  */
 public interface Expression<T> {
@@ -51,6 +52,7 @@ public interface Expression<T> {
 	/**
 	 * Determines if the expression is immutable.
 	 * @param context The JSF context for the current request.
+	 * @return <code>true</code> if the expression is read-only.
 	 * @throws EvaluationException if an exception is thrown while getting the description of the property (the thrown exception must be included as the
 	 *           <code>cause</code> property of this exception).
 	 * @throws NullPointerException if <code>context</code> is <code>null</code>.

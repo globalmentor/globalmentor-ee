@@ -244,7 +244,6 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 	 * Decodes the component information.
 	 * @param context The JSF context.
 	 * @param component The component being decoded.
-	 * @throws IOException Thrown if there is an error writing the output.
 	 * @throws NullPointerException Thrown if <var>context</var> or <var>component</var> is <code>null</code>.
 	 */
 	public void decode(final FacesContext context, UIComponent component) {

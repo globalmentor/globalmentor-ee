@@ -91,7 +91,6 @@ public class RendererDecorator extends Renderer {
 	 * Decodes the component information. This version delegates to the wrapped renderer.
 	 * @param context The JSF context.
 	 * @param component The component being decoded.
-	 * @throws IOException Thrown if there is an error writing the output.
 	 * @throws NullPointerException Thrown if <var>context</var> or <var>component</var> is <code>null</code>.
 	 */
 	public void decode(final FacesContext context, final UIComponent component) {

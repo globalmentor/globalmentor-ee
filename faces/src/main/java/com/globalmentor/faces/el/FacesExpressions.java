@@ -42,11 +42,11 @@ public class FacesExpressions {
 	/**
 	 * Creates an expression representing either a reference of unknown type or a literal string value if no reference is present.
 	 * @param application The JSF application.
-	 * @param The string representing the expression.
+	 * @param string The string representing the expression.
 	 * @return An expression containing a string value or reference.
 	 * @throws IllegalArgumentException if <var>string</var> does not contain a valid extended JSF expression language reference.
-	 * @see #createReferenceExpression(FacesContext, String)
-	 * @see #isReferenceExpression()
+	 * @see #createReferenceExpression(Application, String)
+	 * @see #isReferenceExpression(String)
 	 */
 	public static Expression<?> createExpression(final Application application, final String string) {
 		if(isReferenceExpression(string)) { //if this is a reference expression
@@ -59,11 +59,11 @@ public class FacesExpressions {
 	/**
 	 * Creates an expression representing a string, either a literal value or a reference.
 	 * @param application The JSF application.
-	 * @param The string representing the expression.
+	 * @param string The string representing the expression.
 	 * @return An expression containing a string value or string reference.
 	 * @throws IllegalArgumentException if <var>string</var> does not contain a valid extended JSF expression language reference.
-	 * @see #createReferenceExpression(FacesContext, String)
-	 * @see #isReferenceExpression()
+	 * @see #createReferenceExpression(Application, String)
+	 * @see #isReferenceExpression(String)
 	 */
 	public static Expression<String> createStringExpression(final Application application, final String string) {
 		if(isReferenceExpression(string)) { //if this is a reference expression
@@ -75,11 +75,12 @@ public class FacesExpressions {
 
 	/**
 	 * Creates an expression from a given string in extended-EL.
+	 * @param <T> The type of expression value.
 	 * @param application The JSF application.
-	 * @param The string representing the expression.
+	 * @param string The string representing the expression.
 	 * @return An expression for the appropriate type.
 	 * @throws IllegalArgumentException if <var>string</var> does not contain a valid extended JSF expression language reference.
-	 * @see #isReferenceExpression()
+	 * @see #isReferenceExpression(String)
 	 */
 	public static <T> Expression<T> createReferenceExpression(final Application application, final String string) {
 		if(isReferenceExpression(string)) { //if this is a reference expression
@@ -98,11 +99,12 @@ public class FacesExpressions {
 
 	/**
 	 * Creates a method binding expression from a given string in extended-EL.
+	 * @param <T> The type of expression value.
 	 * @param application The JSF application.
-	 * @param The string representing the expression.
+	 * @param string The string representing the expression.
 	 * @return An expression for the appropriate type.
 	 * @throws IllegalArgumentException if <var>string</var> does not contain a valid extended JSF expression language method reference.
-	 * @see #isReferenceExpression()
+	 * @see #isReferenceExpression(String)
 	 */
 	public static <T> Expression<T> createMethodBindingExpression(final Application application, final String string) {
 		if(isMethodReference(string)) { //if this is a method reference
@@ -129,7 +131,7 @@ public class FacesExpressions {
 	 * @param string The string value of the expression.
 	 * @return <code>true</code> if the string references a method.
 	 * @throws NullPointerException if <var>string</var> is <code>null</code>.
-	 * @see #isReferenceExpression()
+	 * @see #isReferenceExpression(String)
 	 */
 	public static boolean isMethodReference(final String string) {
 		if(isReferenceExpression(string)) { //if the string is a reference

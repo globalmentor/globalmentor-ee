@@ -35,7 +35,7 @@ public abstract class EditObjectBean<T> extends EditBean {
 	/**
 	 * Accepts the information entered.
 	 * @return <code>true</code> if successful.
-	 * @see #accept(T)
+	 * @see #accept(Object)
 	 */
 	public boolean accept() {
 		return accept(create()); //create a user object from the provided information

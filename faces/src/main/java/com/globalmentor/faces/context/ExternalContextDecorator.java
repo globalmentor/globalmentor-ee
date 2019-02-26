@@ -82,7 +82,7 @@ public class ExternalContextDecorator extends ExternalContext {
 	/**
 	 * <p>
 	 * Return the input URL, after performing any rewriting needed to ensure that it will correctly identify an addressable action in the current application.
-	 * <p>
+	 * </p>
 	 *
 	 * <p>
 	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.http.HttpServletResponse</code> method <code>encodeURL(url)</code>.
@@ -127,7 +127,7 @@ public class ExternalContextDecorator extends ExternalContext {
 	/**
 	 * <p>
 	 * Return the input URL, after performing any rewriting needed to ensure that it will correctly identify an addressable resource in the current application.
-	 * <p>
+	 * </p>
 	 *
 	 * <p>
 	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.http.HttpServletResponse</code> method <code>encodeURL(url)</code>.
@@ -562,13 +562,14 @@ public class ExternalContextDecorator extends ExternalContext {
 	 * </p>
 	 *
 	 * <p>
-	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.ServletContext</code> method <code>getResourcePaths(path).</p>
+	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.ServletContext</code> method <code>getResourcePaths(path)</code>.
+	 * </p>
 	 *
-	 * <p><em>Servlet:</em> This must be the value returned by the
-	 * <code>javax.servlet.ServletContext</code> method <code>getResourcePaths(path).</p>
+	 * <p>
+	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.ServletContext</code> method <code>getResourcePaths(path)</code>.
+	 * </p>
 	 *
-	 * &#64;param path Partial path used to match resources, which must
-	 *  start with a slash ("/") character
+	 * &#64;param path Partial path used to match resources, which must start with a slash ("/") character
 	 *
 	 * &#64;throws NullPointerException if <code>path</code> is <code>null</code>
 	 */
@@ -607,7 +608,7 @@ public class ExternalContextDecorator extends ExternalContext {
 	 * </p>
 	 *
 	 * <p>
-	 * em>Portlet:</em> This must return the result of calling <code>getPortletSession(create)</code> on the underlying <code>javax.portlet.PortletRequest</code>
+	 * <em>Portlet:</em> This must return the result of calling <code>getPortletSession(create)</code> on the underlying <code>javax.portlet.PortletRequest</code>
 	 * instance.
 	 * </p>
 	 *

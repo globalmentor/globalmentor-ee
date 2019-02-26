@@ -75,7 +75,7 @@ public class AssignmentTag extends UIComponentTag {
 	/**
 	 * Sets the component properties.
 	 * @param component The component, which must be a <code>UIAssignment</code>.
-	 * @see UIAssignment.
+	 * @see UIAssignment
 	 */
 	protected void setProperties(final UIComponent component) {
 		super.setProperties(component); //set the default properties

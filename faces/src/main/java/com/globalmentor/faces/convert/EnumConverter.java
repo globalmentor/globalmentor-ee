@@ -33,7 +33,7 @@ public class EnumConverter<T extends Enum<T>> implements Converter {
 
 	/**
 	 * Creates an enum converter for a particular enumeration type.
-	 * @param enumType
+	 * @param enumType The class indicating the type of enum to convert.
 	 */
 	public EnumConverter(final Class<T> enumType) {
 		this.enumType = enumType; //save the enum type

@@ -73,6 +73,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 
 	/**
 	 * Determines the value intended by the component. This value is either the submitted value or the currently set value, in that order.
+	 * @param input The input with the current submitted value.
 	 * @return The value intended by the component.
 	 */
 	protected Object getIntendedValue(final UIInput input) {
@@ -86,6 +87,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 
 	/**
 	 * Determines the current value to be rendered. This version returns the intended value.
+	 * @param input The input with the current submitted value.
 	 * @return The value to be rendered as the component's current value.
 	 * @see #getIntendedValue(UIInput)
 	 */
@@ -102,7 +104,6 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 	 * Decodes the component information.
 	 * @param context The JSF context.
 	 * @param component The component being decoded.
-	 * @throws IOException Thrown if there is an error writing the output.
 	 * @throws NullPointerException Thrown if <var>context</var> or <var>component</var> is <code>null</code>.
 	 */
 	public void decode(final FacesContext context, final UIComponent component) {

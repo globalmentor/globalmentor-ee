@@ -100,7 +100,7 @@ public class MethodBindingExpression<T> implements Expression<T> {
 
 	/**
 	 * @return The non-null array of parameter expressions for the method call.
-	 * @see #getMethodBinding()
+	 * @see #getMethodBinding(FacesContext)
 	 */
 	protected Expression<?>[] getParameterExpressions() {
 		return parameterExpressions;

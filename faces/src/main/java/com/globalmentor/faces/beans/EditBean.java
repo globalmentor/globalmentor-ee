@@ -18,6 +18,8 @@ package com.globalmentor.faces.beans;
 
 import static com.globalmentor.faces.Faces.*;
 
+import com.globalmentor.faces.Faces;
+
 /**
  * A generic JSF backing bean that allows editing of information.
  * @author Garret Wilson

@@ -112,6 +112,7 @@ public class FacesComponents {
 	 * </p>
 	 * @param component The component the children of which to register.
 	 * @param context The Faces context.
+	 * @throws IOException if an I/O error occurs while rendering.
 	 */
 	public static void encodeTree(final UIComponent component, final FacesContext context) throws IOException {
 		if(component.isRendered()) { //if the component is rendered
@@ -133,6 +134,7 @@ public class FacesComponents {
 	 * </p>
 	 * @param component The component the children of which to register.
 	 * @param context The Faces context.
+	 * @throws IOException if an I/O error occurs while rendering.
 	 */
 	public static void encodeDescendants(final UIComponent component, final FacesContext context) throws IOException {
 		for(Object child : component.getChildren()) { //look at each of the component's children
@@ -282,8 +284,8 @@ public class FacesComponents {
 	 * Determines if a component is mutable; that is, not disabled and not read-only.
 	 * @param component The component to check.
 	 * @return <code>true</code> if the component is not disabled and not read-only.
-	 * @see #isDisabled()
-	 * @see #isReadonly()
+	 * @see #isDisabled(UIComponent)
+	 * @see #isReadonly(UIComponent)
 	 */
 	public static boolean isMutable(final UIComponent component) {
 		return !isDisabled(component) && !isReadonly(component); //the component is mutable if it isn't disabled and it isn't read-only
@@ -426,6 +428,7 @@ public class FacesComponents {
 
 	/**
 	 * Looks for a value in a value binding, if the value is not already present and returns <code>null</code> as a last result.
+	 * @param <T> The type of value value expected.
 	 * @param component The component from which a value should be obtained.
 	 * @param context The JSF context.
 	 * @param value The existing value, or <code>null</code> if there is no value present.
@@ -439,6 +442,7 @@ public class FacesComponents {
 	/**
 	 * Looks for a value in a value binding, if the value is not already present, and returns a default value as a last result. The default value is turned if the
 	 * local value, the value binding, and the value binding value all return <code>null</code>.
+	 * @param <T> The type of value value expected.
 	 * @param component The component from which a value should be obtained.
 	 * @param context The JSF context.
 	 * @param value The existing value, or <code>null</code> if there is no value present.

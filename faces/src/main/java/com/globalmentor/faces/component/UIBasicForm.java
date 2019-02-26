@@ -69,7 +69,6 @@ public class UIBasicForm extends UIForm {
 	/**
 	 * Constructs a client ID for the hidden field associated with this button.
 	 * @param context The JSF context.
-	 * @param component The component being rendered.
 	 * @return The client ID of the hidden field that holds this button's value.
 	 */
 	public String getHiddenFieldClientID(final FacesContext context) {
