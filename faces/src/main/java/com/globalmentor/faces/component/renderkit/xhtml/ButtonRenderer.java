@@ -30,8 +30,8 @@ import com.globalmentor.faces.component.UIBasicForm;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
 import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
+import static com.globalmentor.html.spec.HTML.*;
 import static com.globalmentor.javascript.JavaScript.*;
-import static com.globalmentor.w3c.spec.HTML.*;
 
 /**
  * Renders a <code>UICommand</code> as a button. Microsoft Internet Explorer does not correctly return values for the HTML button element, so this renderer uses

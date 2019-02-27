@@ -23,7 +23,7 @@ import javax.faces.component.*;
 import javax.faces.context.*;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Renders a sequence of objects contained in a <code>UIData</code> component. This class can function on its own or provide base functionality for more

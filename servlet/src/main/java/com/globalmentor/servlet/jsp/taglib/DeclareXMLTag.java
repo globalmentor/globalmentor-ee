@@ -25,11 +25,11 @@ import javax.servlet.jsp.tagext.*;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.xml.XML;
 
+import static com.globalmentor.html.spec.HTML.*;
 import static com.globalmentor.java.Characters.SPACE_CHAR;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
-import static com.globalmentor.w3c.spec.HTML.*;
-import static com.globalmentor.w3c.spec.XML.*;
 import static com.globalmentor.xml.XML.*;
+import static com.globalmentor.xml.spec.XML.*;
 
 /**
  * A tag for declaring a JSP to be XML.

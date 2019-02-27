@@ -28,7 +28,7 @@ import javax.faces.render.Renderer;
 
 import static com.globalmentor.faces.render.FacesRender.*;
 import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Encapsulates basic XHTML rendering functionality.

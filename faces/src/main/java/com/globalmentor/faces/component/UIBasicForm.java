@@ -31,11 +31,10 @@ import com.globalmentor.log.Log;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.util.*;
-import com.globalmentor.w3c.spec.HTML;
 
 import org.apache.commons.fileupload.*;
 
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Basic form component with enhanced functionality to process multipart form submissions.
@@ -123,7 +122,7 @@ public class UIBasicForm extends UIForm {
 		FacesContext decodeContext = context; //we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype = (String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE); //get the enctype
 		try {
-			if(enctype != null && HTML.MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.create(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
+			if(enctype != null && MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.create(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
 				if(context.getExternalContext().getRequest() instanceof HttpServletRequest) { //if this is an HTTP request
 					final HttpServletRequest request = (HttpServletRequest)context.getExternalContext().getRequest(); //get the HTTP request
 					if(FileUpload.isMultipartContent(request)) { //if this is multipart content			

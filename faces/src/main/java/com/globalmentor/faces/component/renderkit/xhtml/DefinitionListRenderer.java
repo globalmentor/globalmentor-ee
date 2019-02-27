@@ -20,7 +20,7 @@ import javax.faces.component.*;
 
 import com.globalmentor.faces.component.*;
 
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Renders XHTML definition lists.
