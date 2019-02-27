@@ -44,7 +44,7 @@ public class FacesApplications {
 		/*TODO del
 		Debug.setDebug(true);
 		Debug.setVisible(true);
-		Log.trace("created column with ID", id);
+		getLogger().trace("created column with ID {}", id);
 		*/
 		return column; //return the component
 	}

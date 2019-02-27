@@ -143,11 +143,11 @@ public class UIAssignment extends UIComponentBase {
 						ValueBinding vb = getValueBinding("value");
 			    	if(vb!=null)
 			    	{
-			    		Log.trace("performing assignment", getClientId(context), "with expression:", vb.getExpressionString(), "value", value);
+			    		getLogger().trace("performing assignment {} with expression {} value {}", getClientId(context), vb.getExpressionString(), value);
 			    	}
 			    	else
 			    	{
-			    		Log.trace("performing assignment", getClientId(context), "with value", value);
+			    		getLogger().trace("performing assignment {} with value {}", getClientId(context), value);
 			    	}
 			*/
 			final Application application = context.getApplication(); //get the JSF application

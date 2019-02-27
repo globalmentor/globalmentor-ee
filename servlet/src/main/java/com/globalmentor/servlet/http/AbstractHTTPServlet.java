@@ -40,7 +40,6 @@ import static java.nio.charset.StandardCharsets.*;
 import com.globalmentor.collections.Collections;
 import com.globalmentor.io.*;
 import com.globalmentor.java.Characters;
-import com.globalmentor.log.Log;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.*;
 import com.globalmentor.text.SyntaxException;
@@ -82,7 +81,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @see http://purl.org/NET/http-errata#saferedirect
 	 * @see http://httpd.apache.org/docs-2.0/env.html#special
 	 */
-	private static final Pattern[] REDIRECT_UNSUPPORTED_AGENTS = new Pattern[] { Pattern.compile("^gnome-vfs.*"), //Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
+	private static final Pattern[] REDIRECT_UNSUPPORTED_AGENTS = new Pattern[] {Pattern.compile("^gnome-vfs.*"), //Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
 			//TODO del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html
 			Pattern.compile("Microsoft Data Access Internet Publishing Provider.*"), //http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
 			Pattern.compile("Microsoft-WebDAV-MiniRedir/5\\.1\\.2600.*"), //http://mailman.lyra.org/pipermail/dav-dev/2003-June/004777.html
@@ -120,7 +119,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 */
 	public void doOptions(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
-		//TODO del Log.trace("doing options for URI", resourceURI);
+		//TODO del getLogger().trace("doing options for URI {}", resourceURI);
 		final Set<String> allowedMethodSet = getAllowedMethods(request, resourceURI); //get the allowed methods
 		response.addHeader(ALLOW_HEADER, Collections.toString(allowedMethodSet, COMMA_CHAR)); //put the allowed methods in the "allow" header, separated by commas
 		response.setContentLength(0); //set the content length to zero, according to the HTTP specification for OPTIONS
@@ -169,13 +168,11 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws IOException if there is an error reading or writing data.
 	 */
 	public void doPut(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
-		//	TODO del Log.trace("getting resource URI");
+		//	TODO del getLogger().trace("getting resource URI");
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
-		//	TODO del Log.trace("checking destination existence");
-		Log.trace("checking destination existence");
+		getLogger().trace("checking destination existence");
 		final boolean exists = exists(request, resourceURI); //see whether the resource already exists
-		//	TODO del Log.trace("exists", exists);
-		Log.trace("exists", exists);
+		getLogger().trace("exists? {}", exists);
 		final InputStream inputStream = request.getInputStream(); //get an input stream from the request
 		final OutputStream outputStream; //we'll determine the output stream to use
 		if(exists) { //if this resource exists
@@ -185,30 +182,30 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			try {
 				outputStream = createResource(request, resourceURI); //create a new resource
 			} catch(final IllegalArgumentException illegalArgumentException) { //if this is an invalid resource URI
-				//			TODO del Log.warn(illegalArgumentException);
+				//			TODO del getLogger().warn("Illegal argument.", illegalArgumentException);
 				throw new HTTPForbiddenException(illegalArgumentException); //forbid creation of resources with invalid URIs
 			}
 		}
 		try {
-			Log.trace("trying to write");
+			getLogger().trace("trying to write");
 			Streams.copy(inputStream, outputStream); //copy the file from the request to the resource
-			Log.trace("written");
+			getLogger().trace("written");
 		} finally {
 			/*TODO del; doesn't work
 						if(outputStream instanceof FileOutputStream) {	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
-			Log.trace("syncing file output stream", resource.getReferenceURI());
+			getLogger().trace("syncing file output stream {}", resource.getReferenceURI());
 							((FileOutputStream)outputStream).getFD().sync();
 						}
 			*/
 			/*TODO test
 						if(outputStream instanceof FileOutputStream) {	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
-			Log.trace("forcing file output stream", resourceURI);
+			getLogger().trace("forcing file output stream {}", resourceURI);
 							((FileOutputStream)outputStream).getChannel().force(true);
 						}
 			*/
-			//TODO del Log.trace("closing output stream for resource URI", resourceURI);
+			//TODO del getLogger().trace("closing output stream for resource URI {}", resourceURI);
 			outputStream.close(); //always close the output stream
-			//TODO del Log.trace("closed output stream; now content of resource is", getContentLength(request, getResource(request, resourceURI)));
+			//TODO del getLogger().trace("closed output stream; now content of resource is {}", getContentLength(request, getResource(request, resourceURI)));
 		}
 
 		/*TODO del when works
@@ -217,13 +214,13 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 					resource=getResource(request, resourceURI);	//get the resource information
 		    }
 				else {	//if the resource doesn't exist
-		//		TODO del Log.trace("trying to create resource");
+		//		TODO del getLogger().trace("trying to create resource");
 					try
 					{
 						resource=createResource(resourceURI);	//create the resource TODO make sure no default resource content is created here
 					}
 					catch(final IllegalArgumentException illegalArgumentException) {	//if this is an invalid resource URI
-		//			TODO del Log.warn(illegalArgumentException);
+		//			TODO del getLogger().warn("Illegal argument.", illegalArgumentException);
 							throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 					}
 				}
@@ -233,11 +230,11 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 					final OutputStream outputStream=getOutputStream(request, resource);	//get an output stream to the resource
 					try
 					{
-		Log.trace("trying to write");
+		getLogger().trace("trying to write");
 						OutputStreamUtilities.copy(inputStream, outputStream);	//copy the file from the request to the resource
 					}
 					catch(final IllegalArgumentException illegalArgumentException) {	//if this is an invalid resource URI
-		//			TODO del Log.warn(illegalArgumentException);
+		//			TODO del getLogger().warn("Illegal argument.", illegalArgumentException);
 							throw new HTTPForbiddenException(illegalArgumentException);	//forbid creation of resources with invalid URIs
 					}
 					finally
@@ -245,19 +242,19 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 		*/
 		/*TODO del; doesn't work
 						if(outputStream instanceof FileOutputStream) {	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
-		Log.trace("syncing file output stream", resource.getReferenceURI());
+		getLogger().trace("syncing file output stream {}", resource.getReferenceURI());
 							((FileOutputStream)outputStream).getFD().sync();
 						}
 		*/
 		/*TODO del when works
 						if(outputStream instanceof FileOutputStream) {	//TODO fix; testing to put file in known state; this is at best a temporary fix, as the file output stream may by wrapped by a buffered stream; better to create a FileOutputStream wrapper
-		Log.trace("forcing file output stream", resource.getReferenceURI());
+		getLogger().trace("forcing file output stream {}", resource.getReferenceURI());
 							((FileOutputStream)outputStream).getChannel().force(true);
 						}
-
-		Log.trace("closing output stream of resource type", resource.getClass());
+		
+		getLogger().trace("closing output stream of resource type {}", resource.getClass());
 						outputStream.close();	//always close the output stream
-		Log.trace("closed output stream; now content of resource is", getContentLength(request, resource));
+		getLogger().trace("closed output stream; now content of resource is {}", getContentLength(request, resource));
 					}
 				}
 		*/
@@ -269,13 +266,13 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			throw ioException;	//rethrow the exception
 		}
 		*/
-		Log.trace("done PUT; determining response");
+		getLogger().trace("done PUT; determining response");
 		if(exists) { //if the resource already existed
-			Log.trace("PUT already existed; returning SC_NO_CONTENT");
+			getLogger().trace("PUT already existed; returning SC_NO_CONTENT");
 			response.setStatus(HttpServletResponse.SC_NO_CONTENT); //indicate success by showing that there is no content to return
 			response.setContentLength(0); //TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		} else { //if the resource did not exist already
-			Log.trace("PUT resource didn't already exist; returning SC_CREATED");
+			getLogger().trace("PUT resource didn't already exist; returning SC_CREATED");
 			response.setStatus(HttpServletResponse.SC_CREATED); //indicate that we created the resource
 			response.setContentLength(0); //TODO check; this seems to be needed---should we throw an HTTPException or set the response instead?
 		}
@@ -309,12 +306,12 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws ServletException if there is a problem servicing the request.
 	 * @throws IOException if there is an error reading or writing data.
 	 */
-	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent) throws ServletException,
-			IOException {
+	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final boolean serveContent)
+			throws ServletException, IOException {
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
-		//	TODO del Log.trace("serving resource", resourceURI);
+		//	TODO del getLogger().trace("serving resource {}", resourceURI);
 		if(exists(request, resourceURI)) { //if this resource exists
-			//TODO del Log.trace("resource exists", resourceURI);
+			//TODO del getLogger().trace("resource exists? {}", resourceURI);
 			//TODO check if headers
 			final R resource = getResource(request, resourceURI); //get a resource description
 			serveResource(request, response, resource, serveContent); //serve the resource
@@ -335,7 +332,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	protected void serveResource(final HttpServletRequest request, final HttpServletResponse response, final R resource, final boolean serveContent)
 			throws ServletException, IOException {
 		if(isCollection(request, resource.getURI())) { //if the resource is a collection
-			//TODO del Log.trace("is collection", resourceURI);
+			//TODO del getLogger().trace("is collection {}", resourceURI);
 			if(LIST_DIRECTORIES) { //if we should list directories
 				final Writer writer = response.getWriter();
 				response.setContentType("text/plain");
@@ -354,22 +351,22 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 		}
 		//TODO del check; prevents default resources being returned; maybe throw not found exception somewhere here if it's clear there's nothing there  	else	//if this resource is not a collection
 		{
-			//TODO del Log.trace("is not a collection; ready to send back file", resourceURI);
+			//TODO del getLogger().trace("is not a collection; ready to send back file {}", resourceURI);
 			final Date lastModifiedDate = getLastModifiedDate(request, resource); //get the last modified date of the resource
 			if(lastModifiedDate != null) { //if we know when the resource was last modified; check this before adding headers, especially because we use weak validators (RFC 2616 10.3.5)---Last-Modified time is implicitly weak (RDF 2616 13.3.3)
-				//TODO del Log.trace("last modified date:", new HTTPDateFormat().format(lastModifiedDate));
+				//TODO del getLogger().trace("last modified date: {}", new HTTPDateFormat().format(lastModifiedDate));
 				final Date roundedLastModifiedDate = new Date((lastModifiedDate.getTime() / 1000) * 1000); //round the date to the nearest millisecond before using it to compare, because the incoming date only has a one-second precision and comparing with the incoming rounded date would result in data being sent back unnecessarily; see Hunter, Jason, _Java Servlet Programming_, Second Edition, page 59
 				try {
 					final Date ifModifiedSinceDate = getIfModifiedSinceDate(request); //get the If-Modified-Since date
 					/*TODO del 
 						if(ifModifiedSinceDate!=null)
 						{
-							Log.trace("If-Modified-Since:", new HTTPDateFormat().format(ifModifiedSinceDate));
-							Log.trace("ready to compare ifModifiedSince", ifModifiedSinceDate.getTime(), "and roundedLastModified", roundedLastModifiedDate.getTime(), "lastModified", lastModifiedDate.getTime());
+							getLogger().trace("If-Modified-Since: {}", new HTTPDateFormat().format(ifModifiedSinceDate));
+							getLogger().trace("ready to compare ifModifiedSince {} and roundedLastModified {} lastModified {}", ifModifiedSinceDate.getTime(), roundedLastModifiedDate.getTime(), lastModifiedDate.getTime());
 						}
 					*/
 					if(ifModifiedSinceDate != null && ifModifiedSinceDate.compareTo(roundedLastModifiedDate) <= 0) { //if there is an If-Modified-Since date and the resource was not modified since that date
-						//TODO del Log.trace("Not modified---use the value in the cache!");
+						//TODO del getLogger().trace("Not modified---use the value in the cache!");
 						throw new HTTPNotModifiedException(); //stop serving content and indicate that the resource has not been modified
 					}
 					//TODO add support for If-Unmodified-Since
@@ -377,17 +374,17 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 					throw new IllegalArgumentException(syntaxException);
 				}
 			}
-			//    	TODO del Log.trace("ready to send back a file");
+			//    	TODO del getLogger().trace("ready to send back a file");
 			final ContentType contentType = getContentType(request, resource); //get the content type of the resource
 			if(contentType != null) { //if we know the content type
-				//      	TODO del Log.trace("setting content type to:", contentType);
-				//TODO del Log.trace("setting content type to:", contentType);	//TODO del
+				//      	TODO del getLogger().trace("setting content type to: {}", contentType);
+				//TODO del getLogger().trace("setting content type to: {}", contentType);	//TODO del
 				response.setContentType(contentType.toString()); //tell the response which content type we're serving
 			}
 			if(HEAD_METHOD.equals(request.getMethod())) { //if this is a HEAD request, send back the content-length, but not for other methods, as we may compress the actual content TODO make sure this is the correct; RFC 2616 is ambiguous as to whether a HEAD content length should be the compressed length or the uncompresed length
 				final long contentLength = getContentLength(request, resource); //get the content length of the resource
 				if(contentLength >= 0) { //if we found a content length for the resource
-					//      	TODO del Log.trace("setting content length to:", contentLength);
+					//      	TODO del getLogger().trace("setting content length to: {}", contentLength);
 					assert contentLength < Integer.MAX_VALUE : "Resource size " + contentLength + " is too large.";
 					response.setContentLength((int)contentLength); //tell the response the size of the resource      		
 				}
@@ -399,10 +396,10 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				//TODO fix ranges
 				final OutputStream outputStream; //we'll determine the output stream
 				if(contentType != null && isText(contentType)) { //if this is a text content type TODO later add other content types, if they can be compressed
-					//TODO del      			Log.trace("compressing content type:", contentType);
+					//TODO del      			getLogger().trace("compressing content type: {}", contentType);
 					outputStream = getCompressedOutputStream(request, response); //get the output stream, compressing it if we can TODO do we want to check for an IllegalStateException, and send back text if we can?
 				} else { //if we don't know the content type, or it isn't text
-					//TODO del      			Log.trace("not compressing content type:", contentType);
+					//TODO del      			getLogger().trace("not compressing content type: {}", contentType);
 					outputStream = response.getOutputStream(); //get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
 				}
 				final InputStream inputStream = new BufferedInputStream(getInputStream(request, resource)); //get an input stream to the resource
@@ -473,7 +470,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 */
 	protected URI getResourceURI(final HttpServletRequest request, final URI requestedResourceURI, final String method, final URI analogousResourceURI) { //TODO now that we pass the request, remove the method parameter because it is redundance
 		URI resourceURI = requestedResourceURI; //start off assuming we'll use the requested URI
-		//	TODO del Log.trace("requested URI", requestedResourceURI);
+		//	TODO del getLogger().trace("requested URI {}", requestedResourceURI);
 		final String requestResourceURIString = requestedResourceURI.toString(); //get the string version of the request URI
 		if(!endsWith(requestResourceURIString, PATH_SEPARATOR)) { //if the URI is not a collection URI
 			final URI collectionURI = URI.create(requestResourceURIString + PATH_SEPARATOR); //add a trailing slash to get a collection URI
@@ -487,16 +484,16 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				}
 			} else { //if there is no analogous resource (don't do the liberal non-existence check if there is an analogous resource, because this could prevent MOVE or COPY from a non-collection to another non-collection when a similarly-named collection exists)
 				try {
-					//Log.trace("can we subsitutue", collectionURI, "for", requestedResourceURI);
+					//getLogger().trace("can we substitute {} for {}", collectionURI, requestedResourceURI);
 					if(canSubstitute(request, requestedResourceURI, collectionURI)) { //if we can substitute the collection URI for the requested URI
 						resourceURI = collectionURI; //use the collection URI				
 					}
 				} catch(final IOException ioException) { //if there is an error checking existence or whether the resource is a collection
-					Log.warn(ioException); //don't do anything major, now---the request will fail, later, and there's no forwarding to be done for error-prone resources
+					getLogger().warn("I/O error.", ioException); //don't do anything major, now---the request will fail, later, and there's no forwarding to be done for error-prone resources
 				}
 			}
 		}
-		//TODO del Log.trace("using URI", resourceURI);
+		//TODO del getLogger().trace("using URI {}", resourceURI);
 		return resourceURI; //return the resource URI we decided on
 	}
 
@@ -507,13 +504,13 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * This version allows substitution if the requested URI does not exist, but the substitute URI is a collection.
 	 * @param request The HTTP request indicating the requested resource.
 	 * @param requestedResourceURI The requested absolute URI of the resource.
-	 * @param substituteResourceURI The URI to the URI which may be substited for the first URI.
-	 * @return <code>true</code> if the provided URI may be substitued for the requested URI.
+	 * @param substituteResourceURI The URI to the URI which may be substituted for the first URI.
+	 * @return <code>true</code> if the provided URI may be substituted for the requested URI.
 	 * @throws IOException if there is an error checking whether URI substitution can occur.
 	 */
 	protected boolean canSubstitute(final HttpServletRequest request, final URI requestedResourceURI, final URI substituteResourceURI) throws IOException {
-		//Log.trace("requested resource exists:", exists(request, requestedResourceURI));
-		//Log.trace("substitute resource is collection:", isCollection(request, substituteResourceURI));
+		//getLogger().trace("requested resource exists: {}", exists(request, requestedResourceURI));
+		//getLogger().trace("substitute resource is collection: {}", isCollection(request, substituteResourceURI));
 		return !exists(request, requestedResourceURI) && isCollection(request, substituteResourceURI); //if the resource doesn't exist, but the substitute resource is a collection, we can substitute
 	}
 
@@ -530,7 +527,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	/*TODO fix
 		protected URI getResourceURI(final URI requestURI)
 		{
-	Log.trace("request URI", requestURI);
+	getLogger().trace("request URI {}", requestURI);
 			final String requestURIString=requestURI.toString();	//get the string version of the request URI
 			if(!endsWith(requestURIString, PATH_SEPARATOR)) {	//if the URI is not a collection URI
 				final URI redirectURI=URI.create(requestURIString+PATH_SEPARATOR);	//add a trailing slash to get a collection URI
@@ -543,7 +540,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 					redirect=!exists(requestURI) && isCollection(redirectURI);	//redirect if there is no such file but redirecting would take the client to a collection
 				}
 				if(redirect) {	//if we should redirect
-	Log.trace("sending redirect", redirectURI);
+	getLogger().trace("sending redirect {}", redirectURI);
 					if(isRedirectSupported(request)) {	//if redirection is supported by the user agent sending the request
 						throw new HTTPMovedPermanentlyException(redirectURI);	//report back that this resource has permanently moved to its correct location URI
 					}
@@ -566,15 +563,15 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws SAXException if there is an error parsing the document.
 	 */
 	protected Document getXML(final HttpServletRequest request, final DocumentBuilder documentBuilder) throws IOException, DOMException, SAXException {
-		//	TODO del Log.trace("getting XML");
+		//	TODO del getLogger().trace("getting XML");
 		final int contentLength = request.getContentLength(); //get the length of the request
-		//	TODO del Log.trace("content length", contentLength);
+		//	TODO del getLogger().trace("content length {}", contentLength);
 		//TODO del; no content length means no content		assert contentLength>=0 : "Missing content length";
 		if(contentLength > 0) { //if content is present	//TODO fix chunked coding
 			final InputStream inputStream = request.getInputStream(); //get an input stream to the request content
-			//TODO del Log.trace("Ready to get XML bytes of Content-Length:", contentLength);
+			//TODO del getLogger().trace("Ready to get XML bytes of Content-Length: {}", contentLength);
 			final byte[] content = InputStreams.getBytes(inputStream, contentLength); //read the request TODO check for the content being shorter than expected
-			//TODO del Log.trace("got bytes:", new String(content, "UTF-8"));
+			//TODO del getLogger().trace("got bytes: {}", new String(content, "UTF-8"));
 			boolean hasContent = false; //we'll start out assuming there actually is no content
 			for(final byte b : content) { //look at each byte in the content
 				if(!Characters.isWhitespace((char)b)) { //if this byte doesn't represent whitespace (ignoring the encoding is fine, because another encoding would require content, so if we find non-whitespace it means there is some content)
@@ -584,7 +581,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			}
 			if(hasContent) { //if we have content
 				final InputStream xmlInputStream = new ByteArrayInputStream(content); //create a new input stream from the bytes we read
-				//TODO del Log.trace("ready to parse");
+				//TODO del getLogger().trace("ready to parse");
 				return documentBuilder.parse(xmlInputStream); //parse the bytes we read
 			}
 		}
@@ -609,8 +606,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8); //serialize the document to the byte array with no byte order mark
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
-			response.setContentType(ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE,
-					new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8.name())));
+			response.setContentType(
+					ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8.name())));
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
@@ -779,8 +776,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createCollection(HttpServletRequest, URI)
 	 */
-	protected abstract OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException;
+	protected abstract OutputStream createResource(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**
 	 * Creates a resource. For collections, {@link #createCollection(URI)} should be used instead.
@@ -803,8 +800,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createResource(HttpServletRequest, URI)
 	 */
-	protected abstract R createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException;
+	protected abstract R createCollection(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException;
 
 	/**
 	 * Deletes a resource.

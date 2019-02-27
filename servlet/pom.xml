@@ -48,17 +48,17 @@
 
 		<dependency>
 			<groupId>com.globalmentor</groupId>
-			<artifactId>globalmentor-log</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.globalmentor</groupId>
 			<artifactId>globalmentor-webdav</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.globalmentor</groupId>
 			<artifactId>globalmentor-management</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.clogr</groupId>
+			<artifactId>clogr</artifactId>
 		</dependency>
 	</dependencies>
 </project>

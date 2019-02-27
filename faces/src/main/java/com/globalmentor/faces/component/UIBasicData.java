@@ -40,27 +40,27 @@ public class UIBasicData extends UIData {
 	/*TODO del
 	  public void setRowIndex(int rowIndex)
 			{
-				Log.trace("basic data setting row index:", rowIndex);
+				getLogger().trace("basic data setting row index: {}", rowIndex);
 				super.setRowIndex(rowIndex);
-	Log.trace("row index set, var:", getVar());
-	Log.trace("row data available:", isRowAvailable());
+	getLogger().trace("row index set, var: {}", getVar());
+	getLogger().trace("row data available: {}", isRowAvailable());
 	if(isRowAvailable())
 	{
-		Log.trace("row data is:", getRowData());
+		getLogger().trace("row data is: {}", getRowData());
 	}
 	else
 	{
-		Log.trace("row data not available; let's find out why.");
+		getLogger().trace("row data not available; let's find out why.");
 		final Object value=getValue();
-		Log.trace("value is: ", value);
-	//TODO del	Log.trace("data model is:", getDataModel());
+		getLogger().trace("value is: {}", value);
+	//TODO del	getLogger().trace("data model is: {}", getDataModel());
 		if(value instanceof Object[])
 		{
 			final Object[] objects=(Object[])value;
-			Log.trace("This is an array of length: ", objects.length);
+			getLogger().trace("This is an array of length: {}", objects.length);
 		}
 	Map requestMap =getFacesContext().getExternalContext().getRequestMap();
-	Log.trace("variable is now:", requestMap.get(getVar()));
+	getLogger().trace("variable is now: {}", requestMap.get(getVar()));
 	
 			}
 	*/

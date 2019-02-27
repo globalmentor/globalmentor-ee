@@ -87,9 +87,9 @@ public class FacesExpressions {
 			if(isMethodReference(string)) { //if this is a method reference
 				return createMethodBindingExpression(application, string); //create a method binding expression
 			} else { //if this is not a method reference, it must be a value reference
-				//TODO del Log.trace("creating value-binding expression for string: ", string);
+				//TODO del getLogger().trace("creating value-binding expression for string: {}", string);
 				final ValueBinding valueBinding = application.createValueBinding(string); //create a value binding for the string
-				//TODO Log.trace("value-binding type: ", valueBinding.getType(FacesContext.getCurrentInstance()));
+				//TODO getLogger().trace("value-binding type: {}", valueBinding.getType(FacesContext.getCurrentInstance()));
 				return new ValueBindingExpression(valueBinding); //create and return a value binding expression from the value binding we created
 			}
 		} else { //if this is not a reference expression

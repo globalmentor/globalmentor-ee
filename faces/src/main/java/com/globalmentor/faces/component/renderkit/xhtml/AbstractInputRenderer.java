@@ -112,7 +112,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 			final Map requestParameterMap = context.getExternalContext().getRequestParameterMap(); //get the request parameters
 			final String clientID = component.getClientId(context); //get the component's client ID
 			final Object value = requestParameterMap.get(clientID); //see if there is a value for our component
-			//TODO del Log.trace("found value:", value);
+			//TODO del getLogger().trace("found value: {}", value);
 			//if there is a value for our component
 			if(value != null) {
 				final UIInput input = (UIInput)component; //get the component as an input component

@@ -54,14 +54,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.globalmentor</groupId>
-			<artifactId>globalmentor-log</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.clogr</groupId>
+			<artifactId>clogr</artifactId>
 		</dependency>
 	</dependencies>
 </project>
