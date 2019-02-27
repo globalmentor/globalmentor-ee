@@ -38,6 +38,7 @@ import com.globalmentor.servlet.Servlets;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.text.W3CDateFormat;
 
+import static com.globalmentor.io.Filenames.*;
 import static com.globalmentor.io.Files.*;
 import static com.globalmentor.java.Conditions.*;
 import static com.globalmentor.net.HTTP.*;
@@ -286,7 +287,7 @@ public class BaseHTTPServlet extends HttpServlet {
 			throw new IllegalArgumentException("Resource server absolute path " + resourceServerAbsolutePath + " is not located under context path " + contextPath);
 		}
 		final String resourceContextAbsolutePath = resourceServerAbsolutePath.substring(contextPath.length()); //remove the context path
-		if(!isAbsolutePath(resourceContextAbsolutePath)) { //if the resulting path is not absolute, we split a segment in two
+		if(!isPathAbsolute(resourceContextAbsolutePath)) { //if the resulting path is not absolute, we split a segment in two
 			throw new IllegalArgumentException("Resource server absolute path " + resourceServerAbsolutePath + " is not located under context path " + contextPath);
 		}
 		return resourceContextAbsolutePath; //create the context-relative absolute path
@@ -348,8 +349,8 @@ public class BaseHTTPServlet extends HttpServlet {
 			doMethod(request.getMethod(), request, response); //allow the subclass to do special processing if needed
 		} catch(final OutOfMemoryError outOfMemoryError) { //if there was an out-of-memory error, log the info before rethrowing the error
 			final Runtime runtime = Runtime.getRuntime(); //get the runtime instance
-			Log.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used", runtime.totalMemory()
-					- runtime.freeMemory());
+			Log.warn(outOfMemoryError, "memory max", runtime.maxMemory(), "total", runtime.totalMemory(), "free", runtime.freeMemory(), "used",
+					runtime.totalMemory() - runtime.freeMemory());
 			throw outOfMemoryError; //rethrow the error
 		} catch(final AssertionError assertionError) { //if there was an assertion error, that's a serious internal server error
 			Log.warn(assertionError); //log the problem
@@ -512,8 +513,8 @@ public class BaseHTTPServlet extends HttpServlet {
 	 * @throws HTTPUnauthorizedException if the credentials do not provide authorization for access to the resource indicated by the given URI.
 	 * @see #checkAuthorization(HttpServletRequest, URI, String, String, AuthenticateCredentials)
 	 */
-	protected void checkAuthorization(final HttpServletRequest request) throws HTTPInternalServerErrorException, HTTPBadRequestException, HTTPRedirectException,
-			HTTPForbiddenException, HTTPUnauthorizedException {
+	protected void checkAuthorization(final HttpServletRequest request)
+			throws HTTPInternalServerErrorException, HTTPBadRequestException, HTTPRedirectException, HTTPForbiddenException, HTTPUnauthorizedException {
 		try {
 			final URI resourceURI = getResourceURI(request); //get the requested URI
 			final AuthenticateCredentials credentials = getAuthorization(request); //get the credentials from this request, if any
@@ -575,8 +576,8 @@ public class BaseHTTPServlet extends HttpServlet {
 	 * @param credentials The principal's credentials, or <code>null</code> if no credentials are available.
 	 * @param authenticated <code>true</code> if the principal succeeded in authentication, else <code>false</code>.
 	 */
-	protected void authenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI,
-			final Principal principal, final String realm, final AuthenticateCredentials credentials, final boolean authenticated) {
+	protected void authenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI, final Principal principal,
+			final String realm, final AuthenticateCredentials credentials, final boolean authenticated) {
 	}
 
 	/**
@@ -641,8 +642,8 @@ public class BaseHTTPServlet extends HttpServlet {
 	 * @throws HTTPUnauthorizedException if the credentials represent a stale digest authentication nonce.
 	 */
 	protected boolean isAuthenticated(final HttpServletRequest request, final URI resourceURI, final String method, final String requestURI,
-			final Principal principal, final String realm, final AuthenticateCredentials credentials) throws HTTPInternalServerErrorException,
-			HTTPUnauthorizedException {
+			final Principal principal, final String realm, final AuthenticateCredentials credentials)
+			throws HTTPInternalServerErrorException, HTTPUnauthorizedException {
 		//TODO del Log.trace("authenticating");
 		final String credentialsRealm = credentials != null ? credentials.getRealm() : null; //see if the credentials reports the realm, if we have credentials
 		//TODO del Log.trace("got realm", realm);

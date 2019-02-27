@@ -508,7 +508,7 @@ public class HTTPServlets {
 		final String destinationHeader = request.getHeader(DESTINATION_HEADER); //get the destination header value
 		if(destinationHeader != null) { //if there is a destination header value
 			final URI destinationURI = URI.create(destinationHeader); //create a URI from the given value
-			if(!destinationURI.isAbsolute() || !isAbsolutePath(destinationURI)) { //if the URI is not absolute and the path is not absolute
+			if(!destinationURI.isAbsolute() || !hasAbsolutePath(destinationURI)) { //if the URI is not absolute and the path is not absolute
 				throw new IllegalArgumentException(DESTINATION_HEADER + " header value " + destinationHeader + " is not absolute.");
 			}
 			return destinationURI; //return the URI we created from the value
@@ -589,9 +589,9 @@ public class HTTPServlets {
 	public static final String USER_AGENT_NAME_YAHOO_MMCRAWLER = "Yahoo!-MMCrawler";
 
 	/** The read-only set of spiders that do not support sessions. */
-	public static final Set<String> UNSESSIONED_SPIDER_USER_AGENT_NAMES = unmodifiableSet(new HashSet<String>(asList(USER_AGENT_NAME_ALEXA,
-			USER_AGENT_NAME_BAIDU_SPIDER, USER_AGENT_NAME_GIGABOT, USER_AGENT_NAME_GOOGLEBOT, USER_AGENT_NAME_GOOGLEBOT_IMAGE, USER_AGENT_NAME_JMETER,
-			USER_AGENT_NAME_MSNBOT, USER_AGENT_NAME_SCOOTER, USER_AGENT_NAME_W3C_VALIDATOR, USER_AGENT_NAME_YAHOO_MMCRAWLER)));
+	public static final Set<String> UNSESSIONED_SPIDER_USER_AGENT_NAMES = unmodifiableSet(new HashSet<String>(
+			asList(USER_AGENT_NAME_ALEXA, USER_AGENT_NAME_BAIDU_SPIDER, USER_AGENT_NAME_GIGABOT, USER_AGENT_NAME_GOOGLEBOT, USER_AGENT_NAME_GOOGLEBOT_IMAGE,
+					USER_AGENT_NAME_JMETER, USER_AGENT_NAME_MSNBOT, USER_AGENT_NAME_SCOOTER, USER_AGENT_NAME_W3C_VALIDATOR, USER_AGENT_NAME_YAHOO_MMCRAWLER)));
 
 	/** The Microsoft Internet Explorer 6 Security Version 1 identifier. */
 	public static final String USER_AGENT_MSIE6_SV1 = "SV1";
@@ -620,8 +620,8 @@ public class HTTPServlets {
 	private static final Pattern OPERA_PATTERN = Pattern.compile("Opera[/ ](" + PRODUCT_VERSION_REGEX + ")");
 
 	/**
-	 * The pattern for matching the MSIE user agent. The entire version number is the first matching group. Microsoft recommended regular expression:
-	 * "MSIE ([0-9]{1,}[\\.0-9]{0,})"
+	 * The pattern for matching the MSIE user agent. The entire version number is the first matching group. Microsoft recommended regular expression: "MSIE
+	 * ([0-9]{1,}[\\.0-9]{0,})"
 	 * @see <a href="http://msdn.microsoft.com/workshop/author/dhtml/overview/browserdetection.asp">Detecting Internet Explorer More Effectively</a>
 	 */
 	private static final Pattern MSIE_PATTERN = Pattern.compile("MSIE (" + PRODUCT_VERSION_REGEX + ")");

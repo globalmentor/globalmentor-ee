@@ -24,7 +24,7 @@
 	</scm>
 
 	<properties>
-		<globalmentor.http.version>0.6.0-SNAPSHOT</globalmentor.http.version>
+		<globalmentor-http.version>0.6.0-SNAPSHOT</globalmentor-http.version>
 	</properties>
 
 	<modules>
@@ -37,13 +37,13 @@
 			<dependency>
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-core</artifactId>
-				<version>0.5.3</version>
+				<version>0.5.7-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-http</artifactId>
-				<version>${globalmentor.http.version}</version>
+				<version>${globalmentor-http.version}</version>
 			</dependency>
 
 			<dependency>
@@ -61,7 +61,7 @@
 			<dependency>
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-webdav</artifactId>
-				<version>${globalmentor.http.version}</version>
+				<version>${globalmentor-http.version}</version>
 			</dependency>
 
 			<dependency>
