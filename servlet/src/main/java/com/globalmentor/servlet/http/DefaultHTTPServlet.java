@@ -23,10 +23,6 @@ import static java.util.Collections.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.urframework.*;
-import org.urframework.content.Content;
-
-import com.globalmentor.iso.datetime.ISODateTime;
 import com.globalmentor.net.*;
 import com.globalmentor.net.http.HTTPConflictException;
 
@@ -159,8 +155,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createCollection(HttpServletRequest, URI)
 	 */
-	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException {
+	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException {
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
@@ -174,8 +170,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createResource(HttpServletRequest, URI)
 	 */
-	protected HTTPServletResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException {
+	protected HTTPServletResource createCollection(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException {
 		throw new UnsupportedOperationException("DefaultHTTPServlet writing not yet implemented.");
 	}
 
@@ -239,70 +235,6 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @throws IOException if there is an error getting an input stream to the resource.
 		 */
 		public InputStream getInputStream(final HttpServletRequest request) throws IOException;
-	}
-
-	/**
-	 * A resource that has retrieves its properties, if possible, from a given RDF description. Recognized properties are:
-	 * <ul>
-	 * <li>{@link Content#TYPE_PROPERTY_URI} TODO implement</li>
-	 * <li>{@link Content#LENGTH_PROPERTY_URI}</li>
-	 * <li>{@link Content#MODIFIED_PROPERTY_URI}</li>
-	 * </ul>
-	 * @author Garret Wilson
-	 */
-	protected abstract static class AbstractDescriptionResource extends DefaultResource implements HTTPServletResource {
-
-		/** The description of the resource. */
-		private final URFResource resourceDescription;
-
-		/** @return The description of the resource. */
-		public URFResource getResourceDescription() {
-			return resourceDescription;
-		}
-
-		/**
-		 * Returns the full content type of the resource, including any parameters.
-		 * @param request The HTTP request in response to which the content type is being retrieved.
-		 * @return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
-		 * @throws IOException if there is an error getting the type of the resource.
-		 */
-		public ContentType getContentType(final HttpServletRequest request) throws IOException {
-			return Content.getFullContentType(getResourceDescription()); //return the full content type from the description, if possible
-		}
-
-		/**
-		 * Returns the content length of the resource.
-		 * @param request The HTTP request in response to which the content length is being retrieved.
-		 * @return The content length of the resource, or <code>-1</code> if the content length could not be determined.
-		 * @throws IOException if there is an error getting the length of the resource.
-		 */
-		public long getContentLength(final HttpServletRequest request) throws IOException {
-			return Content.getContentLength(getResourceDescription()); //return the content length from the description, if possible
-		}
-
-		/**
-		 * Returns the last modification time of the resource.
-		 * @param request The HTTP request in response to which the last modified time is being retrieved.
-		 * @return The time of last modification as the number of milliseconds since January 1, 1970 GMT, or <code>-1</code> if the last modified date could not be
-		 *         determined.
-		 * @throws IOException if there is an error getting the last modified time.
-		 */
-		public long getLastModified(final HttpServletRequest request) throws IOException {
-			final ISODateTime modifiedDateTime = Content.getModified(getResourceDescription()); //get the last modified date time from the description, if that property exists
-			return modifiedDateTime != null ? modifiedDateTime.getTime() : -1; //return the milliseconds of the time, if the time is available
-		}
-
-		/**
-		 * Constructs a resource with a reference URI and resource description.
-		 * @param referenceURI The reference URI for the new resource.
-		 * @param resourceDescription The description of the resource.
-		 * @throws NullPointerException if the reference URI and/or resource description is <code>null</code>.
-		 */
-		public AbstractDescriptionResource(final URI referenceURI, final URFResource resourceDescription) {
-			super(requireNonNull(referenceURI, "HTTP resource reference URI cannot be null.")); //construct the parent class
-			this.resourceDescription = requireNonNull(resourceDescription, "Resource description cannot be null."); //save the description
-		}
-
 	}
 
 	/**

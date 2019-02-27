@@ -54,6 +54,12 @@
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
+				<artifactId>globalmentor-log</artifactId>
+				<version>0.5.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-w3c-spec</artifactId>
 				<version>0.5.0</version>
 			</dependency>
@@ -62,12 +68,6 @@
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-webdav</artifactId>
 				<version>${globalmentor-http.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.globalmentor</groupId>
-				<artifactId>urframework</artifactId>
-				<version>0.5.0</version>
 			</dependency>
 
 			<dependency>
