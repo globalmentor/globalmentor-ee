@@ -33,6 +33,11 @@
 
 		<dependency>
 			<groupId>com.globalmentor</groupId>
+			<artifactId>globalmentor-html-spec</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.globalmentor</groupId>
 			<artifactId>globalmentor-http</artifactId>
 		</dependency>
 
@@ -43,22 +48,17 @@
 
 		<dependency>
 			<groupId>com.globalmentor</groupId>
-			<artifactId>globalmentor-w3c-spec</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.globalmentor</groupId>
 			<artifactId>globalmentor-webdav</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.globalmentor</groupId>
-			<artifactId>urframework</artifactId>
+			<artifactId>globalmentor-management</artifactId>
 		</dependency>
 
 		<dependency>
-			<groupId>com.globalmentor</groupId>
-			<artifactId>globalmentor-management</artifactId>
+			<groupId>io.clogr</groupId>
+			<artifactId>clogr</artifactId>
 		</dependency>
 	</dependencies>
 </project>

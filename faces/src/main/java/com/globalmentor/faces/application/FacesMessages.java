@@ -18,7 +18,7 @@ package com.globalmentor.faces.application;
 
 import javax.faces.application.FacesMessage;
 
-import com.globalmentor.log.Log;
+import io.clogr.Clogr;
 
 /**
  * Utilities for working with the JavaServer Faces messages.
@@ -32,7 +32,7 @@ public class FacesMessages {
 	 * @return A Faces message appropriate for the error.
 	 */
 	public static FacesMessage createMessage(final Throwable throwable) {
-		Log.error(throwable); //log the error
+		Clogr.getLogger(FacesMessages.class).error("Error.", throwable); //log the error
 		final String messageString = throwable.getMessage(); //get the throwable's message
 		final FacesMessage message = new FacesMessage(messageString != null ? messageString : throwable.toString()); //create a new faces message from the message string
 		message.setSeverity(FacesMessage.SEVERITY_ERROR); //show that this was an error		

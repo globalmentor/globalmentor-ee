@@ -99,8 +99,8 @@ public class ForEachRenderer extends Renderer {
 		if(component.getChildCount() > 0) {
 			/*TODO del
 			Debug.setDebug(true);
-			Log.trace("items is a: ", component.getAttributes().get("items").getClass().getName());
-			Log.trace("var is a: ", component.getAttributes().get("var").getClass().getName());
+			getLogger().trace("items is a: {}", component.getAttributes().get("items").getClass().getName());
+			getLogger().trace("var is a: {}", component.getAttributes().get("var").getClass().getName());
 			*/
 
 			//TODO del	   		String itemsString = (String) component.getAttributes().get("items");

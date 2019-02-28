@@ -24,7 +24,7 @@ import javax.faces.context.*;
 
 import static com.globalmentor.javascript.JavaScript.*;
 
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Utilities for rendering components.

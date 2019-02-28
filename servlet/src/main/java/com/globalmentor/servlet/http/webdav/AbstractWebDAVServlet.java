@@ -25,7 +25,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.globalmentor.collections.DecoratorIDedMappedList;
-import com.globalmentor.log.Log;
 import com.globalmentor.net.Resource;
 import com.globalmentor.net.http.*;
 import com.globalmentor.net.http.webdav.*;
@@ -41,8 +40,8 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
- * The base servlet class for implementing a WebDAV server as defined by <a href="http://www.ietf.org/rfc/rfc2518.txt">RFC 2518</a>,
- * "HTTP Extensions for Distributed Authoring -- WEBDAV".
+ * The base servlet class for implementing a WebDAV server as defined by <a href="http://www.ietf.org/rfc/rfc2518.txt">RFC 2518</a>, "HTTP Extensions for
+ * Distributed Authoring -- WEBDAV".
  * @author Garret Wilson
  */
 public abstract class AbstractWebDAVServlet<R extends Resource> extends AbstractHTTPServlet<R> { //TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
@@ -103,22 +102,22 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	 */
 	public void doCopy(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
-		Log.trace("moving; checking to see if resource exists", resourceURI);
+		getLogger().trace("moving; checking to see if resource {} exists", resourceURI);
 		if(exists(request, resourceURI)) { //if this resource exists
-			Log.trace("resource exists; getting resource");
+			getLogger().trace("resource exists; getting resource");
 			final R resource = getResource(request, resourceURI); //get the resource information
-			Log.trace("getting destination");
+			getLogger().trace("getting destination");
 			final URI requestedDestinationURI = getDestination(request); //get the destination URI for the operation
 			if(requestedDestinationURI != null) { //if a destination was given
-				Log.trace("requested destination", requestedDestinationURI);
+				getLogger().trace("requested destination: {}", requestedDestinationURI);
 				//get the canonical destination URI
 				final URI destinationURI = getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 				final boolean destinationExists = exists(request, destinationURI); //see whether the destination resource already exists
-				Log.trace("destination exists?", destinationExists);
+				getLogger().trace("destination exists? {}", destinationExists);
 				final Depth depth = getDepth(request); //determine the requested depth
-				Log.trace("depth requested:", depth);
+				getLogger().trace("depth requested: {}", depth);
 				final boolean overwrite = isOverwrite(request); //see if we should overwrite an existing destination resource
-				Log.trace("is overwrite?", overwrite);
+				getLogger().trace("is overwrite? {}", overwrite);
 				copyResource(request, resource, destinationURI, depth == Depth.INFINITY ? -1 : depth.ordinal(), overwrite); //copy the resource to its new location
 				if(destinationExists) { //if the destination resource already existed
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT); //indicate success by showing that there is no content to return
@@ -144,20 +143,20 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 	 */
 	public void doMove(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		final URI resourceURI = getResourceURI(request); //get the URI of the requested resource
-		Log.trace("moving; checking to see if resource exists", resourceURI);
+		getLogger().trace("moving; checking to see if resource {} exists", resourceURI);
 		if(exists(request, resourceURI)) { //if this resource exists
-			Log.trace("resource exists; getting resource");
+			getLogger().trace("resource exists; getting resource");
 			final R resource = getResource(request, resourceURI); //get the resource information
-			Log.trace("getting destination");
+			getLogger().trace("getting destination");
 			final URI requestedDestinationURI = getDestination(request); //get the destination URI for the operation
 			if(requestedDestinationURI != null) { //if a destination was given
-				Log.trace("requested destination", requestedDestinationURI);
+				getLogger().trace("requested destination: {}", requestedDestinationURI);
 				//get the canonical destination URI
 				final URI destinationURI = getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 				final boolean destinationExists = exists(request, destinationURI); //see whether the destination resource already exists
-				Log.trace("destination exists?", destinationExists);
+				getLogger().trace("destination exists? {}", destinationExists);
 				final boolean overwrite = isOverwrite(request); //see if we should overwrite an existing destination resource
-				Log.trace("is overwrite?", overwrite);
+				getLogger().trace("is overwrite? {}", overwrite);
 				moveResource(request, resource, destinationURI, overwrite); //move the resource to its new location
 				if(destinationExists) { //if the destination resource already existed
 					response.setStatus(HttpServletResponse.SC_NO_CONTENT); //indicate success by showing that there is no content to return
@@ -236,10 +235,10 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 						//TODO add a response description here
 					}
 					response.setStatus(SC_MULTI_STATUS); //show that we will be sending back multistatus content
-					Log.trace("Ready to send back XML:", XML.toString(multistatusDocument));
+					getLogger().trace("Ready to send back XML: {}", XML.toString(multistatusDocument));
 					setXML(request, response, multistatusDocument); //put the XML in our response and send it back, compressed if possible
 				} catch(final DOMException domException) { //any XML problem here is the server's fault
-					Log.error(domException); //report the error
+					getLogger().error("XML DOM error.", domException); //report the error
 					throw new HTTPInternalServerErrorException(domException); //show that the XML wasn't correct
 				}
 			} else { //if the resource does not exist
@@ -291,7 +290,7 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 			//  	TODO implement  		methodSet.add(PROPPATCH);
 			//  	TODO implement  		methodSet.add(UNLOCK);
 		} else { //if the resource does not exist
-		//  	TODO implement  		methodSet.add(LOCK);
+			//  	TODO implement  		methodSet.add(LOCK);
 			allowedMethods.add(MKCOL_METHOD);
 		}
 		return allowedMethods; //return the allowed methods
@@ -322,7 +321,7 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 			if(COPY_METHOD.equals(method) || MOVE_METHOD.equals(method)) { //if this is COPY or MOVE
 				final URI requestedDestinationURI = getDestination(request); //get the destination URI for the operation
 				if(requestedDestinationURI != null) { //if a destination was given (ignore missing destinations---a principal is authorized to copy or move a resource to nowhere)
-					Log.trace("checking authorization for requested destination", requestedDestinationURI);
+					getLogger().trace("checking authorization for requested destination {}", requestedDestinationURI);
 					//get the canonical destination URI
 					final URI destinationURI = getResourceURI(request, requestedDestinationURI, request.getMethod(), resourceURI);
 					//for COPY and MOVE, make sure the principal is authorized to do a PUT on the destination

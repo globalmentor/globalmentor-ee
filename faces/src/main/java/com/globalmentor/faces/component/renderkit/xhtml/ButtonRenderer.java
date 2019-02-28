@@ -30,12 +30,12 @@ import com.globalmentor.faces.component.UIBasicForm;
 
 import static com.globalmentor.faces.component.FacesComponents.*;
 import static com.globalmentor.faces.taglib.xhtml.XHTMLTags.*;
+import static com.globalmentor.html.spec.HTML.*;
 import static com.globalmentor.javascript.JavaScript.*;
-import static com.globalmentor.w3c.spec.HTML.*;
 
 /**
  * Renders a <code>UICommand</code> as a button. Microsoft Internet Explorer does not correctly return values for the HTML button element, so this renderer uses
- * hidden fields and Javascript to effect the same result when IE is the client.
+ * hidden fields and JavaScript to effect the same result when IE is the client.
  * @author Garret Wilson TODO create client checking for IE
  */
 public class ButtonRenderer extends AbstractXHTMLRenderer {
@@ -92,7 +92,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 		*/
 		final ResponseWriter writer = context.getResponseWriter(); //get the response writer
 		final String clientID = component.getClientId(context); //get the component's client ID
-		//TODO del Log.trace("ready to try to encode button:", clientID);
+		//TODO del getLogger().trace("ready to try to encode button: {}", clientID);
 
 		/*TODO fix without relying on UIBasicForm
 				if(USE_JAVASCRIPT) {	//if we should use JavaScript to compensate for a buggy browser
@@ -113,10 +113,10 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 			final UICommand command = (UICommand)component; //get the component as a command component
 
 			//TODO del Debug.setDebug(true);
-			//TODO del Log.trace("**********encoding, action type is: ", command.getAction().getType(context));
-			//TODO del Log.trace("**********encoding, action value is: ", command.getAction().invoke(context, new Object[]{}));
+			//TODO del getLogger().trace("**********encoding, action type is: {}", command.getAction().getType(context));
+			//TODO del getLogger().trace("**********encoding, action value is: {}", command.getAction().invoke(context, new Object[]{}));
 
-			//TODO del Log.trace("encoding command", command, "client id", clientID);
+			//TODO del getLogger().trace("encoding command {} client id {}", command, clientID);
 			writer.writeAttribute(ATTRIBUTE_NAME, clientID, CLIENT_ID_ATTRIBUTE); //write the client ID as the name
 			final Map attributeMap = component.getAttributes(); //get the map of attributes
 			final String type; //we'll deterine the type to generate
@@ -255,8 +255,8 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 				final String hiddenFieldClientID = getHiddenFieldClientID(context, component); //get the client ID of the hidden field
 				final String hiddenFieldValue = (String)requestParameterMap.get(hiddenFieldClientID); //see if there is a value for our hidden field
 				/*TODO del
-				Log.trace("hidden field value:", hiddenFieldValue);
-				Log.trace("expecting value of client ID:", clientID);
+				getLogger().trace("hidden field value: {}", hiddenFieldValue);
+				getLogger().trace("expecting value of client ID: {}", clientID);
 				*/
 				isClientIDMatch = clientID.equals(hiddenFieldValue); //record whether the the hidden field value contains our client ID
 			} else { //if we're not using JavaScript
@@ -277,7 +277,7 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 					return; //don't generate an event for the reset button
 				}
 				final ActionEvent actionEvent = new ActionEvent(component); //create a new action event for our component
-				//TODO del Log.trace("---queueing an action:", actionEvent);
+				//TODO del getLogger().trace("---queueing an action: {}", actionEvent);
 				component.queueEvent(actionEvent); //queue our new action
 			}
 		}

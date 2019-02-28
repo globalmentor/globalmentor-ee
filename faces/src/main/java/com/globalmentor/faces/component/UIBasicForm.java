@@ -27,15 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.globalmentor.faces.context.RequestParametersFacesContextDecorator;
 import com.globalmentor.io.*;
-import com.globalmentor.log.Log;
 import com.globalmentor.net.ContentType;
 import com.globalmentor.text.ArgumentSyntaxException;
 import com.globalmentor.util.*;
-import com.globalmentor.w3c.spec.HTML;
+
+import io.clogr.Clogged;
 
 import org.apache.commons.fileupload.*;
 
-import static com.globalmentor.w3c.spec.HTML.*;
+import static com.globalmentor.html.spec.HTML.*;
 
 /**
  * Basic form component with enhanced functionality to process multipart form submissions.
@@ -51,7 +51,7 @@ import static com.globalmentor.w3c.spec.HTML.*;
  * </p>
  * @author Garret Wilson
  */
-public class UIBasicForm extends UIForm {
+public class UIBasicForm extends UIForm implements Clogged {
 
 	/** The ID of the hidden field used to hold the button value. */
 	protected static final String HIDDEN_FIELD_ID = "button";
@@ -123,11 +123,11 @@ public class UIBasicForm extends UIForm {
 		FacesContext decodeContext = context; //we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype = (String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE); //get the enctype
 		try {
-			if(enctype != null && HTML.MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.create(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
+			if(enctype != null && MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.create(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
 				if(context.getExternalContext().getRequest() instanceof HttpServletRequest) { //if this is an HTTP request
 					final HttpServletRequest request = (HttpServletRequest)context.getExternalContext().getRequest(); //get the HTTP request
 					if(FileUpload.isMultipartContent(request)) { //if this is multipart content			
-						Log.trace("is multipart content");
+						getLogger().trace("is multipart content");
 						/*TODO fix or delete
 										final DiskFileUpload diskFileUpload=new DiskFileUpload();	//create a file upload handler
 											//create a factory to populate a map with form fields
@@ -156,13 +156,13 @@ public class UIBasicForm extends UIForm {
 							for(final Object object : fileItems) { //look at each file item
 								final FileItem fileItem = (FileItem)object; //cast the object to a file item
 								/*TODO del
-										Log.trace("looking at a file item", fileItem.getFieldName(), "with name", fileItem.getName(), "searching for our client ID");
+										getLogger().trace("looking at a file item {} with name {} searching for our client ID", fileItem.getFieldName(), fileItem.getName());
 										if(fileItem.isFormField()) {	//TODO del
-											Log.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+											getLogger().trace("looking at form field {} with value {}", fileItem.getFieldName(), fileItem);
 										}
 								*/
 								if(fileItem.isFormField() && clientID.equals(fileItem.getFieldName())) { //if this is a form field for our client ID
-									//TODO del	Log.trace("found our client ID!", clientID);
+									//TODO del	getLogger().trace("found our client ID! {}", clientID);
 									foundClientID = true; //show that we found the client ID
 									break; //stop searching for the client ID
 								}
@@ -182,16 +182,16 @@ public class UIBasicForm extends UIForm {
 								decodeContext = requestParametersFacesContextDecorator; //use our JSF context decorator when doing the rest of the decoding
 							}
 						} catch(final FileUploadException fileUploadException) { //if there was an error parsing the files
-							Log.warn(fileUploadException); //just warn about the problem
+							getLogger().warn("File upload error.", fileUploadException); //just warn about the problem
 						}
 					}
 				}
 			}
-		} catch(final ArgumentSyntaxException mimeTypeParseException) {
-			Log.warn(mimeTypeParseException); //just warn about the incorrect MIME type format
+		} catch(final ArgumentSyntaxException argumentSyntaxException) {
+			getLogger().warn("Incorrect MIME type format.", argumentSyntaxException); //just warn about the incorrect MIME type format
 		}
-		//TODO del Log.trace("ready to process default form decodes");
-		//if this form submision was meant for us, we'll have set up the request parameters with the submitted values
+		//TODO del getLogger().trace("ready to process default form decodes");
+		//if this form submission was meant for us, we'll have set up the request parameters with the submitted values
 		super.processDecodes(decodeContext); //do the default decode processing with either the context we received, or the one we wrapped to return our extra parameters
 	}
 
@@ -238,12 +238,12 @@ public class UIBasicForm extends UIForm {
 		 * @param fileName The name of the uploaded file, if any, as supplied by the browser or other client.
 		 */
 		public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName) {
-			//TODO del 	Log.trace("ready to create a file item");
+			//TODO del 	getLogger().trace("ready to create a file item");
 			final FileItem fileItem; //we'll store a file item here to return
 			if(isFormField) { //if this is a form field
 				//delegate to the default factory
 				fileItem = getDefaultFileItemFactory().createItem(fieldName, contentType, isFormField, fileName);
-				//TODO del		Log.trace("looking at form field", fileItem.getFieldName(), "with value", fileItem.getString());
+				//TODO del		getLogger().trace("looking at form field {} with value {}", fileItem.getFieldName(), fileItem);
 				getFormFieldMap().put(fileItem.getFieldName(), fileItem.getString()); //store this field in this map
 			} else { //if this is not a form field
 				fileItem = new DummyFileItem(fieldName, contentType, isFormField, fileName); //create a dummy file item				

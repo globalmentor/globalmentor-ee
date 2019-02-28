@@ -63,33 +63,33 @@ public class MethodBindingExpression<T> implements Expression<T> {
 			for(int i = 0; i < parameterExpressions.length; ++i) { //look at each parameter expression
 				parameterTypes[i] = parameterExpressions[i].getType(context); //get the type of this parameter
 				/*TODO fix
-				Log.trace("*****does this fix the type bug? parameter type for expression", parameterExpressions[i].getExpressionString(), "is", parameterTypes[i]);	//get the type of this parameter
+				getLogger().trace("*****does this fix the type bug? parameter type for expression {} is {}", parameterExpressions[i].getExpressionString(), parameterTypes[i]);	//get the type of this parameter
 				final Object object=parameterExpressions[i].getValue(context);
-				Log.trace("what if we get the value of the expression?", object, "of type", object.getClass());
+				getLogger().trace("what if we get the value of the expression? {} of type {}", object, object.getClass());
 									parameterTypes[i]=object.getClass();	//get the type of this parameter
 				
-				Log.trace("let's create a new value binding");
+				getLogger().trace("let's create a new value binding");
 				final ValueBinding valueBinding=context.getApplication().createValueBinding("#{group}");
-				Log.trace("created a value binding", valueBinding.getExpressionString(), "of type", valueBinding.getType(context), "and value", valueBinding.getValue(context));
+				getLogger().trace("created a value binding {} of type {} and value {}", valueBinding.getExpressionString(), valueBinding.getType(context), valueBinding.getValue(context));
 				
-				Log.trace("let's get the resolved value");
+				getLogger().trace("let's get the resolved value");
 				final Object resolvedObject=context.getApplication().getVariableResolver().resolveVariable(context, "group");
-				Log.trace("here's the resolved value of type", resolvedObject.getClass(), "and value", resolvedObject);
+				getLogger().trace("here's the resolved value of type {} and value {}", resolvedObject.getClass(), resolvedObject);
 				*/
 
 				/*TODO del when works
-				Log.trace("looking at parameter expression: ", parameterExpressions[i].getExpressionString());
+				getLogger().trace("looking at parameter expression: {}", parameterExpressions[i].getExpressionString());
 				//TODO fix---why does this always return java.lang.Object					parameterTypes[i]=parameterExpressions[i].getType(context);	//get the type of this parameter
-				Log.trace("*****does this fix the type bug?", parameterExpressions[i].getType(context));	//get the type of this parameter
+				getLogger().trace("*****does this fix the type bug? {}", parameterExpressions[i].getType(context));	//get the type of this parameter
 									final Object parameterValue=parameterExpressions[i].getValue(context);	//TODO fix type bug---don't actually get the value here
 									parameterTypes[i]=parameterValue!=null ? parameterValue.getClass() : null;	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
 				//TODO del; doesn't work with null values					parameterTypes[i]=parameterExpressions[i].getValue(context).getClass();	//get the type of this parameter	//TODO fix type bug---don't actually get the value here
-				Log.trace("parameter expression type: ", parameterExpressions[i].getType(context).getName());
+				getLogger().trace("parameter expression type: {}", parameterExpressions[i].getType(context).getName());
 				*/
 			}
-			//TODO del Log.trace("actually creating method binding");
+			//TODO del getLogger().trace("actually creating method binding");
 			final MethodBinding methodBinding = context.getApplication().createMethodBinding(methodReference, parameterTypes); //create a method binding and return it
-			//TODO del Log.trace("method binding:", methodBinding);
+			//TODO del getLogger().trace("method binding: {}", methodBinding);
 			return methodBinding;
 		}
 		//TODO del			return methodBinding;	//return the method binding
@@ -138,7 +138,7 @@ public class MethodBindingExpression<T> implements Expression<T> {
 			} else { //if this is not a literal expression, assume it's a reference expression
 				parameterExpression = createReferenceExpression(application, param); //create an expression for the parameter
 			}
-			//TODO fix Log.trace("created parameter expression of type: ", parameterExpression.getType(context));
+			//TODO fix getLogger().trace("created parameter expression of type: {}", parameterExpression.getType(context));
 			parameterExpressionList.add(parameterExpression); //add the parameter expression to our list
 		}
 		//store the parameter expressions
@@ -158,19 +158,19 @@ public class MethodBindingExpression<T> implements Expression<T> {
 	 * @throws MethodNotFoundException if the value specifies a method that cannot be found.
 	 */
 	public T getValue(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
-		//TODO del Log.trace("getting value of a method-binding expression: ", getExpressionString());
+		//TODO del getLogger().trace("getting value of a method-binding expression: {}", getExpressionString());
 		//TODO del		getMethodBinding(context);	//TODO del
 		final Expression<?>[] parameterExpressions = getParameterExpressions(); //get the parameter expressions
 		final Object[] parameterValues = new Object[parameterExpressions.length]; //create an array of objects to hold the actual parameter values
 		for(int i = 0; i < parameterExpressions.length; ++i) { //look at each parameter expression
 			parameterValues[i] = parameterExpressions[i].getValue(context); //get this parameter value
-			//TODO del Log.trace("just got value for parameter", i, parameterValues[i], "of type", parameterExpressions[i].getType(context));
+			//TODO del getLogger().trace("just got value for parameter {} {} of type {}", i, parameterValues[i], parameterExpressions[i].getType(context));
 		}
 		final MethodBinding methodBinding = getMethodBinding(context);
-		//TODO del Log.trace("ready to invoke a method binding we got: ", methodBinding);
+		//TODO del getLogger().trace("ready to invoke a method binding we got: {}", methodBinding);
 		final T test = (T)methodBinding.invoke(context, parameterValues); //invoke the method with the parameter values and cast the return value to the correct type
-		//TODO del Log.trace("value: ", test);
-		//TODO fix Log.trace("type: ", getType(context));
+		//TODO del getLogger().trace("value: {}", test);
+		//TODO fix getLogger().trace("type: {}", getType(context));
 		return test;
 		//TODO bring back		return (T)getMethodBinding(context).invoke(context, parameterValues);	//invoke the method with the parameter values and cast the return value to the correct type
 	}
@@ -212,8 +212,8 @@ public class MethodBindingExpression<T> implements Expression<T> {
 	 */
 	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
 		/*TODO del
-		Log.trace("getting type of a method-binding expression: ", getExpressionString());
-		Log.trace("type: ", getMethodBinding(context).getType(context));
+		getLogger().trace("getting type of a method-binding expression: {}", getExpressionString());
+		getLogger().trace("type: {}", getMethodBinding(context).getType(context));
 		*/
 		return getMethodBinding(context).getType(context); //return the type of the method binding
 	}

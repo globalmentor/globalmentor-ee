@@ -70,7 +70,7 @@ public class RedirectServlet extends BaseHTTPServlet {
 			if(requestedRedirectURI.isAbsolute()) { //if the given URI is absolute
 				redirectURI = requestedRedirectURI; //use the provided URI unmodified
 			} else { //if the given URI is not absolute
-				if(isAbsolutePath(requestedRedirectURI)) { //if the requested URI has an absolute path
+				if(hasAbsolutePath(requestedRedirectURI)) { //if the requested URI has an absolute path
 					//TODO make sure that no authority was given
 					redirectURI = URI.create(request.getContextPath() + requestedRedirectURI); //append the redirect URI to the context path, along with the query string
 				} else { //if the requested URI doesn't have an absolute path
