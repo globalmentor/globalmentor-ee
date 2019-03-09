@@ -64,12 +64,6 @@
 				<artifactId>globalmentor-webdav</artifactId>
 				<version>${globalmentor-http.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>io.clogr</groupId>
-				<artifactId>clogr</artifactId>
-				<version>0.8.0-SNAPSHOT</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 </project>
