@@ -23,12 +23,12 @@ import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
 import com.globalmentor.net.ContentType;
-import com.globalmentor.xml.XML;
+import com.globalmentor.xml.XmlDom;
 
 import static com.globalmentor.html.spec.HTML.*;
 import static com.globalmentor.java.Characters.SPACE_CHAR;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
-import static com.globalmentor.xml.XML.*;
+import static com.globalmentor.xml.XmlDom.*;
 import static com.globalmentor.xml.spec.XML.*;
 
 /**
@@ -80,7 +80,7 @@ public class DeclareXMLTag extends TagSupport {
 		} else { //if there is no content type string
 			final String publicID = getPublicID(); //get the public ID
 			if(publicID != null) { //if there is a document type public ID
-				mediaType = XML.getContentTypeForPublicID(publicID); //get the content type for this doctype public ID
+				mediaType = XmlDom.getContentTypeForPublicID(publicID); //get the content type for this doctype public ID
 			}
 			if(mediaType == null) { //if we still couldn't find a content type
 				mediaType = CONTENT_TYPE; //use the generic "text/xml" content type

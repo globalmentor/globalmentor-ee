@@ -34,7 +34,7 @@ import static com.globalmentor.net.http.webdav.WebDAV.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
 
 import com.globalmentor.servlet.http.AbstractHTTPServlet;
-import com.globalmentor.xml.XML;
+import com.globalmentor.xml.XmlDom;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -235,7 +235,7 @@ public abstract class AbstractWebDAVServlet<R extends Resource> extends Abstract
 						//TODO add a response description here
 					}
 					response.setStatus(SC_MULTI_STATUS); //show that we will be sending back multistatus content
-					getLogger().trace("Ready to send back XML: {}", XML.toString(multistatusDocument));
+					getLogger().trace("Ready to send back XML: {}", XmlDom.toString(multistatusDocument));
 					setXML(request, response, multistatusDocument); //put the XML in our response and send it back, compressed if possible
 				} catch(final DOMException domException) { //any XML problem here is the server's fault
 					getLogger().error("XML DOM error.", domException); //report the error
