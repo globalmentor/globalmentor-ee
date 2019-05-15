@@ -334,6 +334,16 @@ public class UIBasicForm extends UIForm implements Clogged {
 
 			public void write(final File file) {
 			}
+
+			@Override
+			public FileItemHeaders getHeaders() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void setHeaders(FileItemHeaders headers) {
+				throw new UnsupportedOperationException();
+			}
 		}
 
 	}
