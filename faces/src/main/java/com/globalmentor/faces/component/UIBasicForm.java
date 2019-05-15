@@ -228,13 +228,11 @@ public class UIBasicForm extends UIForm implements Clogged {
 		}
 
 		/**
-		 * Create a new <code>FileItem</code. instance from the supplied parameters
-			and any local factory configuration.
-		This version adds form fields to this map using the default file item
-			factory, and returns a dummy file item for all other file items.
-		&#64;param fieldName The name of the form field.
-		&#64;param contentType The content type of the form field.
-		&#64;param isFormField <code>true</code> if this is a plain form field; <code>false</code> otherwise.
+		 * Create a new <code>FileItem</code> instance from the supplied parameters and any local factory configuration. This version adds form fields to this map
+		 * using the default file item factory, and returns a dummy file item for all other file items.
+		 * @param fieldName The name of the form field.
+		 * @param contentType The content type of the form field.
+		 * @param isFormField <code>true</code> if this is a plain form field; <code>false</code> otherwise.
 		 * @param fileName The name of the uploaded file, if any, as supplied by the browser or other client.
 		 */
 		public FileItem createItem(final String fieldName, final String contentType, final boolean isFormField, final String fileName) {

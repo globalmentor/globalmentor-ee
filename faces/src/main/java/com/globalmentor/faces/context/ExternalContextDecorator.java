@@ -569,9 +569,9 @@ public class ExternalContextDecorator extends ExternalContext {
 	 * <em>Servlet:</em> This must be the value returned by the <code>javax.servlet.ServletContext</code> method <code>getResourcePaths(path)</code>.
 	 * </p>
 	 *
-	 * &#64;param path Partial path used to match resources, which must start with a slash ("/") character
+	 * #param path Partial path used to match resources, which must start with a slash ("/") character
 	 *
-	 * &#64;throws NullPointerException if <code>path</code> is <code>null</code>
+	 * @throws NullPointerException if <code>path</code> is <code>null</code>
 	 */
 	public Set getResourcePaths(String path) {
 		return getExternalContext().getResourcePaths(path);
