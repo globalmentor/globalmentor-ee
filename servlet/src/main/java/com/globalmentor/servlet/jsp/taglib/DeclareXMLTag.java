@@ -76,7 +76,7 @@ public class DeclareXMLTag extends TagSupport {
 	protected ContentType getMediaType() throws IllegalArgumentException {
 		ContentType mediaType = null; //we'll determine the media type if we can
 		if(contentType != null) { //if there is a content type string
-			mediaType = ContentType.create(contentType); //create a new media type
+			mediaType = ContentType.parse(contentType); //create a new media type
 		} else { //if there is no content type string
 			final String publicID = getPublicID(); //get the public ID
 			if(publicID != null) { //if there is a document type public ID

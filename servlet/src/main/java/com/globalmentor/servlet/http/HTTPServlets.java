@@ -103,7 +103,7 @@ public class HTTPServlets {
 			while(stringTokenizer.hasMoreTokens()) { //while there are more tokens
 				final String token = stringTokenizer.nextToken(); //get the next token
 				try {
-					contentTypeList.add(ContentType.create(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(ContentType.parse(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				} catch(final ArgumentSyntaxException argumentSyntaxException) { //ignore content type strings that aren't syntactically correct
 				}
 			}

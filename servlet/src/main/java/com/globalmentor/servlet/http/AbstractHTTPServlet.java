@@ -607,7 +607,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
 			response.setContentType(
-					ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, new ContentType.Parameter(ContentType.CHARSET_PARAMETER, UTF_8.name())));
+					ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, ContentType.Parameter.of(ContentType.CHARSET_PARAMETER, UTF_8.name())));
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
@@ -726,7 +726,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 */
 	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException {
 		final String contentTypeString = getServletContext().getMimeType(getRawName(resource.getURI())); //ask the servlet context for the MIME type
-		return contentTypeString != null ? ContentType.create(contentTypeString) : null; //create a content type object if a content type string was returned
+		return contentTypeString != null ? ContentType.parse(contentTypeString) : null; //create a content type object if a content type string was returned
 	}
 
 	/**
