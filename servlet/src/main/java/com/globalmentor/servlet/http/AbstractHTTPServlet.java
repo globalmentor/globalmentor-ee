@@ -188,7 +188,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 		}
 		try {
 			getLogger().trace("trying to write");
-			Streams.copy(inputStream, outputStream); //copy the file from the request to the resource
+			IOStreams.copy(inputStream, outputStream); //copy the file from the request to the resource
 			getLogger().trace("written");
 		} finally {
 			/*TODO del; doesn't work
@@ -404,7 +404,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				}
 				final InputStream inputStream = new BufferedInputStream(getInputStream(request, resource)); //get an input stream to the resource
 				try {
-					Streams.copy(inputStream, outputStream); //copy the input stream to the output stream
+					IOStreams.copy(inputStream, outputStream); //copy the input stream to the output stream
 				} finally {
 					inputStream.close(); //always close the input stream to the resource
 				}
@@ -612,7 +612,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
 			try {
-				Streams.copy(inputStream, outputStream); //write the bytes to the response
+				IOStreams.copy(inputStream, outputStream); //write the bytes to the response
 			} finally {
 				inputStream.close(); //always close our input stream as good practice
 			}

@@ -927,7 +927,7 @@ public class HTTPServlets {
 			response.setContentLength(size); //show how many bytes we're going to download
 		}
 		final OutputStream outputStream = new BufferedOutputStream(response.getOutputStream()); //get an output stream to the response
-		Streams.copy(inputStream, outputStream); //copy the file to the output stream
+		IOStreams.copy(inputStream, outputStream); //copy the file to the output stream
 		outputStream.flush(); //flush the output stream
 	}
 

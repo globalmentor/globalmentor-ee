@@ -146,6 +146,11 @@ public class ExternalContextDecorator extends ExternalContext {
 		return getExternalContext().encodeResourceURL(url);
 	}
 
+	@Override
+	public String encodeWebsocketURL(String url) {
+		return getExternalContext().encodeWebsocketURL(url);
+	}
+
 	/**
 	 * <p>
 	 * Return a mutable <code>Map</code> representing the application scope attributes for the current application. The returned <code>Map</code> must implement
