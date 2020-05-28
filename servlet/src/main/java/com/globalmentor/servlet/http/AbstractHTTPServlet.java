@@ -725,8 +725,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @see ServletContext#getMimeType(java.lang.String)
 	 */
 	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException {
-		final String contentTypeString = getServletContext().getMimeType(getRawName(resource.getURI())); //ask the servlet context for the MIME type
-		return contentTypeString != null ? ContentType.parse(contentTypeString) : null; //create a content type object if a content type string was returned
+		return findRawName(resource.getURI()).map(getServletContext()::getMimeType) //ask the servlet context for the MIME type
+				.map(ContentType::parse).orElse(null); //create a content type object if a content type string was returned
 	}
 
 	/**
