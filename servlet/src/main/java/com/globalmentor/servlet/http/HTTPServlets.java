@@ -134,11 +134,11 @@ public class HTTPServlets {
 			return true; //this content type (and all other content types) is accepted
 		}
 		for(final ContentType acceptedContentType : acceptedContentTypes) { //look at each content type
-			if(matchWildcards || acceptedContentType.getBaseType().indexOf(WILDCARD_CHAR) < 0) { //only match wildcards if we were asked to
+			if(matchWildcards || acceptedContentType.toBaseTypeString().indexOf(WILDCARD_CHAR) < 0) { //only match wildcards if we were asked to
 				if(contentType.hasBaseType(acceptedContentType)) { //if our content type matches an accepted content type (make sure we match to the accepted content type, which can have wildcards)
 					return true; //show that we found a match
 				}
-				if("*/*".equals(acceptedContentType.getBaseType())) //if this is the wildcard content type TODO use a constant
+				if("*/*".equals(acceptedContentType.toBaseTypeString())) //if this is the wildcard content type TODO use a constant
 				{
 					return true;
 				}
