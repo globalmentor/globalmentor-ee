@@ -61,7 +61,7 @@ public class FacesRender {
 	 */
 	public static void renderJavaScript(final ResponseWriter writer, final UIComponent component, final String javascript) throws IOException {
 		writer.startElement(ELEMENT_SCRIPT, component); //<script>
-		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, JAVASCRIPT_OBSOLETE_CONTENT_TYPE.toString(), ELEMENT_SCRIPT_ATTRIBUTE_TYPE); //type="text/javascript"
+		writer.writeAttribute(ELEMENT_SCRIPT_ATTRIBUTE_TYPE, OBSOLETE_MEDIA_TYPE.toString(), ELEMENT_SCRIPT_ATTRIBUTE_TYPE); //type="text/javascript"
 		writer.writeText("<!--", null); //<!--
 		writer.writeText(javascript, null); //write the JavaScript code
 		writer.writeText("-->", null); //-->

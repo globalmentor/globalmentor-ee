@@ -123,7 +123,7 @@ public class UIBasicForm extends UIForm implements Clogged {
 		FacesContext decodeContext = context; //we'll either keep the existing context, or wrap it with one that reports extra parameters
 		final String enctype = (String)getAttributes().get(ELEMENT_FORM_ATTRIBUTE_ENCTYPE); //get the enctype
 		try {
-			if(enctype != null && MULTIPART_FORM_DATA_CONTENT_TYPE.hasBaseType(ContentType.parse(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
+			if(enctype != null && MULTIPART_FORM_DATA_MEDIA_TYPE.hasBaseType(ContentType.parse(enctype))) { //if our form was multipart-encoded, see if this is a multipart submission
 				if(context.getExternalContext().getRequest() instanceof HttpServletRequest) { //if this is an HTTP request
 					final HttpServletRequest request = (HttpServletRequest)context.getExternalContext().getRequest(); //get the HTTP request
 					if(FileUpload.isMultipartContent(request)) { //if this is multipart content			
