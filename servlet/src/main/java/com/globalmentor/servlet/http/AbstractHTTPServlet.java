@@ -29,7 +29,6 @@ import javax.xml.parsers.DocumentBuilder;
 import static com.globalmentor.java.CharSequences.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Classes.getLocalName;
-import static com.globalmentor.net.ContentTypeConstants.*;
 import static com.globalmentor.net.HTTP.*;
 import static com.globalmentor.net.URIs.*;
 import static com.globalmentor.net.http.webdav.WebDAV.*;
@@ -44,6 +43,7 @@ import com.globalmentor.net.*;
 import com.globalmentor.net.http.*;
 import com.globalmentor.text.SyntaxException;
 import com.globalmentor.xml.XMLSerializer;
+import com.globalmentor.xml.spec.XML;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -606,8 +606,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8); //serialize the document to the byte array with no byte order mark
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
-			response.setContentType(
-					ContentType.toString(ContentType.TEXT_PRIMARY_TYPE, XML_SUBTYPE, ContentType.Parameter.of(ContentType.CHARSET_PARAMETER, UTF_8.name())));
+			response.setContentType(XML.CONTENT_TYPE.withCharset(UTF_8).toString());
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
 			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
