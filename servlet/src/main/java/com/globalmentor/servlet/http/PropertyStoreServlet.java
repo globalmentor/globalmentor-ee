@@ -51,11 +51,11 @@ import com.globalmentor.xml.spec.XML;
  * of the response, according to the accepted content type of the client. Supported content types are:
  * </p>
  * <dl>
- * <dt>{@link Text#PLAIN_CONTENT_TYPE}</dt>
+ * <dt>{@link Text#PLAIN_MEDIA_TYPE}</dt>
  * <dd>(default) Returns the properties in line-separated <code><var>property</var>=<var>value</var>CRLF</code> format using the UTF-8 charset.</dd>
- * <dt>{@link JSON#CONTENT_TYPE}</dt>
+ * <dt>{@link JSON#MEDIA_TYPE}</dt>
  * <dd>Returns the properties in JSON using the UTF-8 charset.</dd>
- * <dt>{@link XML#CONTENT_TYPE}</dt>
+ * <dt>{@link XML#MEDIA_TYPE}</dt>
  * <dd>Returns the properties in Java {@link Properties} XML format using the UTF-8 charset.</dd>
  * </dl>
  * 
@@ -143,19 +143,19 @@ public class PropertyStoreServlet extends BaseHTTPServlet {
 		propertyMap.readLock().lock(); //lock our property map for reading
 		try {
 			//see what content type is accepted by the client
-			if(isAcceptedContentType(request, JSON.CONTENT_TYPE)) { //JSON
-				response.setContentType(JSON.CONTENT_TYPE.toString()); //use JSON
+			if(isAcceptedContentType(request, JSON.MEDIA_TYPE)) { //JSON
+				response.setContentType(JSON.MEDIA_TYPE.toString()); //use JSON
 				response.setCharacterEncoding(UTF_8.name()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
 				JSON.appendValue(writer, propertyMap); //append the property map to the output
-			} else if(isAcceptedContentType(request, XML.CONTENT_TYPE)) { //XML
-				response.setContentType(XML.CONTENT_TYPE.toString()); //use JSON
+			} else if(isAcceptedContentType(request, XML.MEDIA_TYPE)) { //XML
+				response.setContentType(XML.MEDIA_TYPE.toString()); //use JSON
 				response.setCharacterEncoding(UTF_8.name()); //encode in UTF-8
 				final OutputStream outputStream = response.getOutputStream(); //get an output stream to return the response
 				final Properties properties = PropertiesUtilities.toProperties(propertyMap); //convert the map to a properties object
 				properties.storeToXML(outputStream, null, UTF_8.name());
 			} else { //plain text (default)
-				response.setContentType(Text.PLAIN_CONTENT_TYPE.toString()); //use text/plain
+				response.setContentType(Text.PLAIN_MEDIA_TYPE.toString()); //use text/plain
 				response.setCharacterEncoding(UTF_8.toString()); //encode in UTF-8
 				final Writer writer = response.getWriter(); //get a writer to return the response
 				for(final Map.Entry<String, String> propertyEntry : propertyMap.entrySet()) {

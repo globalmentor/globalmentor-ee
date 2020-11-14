@@ -916,7 +916,7 @@ public class HTTPServlets {
 			final ContentType contentType, final ContentDispositionType contentDispositionType, final String filename, final String description) throws IOException {
 		setNoCache(request, response); //turn off caching
 		//set the content type to the media type, if we have one, else a binary file
-		response.setContentType(contentType != null ? contentType.toString() : ContentType.APPLICATION_OCTET_STREAM_CONTENT_TYPE.toString());
+		response.setContentType(contentType != null ? contentType.toString() : ContentType.APPLICATION_OCTET_STREAM_MEDIA_TYPE.toString());
 		if(filename != null) { //if a filename is given, send the content as an attachment
 			setContentDisposition(response, contentDispositionType, filename); //set the content disposition
 		}

@@ -83,7 +83,7 @@ public class DeclareXMLTag extends TagSupport {
 				mediaType = XmlDom.getContentTypeForPublicID(publicID); //get the content type for this doctype public ID
 			}
 			if(mediaType == null) { //if we still couldn't find a content type
-				mediaType = CONTENT_TYPE; //use the generic "text/xml" content type
+				mediaType = MEDIA_TYPE; //use the generic "text/xml" content type
 			}
 		}
 		return mediaType; //return the media type we found
@@ -174,10 +174,10 @@ public class DeclareXMLTag extends TagSupport {
 			//set the content type
 			ContentType contentType = getMediaType(); //get the preferred content type
 			if(contentType != null) { //if a content type is specified
-				if(contentType.hasBaseType(XHTML_CONTENT_TYPE)) { //if the preferred content type is "application/xhtml+xml"
+				if(contentType.hasBaseType(XHTML_MEDIA_TYPE)) { //if the preferred content type is "application/xhtml+xml"
 					//if the client doesn't accept "application/xhtml+xml" exactly
-					if(!isAcceptedContentType(request, XHTML_CONTENT_TYPE, false)) {
-						contentType = HTML_CONTENT_TYPE; //step down to "text/html"
+					if(!isAcceptedContentType(request, XHTML_MEDIA_TYPE, false)) {
+						contentType = HTML_MEDIA_TYPE; //step down to "text/html"
 					}
 				}
 				response.setContentType(contentType.toString()); //set the content type of the response
