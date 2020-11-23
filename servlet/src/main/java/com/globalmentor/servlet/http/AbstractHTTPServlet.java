@@ -402,11 +402,8 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 					//TODO del      			getLogger().trace("not compressing content type: {}", contentType);
 					outputStream = response.getOutputStream(); //get the output stream without compression, as this could be a binary resource, making compression counter-productive TODO do we want to check for an IllegalStateException, and send back text if we can?      			
 				}
-				final InputStream inputStream = new BufferedInputStream(getInputStream(request, resource)); //get an input stream to the resource
-				try {
+				try (final InputStream inputStream = new BufferedInputStream(getInputStream(request, resource))) { //get an input stream to the resource
 					IOStreams.copy(inputStream, outputStream); //copy the input stream to the output stream
-				} finally {
-					inputStream.close(); //always close the input stream to the resource
 				}
 				outputStream.close(); //if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
 			}
@@ -601,23 +598,17 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @throws IOException if there is an error writing the XML.
 	 */
 	protected void setXML(final HttpServletRequest request, final HttpServletResponse response, final Document document) throws IOException {
-		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); //create a byte array output stream to hold our outgoing data
-		try {
+		try (final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) { //create a byte array output stream to hold our outgoing data
 			new XMLSerializer(true).serialize(document, byteArrayOutputStream, UTF_8); //serialize the document to the byte array with no byte order mark
 			final byte[] bytes = byteArrayOutputStream.toByteArray(); //get the bytes we serialized
 			//set the content type to text/xml; charset=UTF-8
 			response.setContentType(XML.MEDIA_TYPE.withCharset(UTF_8).toString());
 			//TODO del; this prevents compression			response.setContentLength(bytes.length);	//tell the response how many bytes to expect
 			final OutputStream outputStream = getCompressedOutputStream(request, response); //get an output stream to the response, compressing the output if possible
-			final InputStream inputStream = new ByteArrayInputStream(bytes); //get an input stream to the bytes
-			try {
+			try (final InputStream inputStream = new ByteArrayInputStream(bytes)) { //get an input stream to the bytes
 				IOStreams.copy(inputStream, outputStream); //write the bytes to the response
-			} finally {
-				inputStream.close(); //always close our input stream as good practice
 			}
 			outputStream.close(); //if there are no errors, close the output stream, which will write the remaining compressed data, if this is a compressed output stream
-		} finally {
-			byteArrayOutputStream.close(); //always close the stream as good practice			
 		}
 	}
 
