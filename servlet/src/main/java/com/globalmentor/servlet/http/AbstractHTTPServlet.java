@@ -567,7 +567,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 		if(contentLength > 0) { //if content is present	//TODO fix chunked coding
 			final InputStream inputStream = request.getInputStream(); //get an input stream to the request content
 			//TODO del getLogger().trace("Ready to get XML bytes of Content-Length: {}", contentLength);
-			final byte[] content = InputStreams.getBytes(inputStream, contentLength); //read the request TODO check for the content being shorter than expected
+			final byte[] content = InputStreams.readBytes(inputStream, contentLength); //read the request TODO check for the content being shorter than expected
 			//TODO del getLogger().trace("got bytes: {}", new String(content, "UTF-8"));
 			boolean hasContent = false; //we'll start out assuming there actually is no content
 			for(final byte b : content) { //look at each byte in the content
