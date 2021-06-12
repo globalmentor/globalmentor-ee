@@ -94,8 +94,8 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	 * @param resource The resource for which the content type should be determined.
 	 * @return The content type of the given resource, or <code>null</code> if no content type could be determined.
 	 */
-	protected ContentType getContentType(final HttpServletRequest request, final HTTPServletResource resource) throws IOException {
-		final ContentType contentType = resource.getContentType(request); //see if the resource indicates its content type
+	protected MediaType getContentType(final HttpServletRequest request, final HTTPServletResource resource) throws IOException {
+		final MediaType contentType = resource.getContentType(request); //see if the resource indicates its content type
 		return contentType != null ? contentType : super.getContentType(request, resource); //if no content type is specified, return the default content type, if one can be determined
 	}
 
@@ -209,7 +209,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
 		 * @throws IOException if there is an error getting the type of the resource.
 		 */
-		public ContentType getContentType(final HttpServletRequest request) throws IOException;
+		public MediaType getContentType(final HttpServletRequest request) throws IOException;
 
 		/**
 		 * Returns the content length of the resource.
@@ -245,7 +245,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 	{
 
 		/** The non-standard "content/unknown" string returned by {@link URLConnection} when the content is unknown. */
-		private static final String CONTENT_UNKNOWN_CONTENT_TYPE_STRING = ContentType.toString(ContentType.CONTENT_PRIMARY_TYPE, ContentType.UNKNOWN_SUBTYPE);
+		private static final String CONTENT_UNKNOWN_CONTENT_TYPE_STRING = MediaType.toString(MediaType.CONTENT_PRIMARY_TYPE, MediaType.UNKNOWN_SUBTYPE);
 
 		/** The URL of the resource. */
 		private final URL url;
@@ -277,10 +277,10 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
 		 * @throws IOException if there is an error getting the type of the resource.
 		 */
-		public ContentType getContentType(final HttpServletRequest request) throws IOException {
+		public MediaType getContentType(final HttpServletRequest request) throws IOException {
 			final String contentTypeString = getURLConnection().getContentType(); //get the content type of the URL connection
 			//URLConnection returns a non-standard "content/unknown" type if the content is unknown rather than returning null as the API claims; convert this value to null
-			return contentTypeString != null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? ContentType.parse(contentTypeString) : null; //return a new content type if a content type is known
+			return contentTypeString != null && !contentTypeString.equals(CONTENT_UNKNOWN_CONTENT_TYPE_STRING) ? MediaType.parse(contentTypeString) : null; //return a new content type if a content type is known
 		}
 
 		/**
@@ -403,7 +403,7 @@ public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.H
 		 * @return The full content type of the resource with any parameters, or <code>null</code> if the content type could not be determined.
 		 * @throws IOException if there is an error getting the type of the resource.
 		 */
-		public ContentType getContentType(final HttpServletRequest request) throws IOException {
+		public MediaType getContentType(final HttpServletRequest request) throws IOException {
 			return getResource().getContentType(request); //delegate to the decorated resource
 		}
 

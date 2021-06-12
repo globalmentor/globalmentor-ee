@@ -31,7 +31,7 @@ import javax.servlet.http.*;
 import com.globalmentor.io.*;
 import com.globalmentor.java.CharSequences;
 import com.globalmentor.model.Locales;
-import com.globalmentor.net.ContentType;
+import com.globalmentor.net.MediaType;
 import com.globalmentor.net.HTTP;
 import com.globalmentor.net.http.*;
 import com.globalmentor.net.http.webdav.WebDAV;
@@ -94,8 +94,8 @@ public class HTTPServlets {
 	 * @return An array of content types accepted by the client.
 	 * @see #getAccept(HttpServletRequest)
 	 */
-	public static ContentType[] getAcceptedContentTypes(final HttpServletRequest request) { //TODO allow for q designation
-		final List<ContentType> contentTypeList = new ArrayList<ContentType>(); //create a list of content types
+	public static MediaType[] getAcceptedContentTypes(final HttpServletRequest request) { //TODO allow for q designation
+		final List<MediaType> contentTypeList = new ArrayList<MediaType>(); //create a list of content types
 		final Enumeration<String> acceptEnumeration = getAccept(request); //get the accept headers
 		while(acceptEnumeration.hasMoreElements()) { //while there are more accept headers
 			final String accept = (String)acceptEnumeration.nextElement(); //get the next accept header
@@ -103,12 +103,12 @@ public class HTTPServlets {
 			while(stringTokenizer.hasMoreTokens()) { //while there are more tokens
 				final String token = stringTokenizer.nextToken(); //get the next token
 				try {
-					contentTypeList.add(ContentType.parse(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
+					contentTypeList.add(MediaType.parse(truncateAtFirst(token, ';').toString().trim())); //add a new content type to the list, trimming off any whitespace and any quality designation TODO use a constant
 				} catch(final ArgumentSyntaxException argumentSyntaxException) { //ignore content type strings that aren't syntactically correct
 				}
 			}
 		}
-		return contentTypeList.toArray(new ContentType[contentTypeList.size()]); //return the list of content types as an array
+		return contentTypeList.toArray(new MediaType[contentTypeList.size()]); //return the list of content types as an array
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class HTTPServlets {
 	 * @param contentType The content type to check.
 	 * @return <code>true</code> if the client accepts the given content type.
 	 */
-	public static boolean isAcceptedContentType(final HttpServletRequest request, final ContentType contentType) {
+	public static boolean isAcceptedContentType(final HttpServletRequest request, final MediaType contentType) {
 		return isAcceptedContentType(request, contentType, true); //check accepted content types, matching wildcards
 	}
 
@@ -128,12 +128,12 @@ public class HTTPServlets {
 	 * @param matchWildcards <code>true</code> if the content type should be matched against wildcard sequences, as is normal.
 	 * @return <code>true</code> if the client accepts the given content type.
 	 */
-	public static boolean isAcceptedContentType(final HttpServletRequest request, final ContentType contentType, final boolean matchWildcards) {
-		final ContentType[] acceptedContentTypes = getAcceptedContentTypes(request); //get the accepted content types
+	public static boolean isAcceptedContentType(final HttpServletRequest request, final MediaType contentType, final boolean matchWildcards) {
+		final MediaType[] acceptedContentTypes = getAcceptedContentTypes(request); //get the accepted content types
 		if(acceptedContentTypes.length == 0) { //if no content types are listed as being accepted, then everything is accepted
 			return true; //this content type (and all other content types) is accepted
 		}
-		for(final ContentType acceptedContentType : acceptedContentTypes) { //look at each content type
+		for(final MediaType acceptedContentType : acceptedContentTypes) { //look at each content type
 			if(matchWildcards || acceptedContentType.toBaseTypeString().indexOf(WILDCARD_CHAR) < 0) { //only match wildcards if we were asked to
 				if(contentType.hasBaseType(acceptedContentType)) { //if our content type matches an accepted content type (make sure we match to the accepted content type, which can have wildcards)
 					return true; //show that we found a match
@@ -913,10 +913,10 @@ public class HTTPServlets {
 	 * @see #setContentDescription(HttpServletResponse, String)
 	 */
 	public static void sendContent(final HttpServletRequest request, final HttpServletResponse response, final InputStream inputStream, final int size,
-			final ContentType contentType, final ContentDispositionType contentDispositionType, final String filename, final String description) throws IOException {
+			final MediaType contentType, final ContentDispositionType contentDispositionType, final String filename, final String description) throws IOException {
 		setNoCache(request, response); //turn off caching
 		//set the content type to the media type, if we have one, else a binary file
-		response.setContentType(contentType != null ? contentType.toString() : ContentType.APPLICATION_OCTET_STREAM_MEDIA_TYPE.toString());
+		response.setContentType(contentType != null ? contentType.toString() : MediaType.APPLICATION_OCTET_STREAM_MEDIA_TYPE.toString());
 		if(filename != null) { //if a filename is given, send the content as an attachment
 			setContentDisposition(response, contentDispositionType, filename); //set the content disposition
 		}

@@ -375,7 +375,7 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 				}
 			}
 			//    	TODO del getLogger().trace("ready to send back a file");
-			final ContentType contentType = getContentType(request, resource); //get the content type of the resource
+			final MediaType contentType = getContentType(request, resource); //get the content type of the resource
 			if(contentType != null) { //if we know the content type
 				//      	TODO del getLogger().trace("setting content type to: {}", contentType);
 				//TODO del getLogger().trace("setting content type to: {}", contentType);	//TODO del
@@ -714,9 +714,9 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 	 * @return The content type of the given resource, or <code>null</code> if no content type could be determined.
 	 * @see ServletContext#getMimeType(java.lang.String)
 	 */
-	protected ContentType getContentType(final HttpServletRequest request, final R resource) throws IOException {
+	protected MediaType getContentType(final HttpServletRequest request, final R resource) throws IOException {
 		return findRawName(resource.getURI()).map(getServletContext()::getMimeType) //ask the servlet context for the MIME type
-				.map(ContentType::parse).orElse(null); //create a content type object if a content type string was returned
+				.map(MediaType::parse).orElse(null); //create a content type object if a content type string was returned
 	}
 
 	/**

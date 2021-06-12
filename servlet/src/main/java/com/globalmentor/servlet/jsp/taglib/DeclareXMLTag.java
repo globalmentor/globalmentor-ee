@@ -22,7 +22,7 @@ import javax.servlet.http.*;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 
-import com.globalmentor.net.ContentType;
+import com.globalmentor.net.MediaType;
 import com.globalmentor.xml.XmlDom;
 
 import static com.globalmentor.html.spec.HTML.*;
@@ -73,14 +73,14 @@ public class DeclareXMLTag extends TagSupport {
 	 * @return The document content type object. Defaults to the appropriate content type if a recognized document type is requested; otherwise "text/xml".
 	 * @throws IllegalArgumentException Thrown if the string is not a syntactically correct content type.
 	 */
-	protected ContentType getMediaType() throws IllegalArgumentException {
-		ContentType mediaType = null; //we'll determine the media type if we can
+	protected MediaType getMediaType() throws IllegalArgumentException {
+		MediaType mediaType = null; //we'll determine the media type if we can
 		if(contentType != null) { //if there is a content type string
-			mediaType = ContentType.parse(contentType); //create a new media type
+			mediaType = MediaType.parse(contentType); //create a new media type
 		} else { //if there is no content type string
 			final String publicID = getPublicID(); //get the public ID
 			if(publicID != null) { //if there is a document type public ID
-				mediaType = XmlDom.getContentTypeForPublicID(publicID); //get the content type for this doctype public ID
+				mediaType = XmlDom.getMediaTypeForPublicID(publicID); //get the content type for this doctype public ID
 			}
 			if(mediaType == null) { //if we still couldn't find a content type
 				mediaType = MEDIA_TYPE; //use the generic "text/xml" content type
@@ -107,7 +107,7 @@ public class DeclareXMLTag extends TagSupport {
 	public String getRootElement() {
 		String element = rootElement; //get the current root element
 		if(element == null) { //if we don't have a root element
-			final ContentType mediaType = getMediaType(); //determine the media type
+			final MediaType mediaType = getMediaType(); //determine the media type
 			element = getDefaultRootElementLocalName(mediaType); //determine the root element name based upon the media type
 		}
 		return element; //return our determined root element
@@ -172,7 +172,7 @@ public class DeclareXMLTag extends TagSupport {
 		final JspWriter writer = pageContext.getOut(); //get the writer
 		try {
 			//set the content type
-			ContentType contentType = getMediaType(); //get the preferred content type
+			MediaType contentType = getMediaType(); //get the preferred content type
 			if(contentType != null) { //if a content type is specified
 				if(contentType.hasBaseType(XHTML_MEDIA_TYPE)) { //if the preferred content type is "application/xhtml+xml"
 					//if the client doesn't accept "application/xhtml+xml" exactly

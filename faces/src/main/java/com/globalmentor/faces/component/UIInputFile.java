@@ -29,7 +29,7 @@ import javax.faces.el.*;
 import com.globalmentor.faces.component.FacesComponents;
 import com.globalmentor.faces.component.renderkit.xhtml.InputFileRenderer;
 import com.globalmentor.java.Classes;
-import com.globalmentor.net.ContentType;
+import com.globalmentor.net.MediaType;
 import com.globalmentor.text.ArgumentSyntaxException;
 
 import io.clogr.Clogged;
@@ -143,7 +143,7 @@ public class UIInputFile extends UIInput implements Clogged {
 				//TODO del getLogger().trace("no directory");
 				try {
 					final byte[] bytes = fileItem.get(); //get the bytes of the file
-					final ContentType contentType = ContentType.parse(fileItem.getContentType()); //get the content type of the file
+					final MediaType contentType = MediaType.parse(fileItem.getContentType()); //get the content type of the file
 					//TODO del getLogger().trace("uploaded file content type {}", contentType);
 					if(isText(contentType)) { //if this is a text file
 						//TODO del getLogger().trace("is text type");
