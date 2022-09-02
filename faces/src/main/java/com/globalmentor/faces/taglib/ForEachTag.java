@@ -76,7 +76,7 @@ public class ForEachTag extends UIComponentBodyTag {
 		if(UIComponentTag.isValueReference(attributeValue))
 			setValueBinding(component, attributeName, attributeValue);
 		else
-			component.getAttributes().put(attributeName, new Integer(attributeValue));
+			component.getAttributes().put(attributeName, Integer.valueOf(attributeValue));
 	}
 
 	public static void setBoolean(UIComponent component, String attributeName, String attributeValue) {
@@ -85,7 +85,7 @@ public class ForEachTag extends UIComponentBodyTag {
 		if(UIComponentTag.isValueReference(attributeValue))
 			setValueBinding(component, attributeName, attributeValue);
 		else
-			component.getAttributes().put(attributeName, new Boolean(attributeValue));
+			component.getAttributes().put(attributeName, Boolean.valueOf(attributeValue));
 	}
 
 	public static void setValueBinding(UIComponent component, String attributeName, String attributeValue) {

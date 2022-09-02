@@ -373,7 +373,7 @@ public class FacesComponents {
 			if(isReferenceExpression(attributeValue)) //if the string is a value reference
 				setValueBinding(component, attributeName, attributeValue); //set the value binding of the component
 			else //if the string is not a value reference
-				component.getAttributes().put(attributeName, new Integer(attributeValue)); //store the integer value in the component's attributes
+				component.getAttributes().put(attributeName, Integer.valueOf(attributeValue)); //store the integer value in the component's attributes
 		}
 	}
 
