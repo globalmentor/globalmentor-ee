@@ -4,29 +4,32 @@
 
 	<parent>
 		<groupId>com.globalmentor</groupId>
-		<artifactId>globalmentor-opensource-parent</artifactId>
-		<version>8.6.0</version>
+		<artifactId>globalmentor-base</artifactId>
+		<version>0.7.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>globalmentor-ee-parent</artifactId>
+	<artifactId>globalmentor-ee</artifactId>
 	<version>0.6.4-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>GlobalMentor EE Parent</name>
-	<description>GlobalMentor libraries for Java EE technologies aggregate parent POM.</description>
+	<name>GlobalMentor EE</name>
+	<description>GlobalMentor libraries for Java EE technologies aggregate parent POM and bill of materials.</description>
 	<url>http://www.globalmentor.com/software/</url>
 	<inceptionYear>1996</inceptionYear>
+
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<scm>
 		<connection>scm:git:https://bitbucket.org/globalmentor/globalmentor-ee.git</connection>
 		<developerConnection>scm:git:https://bitbucket.org/globalmentor/globalmentor-ee.git</developerConnection>
 		<url>https://bitbucket.org/globalmentor/globalmentor-ee</url>
 	</scm>
-
-	<properties>
-		<globalmentor-http.version>0.6.2</globalmentor-http.version>
-		<globalmentor-web.version>0.6.5</globalmentor-web.version>
-	</properties>
 
 	<modules>
 		<module>faces</module>
@@ -37,32 +40,36 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.globalmentor</groupId>
-				<artifactId>globalmentor-html-spec</artifactId>
-				<version>${globalmentor-web.version}</version>
+				<artifactId>globalmentor-faces</artifactId>
+				<version>0.6.4-SNAPSHOT</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
-				<artifactId>globalmentor-http</artifactId>
-				<version>${globalmentor-http.version}</version>
+				<artifactId>globalmentor-servlet</artifactId>
+				<version>0.6.4-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>io.clogr</groupId>
+				<artifactId>clogr</artifactId>
+				<version>0.8.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
-				<artifactId>globalmentor-javascript</artifactId>
-				<version>${globalmentor-web.version}</version>
+				<artifactId>globalmentor-web</artifactId>
+				<version>0.6.6-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
-				<artifactId>globalmentor-xml</artifactId>
-				<version>${globalmentor-web.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.globalmentor</groupId>
-				<artifactId>globalmentor-webdav</artifactId>
-				<version>${globalmentor-http.version}</version>
+				<artifactId>globalmentor-http-bom</artifactId>
+				<version>0.6.3-SNAPSHOT</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 
 			<dependency>
