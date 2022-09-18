@@ -16,6 +16,7 @@
 
 package com.globalmentor.servlet.http;
 
+import static com.globalmentor.collections.Maps.*;
 import static com.globalmentor.java.Characters.*;
 import static com.globalmentor.java.Conditions.*;
 import static com.globalmentor.servlet.http.HTTPServlets.*;
@@ -33,7 +34,6 @@ import com.globalmentor.collections.*;
 import com.globalmentor.javascript.JSON;
 import com.globalmentor.net.HTTP;
 import com.globalmentor.text.Text;
-import com.globalmentor.util.PropertiesUtilities;
 import com.globalmentor.xml.spec.XML;
 
 /**
@@ -152,7 +152,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet {
 				response.setContentType(XML.MEDIA_TYPE.toString()); //use JSON
 				response.setCharacterEncoding(UTF_8.name()); //encode in UTF-8
 				final OutputStream outputStream = response.getOutputStream(); //get an output stream to return the response
-				final Properties properties = PropertiesUtilities.toProperties(propertyMap); //convert the map to a properties object
+				final Properties properties = toProperties(propertyMap); //convert the map to a properties object
 				properties.storeToXML(outputStream, null, UTF_8.name());
 			} else { //plain text (default)
 				response.setContentType(Text.PLAIN_MEDIA_TYPE.toString()); //use text/plain
