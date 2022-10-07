@@ -1,11 +1,11 @@
 /*
- * Copyright © 1996-2008 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ * Copyright © 1996-2008 GlobalMentor, Inc. <https://www.globalmentor.com/>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,8 @@ import org.xml.sax.SAXException;
 
 /**
  * The base servlet class for implementing an HTTP server that access resources.
- * @see <a href="http://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
- * @see <a href="http://www.mnot.net/cache_docs/">Caching Tutorial</a>
+ * @see <a href="https://www.ietf.org/rfc/rfc2616.txt">RFC 2616</a>
+ * @see <a href="https://www.mnot.net/cache_docs/">Caching Tutorial</a>
  * @author Garret Wilson
  */
 public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPServlet { //TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
@@ -79,9 +79,9 @@ public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPSe
 
 	/**
 	 * An array of regular expressions matching user agents not correctly supporting redirects.
-	 * @see http://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
-	 * @see http://purl.org/NET/http-errata#saferedirect
-	 * @see http://httpd.apache.org/docs-2.0/env.html#special
+	 * @see https://lists.w3.org/Archives/Public/w3c-dist-auth/2002AprJun/0190.html
+	 * @see https://skrb.org/ietf/http_errata.html#saferedirect
+	 * @see https://httpd.apache.org/docs/2.0/env.html#special
 	 */
 	private static final Pattern[] REDIRECT_UNSUPPORTED_AGENTS = new Pattern[] {Pattern.compile("^gnome-vfs.*"), //Gnome; see http://bugzilla.gnome.org/show_bug.cgi?id=92908 ; https://bugzilla.redhat.com/beta/show_bug.cgi?id=106290
 			//TODO del				"gnome-vfs/*"	//see http://mail.gnome.org/archives/gnome-vfs-list/2002-December/msg00028.html

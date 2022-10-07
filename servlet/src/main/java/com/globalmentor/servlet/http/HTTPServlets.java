@@ -1,11 +1,11 @@
 /*
- * Copyright © 1996-2011 GlobalMentor, Inc. <http://www.globalmentor.com/>
+ * Copyright © 1996-2011 GlobalMentor, Inc. <https://www.globalmentor.com/>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -565,7 +565,7 @@ public class HTTPServlets {
 	/** The wget user agent name. */
 	public static final String USER_AGENT_NAME_WGET = "Wget";
 
-	//spiders; see http://en.wikipedia.org/wiki/User-agent
+	//spiders; see https://en.wikipedia.org/wiki/User_agent
 
 	/** The Alexa user agent name. */
 	public static final String USER_AGENT_NAME_ALEXA = "ia_archiver";
