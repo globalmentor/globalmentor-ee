@@ -27,8 +27,10 @@ import com.globalmentor.java.Classes;
  */
 public class UIItem extends UIColumn {
 
+	/** The name of the component. */
 	public static final String COMPONENT_TYPE = Classes.getFullName(UIItem.class, "Item");
 
+	/** Constructor. */
 	public UIItem() {
 		super();
 	}

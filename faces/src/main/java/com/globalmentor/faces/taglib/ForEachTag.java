@@ -28,6 +28,10 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.webapp.UIComponentBodyTag;
 import javax.faces.webapp.UIComponentTag;
 
+/**
+ * A for-each tag.
+ * @author Garret Wilson
+ */
 public class ForEachTag extends UIComponentBodyTag {
 	public String getRendererType() {
 		return ForEachTag.class.getPackage().getName() + ".ForEach";

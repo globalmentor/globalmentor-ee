@@ -24,6 +24,8 @@ import com.globalmentor.java.Classes;
  * @author Garret Wilson
  */
 public class UIList extends UIBasicData {
+
+	/** The name of the component. */
 	public static final String COMPONENT_TYPE = Classes.getFullName(UIList.class, "List"); //TODO we probably don't even need a special list type
 
 	/** Constructor. */

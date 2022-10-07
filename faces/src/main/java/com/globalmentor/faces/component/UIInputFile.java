@@ -45,6 +45,7 @@ import static com.globalmentor.text.Text.*;
  */
 public class UIInputFile extends UIInput implements Clogged {
 
+	/** The name of the component. */
 	public static final String COMPONENT_TYPE = Classes.getFullName(UIInputFile.class, "InputFile");
 
 	/** The directory value binding variable name. */

@@ -24,6 +24,8 @@ import com.globalmentor.java.Classes;
  * @author Garret Wilson
  */
 public class UIDefinitionList extends UIList {
+
+	/** The name of the component. */
 	public static final String COMPONENT_TYPE = Classes.getFullName(UIDefinitionList.class, "DefinitionList");
 
 	/** Default constructor. */

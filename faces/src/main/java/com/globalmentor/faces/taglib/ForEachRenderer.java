@@ -38,8 +38,10 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-// Renderer for the UITabbedPane component
-
+/**
+ * Renderer for the UITabbedPane component
+ * @author Garret Wilson
+ */
 public class ForEachRenderer extends Renderer {
 
 	// By default, getRendersChildren() returns false, so encodeChildren()

@@ -28,8 +28,10 @@ import com.globalmentor.java.Classes;
  */
 public class UITerm extends UIColumn {
 
+	/** The name of the component. */
 	public static final String COMPONENT_TYPE = Classes.getFullName(UITerm.class, "Term");
 
+	/** Constructor. */
 	public UITerm() {
 		super();
 	}

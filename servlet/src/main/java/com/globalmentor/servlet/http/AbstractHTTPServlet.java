@@ -57,6 +57,7 @@ import org.xml.sax.SAXException;
 public abstract class AbstractHTTPServlet<R extends Resource> extends BaseHTTPServlet //TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 {
 
+	/** Whether a directory listing is allowed for <code>GET</code> on a collection. */
 	protected static final boolean LIST_DIRECTORIES = false; //TODO fix
 
 	/** Whether access is restricted to read methods. */
