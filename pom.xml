@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>globalmentor-ee</artifactId>
-	<version>0.6.4-SNAPSHOT</version>
+	<version>0.6.4</version>
 	<packaging>pom</packaging>
 
 	<name>GlobalMentor EE</name>
@@ -41,13 +41,13 @@
 			<dependency>
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-faces</artifactId>
-				<version>0.6.4-SNAPSHOT</version>
+				<version>0.6.4</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.globalmentor</groupId>
 				<artifactId>globalmentor-servlet</artifactId>
-				<version>0.6.4-SNAPSHOT</version>
+				<version>0.6.4</version>
 			</dependency>
 
 			<dependency>
