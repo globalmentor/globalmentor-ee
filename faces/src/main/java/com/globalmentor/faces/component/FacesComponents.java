@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
@@ -28,7 +29,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.el.*;
 
 import com.globalmentor.faces.el.*;
-import com.globalmentor.model.NameValuePair;
 
 import static com.globalmentor.faces.FacesValues.*;
 import static com.globalmentor.faces.application.FacesMessages.*;
@@ -182,15 +182,16 @@ public class FacesComponents {
 	 * @param context The JSF context.
 	 * @return A non-<code>null</code> array of parameters.
 	 */
-	public static NameValuePair<String, Object>[] getParameters(final UIComponent component, final FacesContext context) {
-		final List<NameValuePair<String, Object>> nameValuePairList = new ArrayList<NameValuePair<String, Object>>(component.getChildCount()); //create a list of name-value pairs long enough to store all direct children, if needed
+	@SuppressWarnings("unchecked")
+	public static Map.Entry<String, Object>[] getParameters(final UIComponent component, final FacesContext context) {
+		final List<Map.Entry<String, Object>> parameterList = new ArrayList<Map.Entry<String, Object>>(component.getChildCount()); //create a list of name-value pairs long enough to store all direct children, if needed
 		for(Object child : component.getChildren()) { //look at all children
 			if(child instanceof UIParameter) { //if this child is a parameter
 				final UIParameter parameter = (UIParameter)child; //cast the child to a parameter
-				nameValuePairList.add(new NameValuePair<String, Object>(parameter.getName(), parameter.getValue())); //create a new name-value pair representing this parameter and add it to our list 
+				parameterList.add(new SimpleImmutableEntry<String, Object>(parameter.getName(), parameter.getValue())); //create a new name-value pair representing this parameter and add it to our list 
 			}
 		}
-		return nameValuePairList.toArray(new NameValuePair[nameValuePairList.size()]); //TODO why won't this allow the generic designation?
+		return (Map.Entry<String, Object>[])parameterList.toArray(new Map.Entry<?, ?>[0]); //TODO why won't this allow the generic designation?
 	}
 
 	/**

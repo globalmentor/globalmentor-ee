@@ -22,7 +22,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 
 import com.globalmentor.faces.component.FacesComponents;
-import com.globalmentor.model.NameValuePair;
 
 /**
  * Utilities for working with JavaServer Faces events.
@@ -42,13 +41,13 @@ public class FacesEvents {
 	}
 
 	/**
-	 * Retrieves the parameters of a given event, derived from the names and values of all direct <code>UIParameter</code> children of the comopnent of the given
+	 * Retrieves the parameters of a given event, derived from the names and values of all direct <code>UIParameter</code> children of the component of the given
 	 * component.
 	 * @param event The JSF event for which parameters should be retrieved.
 	 * @param context The JSF context.
 	 * @return A non-<code>null</code> array of parameters.
 	 */
-	public static NameValuePair<String, Object>[] getParameters(final FacesEvent event, final FacesContext context) {
+	public static Map.Entry<String, Object>[] getParameters(final FacesEvent event, final FacesContext context) {
 		return FacesComponents.getParameters(event.getComponent(), context); //get all the parameters for the event's component
 	}
 
