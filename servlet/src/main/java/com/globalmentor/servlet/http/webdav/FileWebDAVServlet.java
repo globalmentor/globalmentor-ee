@@ -32,6 +32,8 @@ import com.globalmentor.net.http.HTTPConflictException;
  */
 public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResource> { //TODO finish implementing WebDAV-specific methods
 
+	private static final long serialVersionUID = 8114228458331897082L;
+
 	//TODO fix checks for WEB-INF
 
 	/**
@@ -125,8 +127,8 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createCollection(HttpServletRequest, URI)
 	 */
-	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException {
+	protected OutputStream createResource(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException {
 		final FileResource fileResource = getResource(resourceURI); //get the resource associated with this URI
 		//TODO del if not needed		createNewFile(fileResource.getFile());	//create a new file
 		final File file = fileResource.getFile(); //get the associated file
@@ -146,8 +148,8 @@ public abstract class FileWebDAVServlet extends AbstractWebDAVServlet<FileResour
 	 * @throws HTTPConflictException if an intermediate collection required for creating this collection does not exist.
 	 * @see #createCollection(HttpServletRequest, URI)
 	 */
-	protected FileResource createCollection(final HttpServletRequest request, final URI resourceURI) throws IllegalArgumentException, IOException,
-			HTTPConflictException {
+	protected FileResource createCollection(final HttpServletRequest request, final URI resourceURI)
+			throws IllegalArgumentException, IOException, HTTPConflictException {
 		final FileResource fileResource = getResource(resourceURI); //get the resource associated with this URI
 		final File file = fileResource.getFile(); //get the associated file
 		if(!file.getParentFile().isDirectory()) { //if the file's parent is not an existing directory

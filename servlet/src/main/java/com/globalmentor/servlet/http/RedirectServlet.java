@@ -42,6 +42,8 @@ import static com.globalmentor.net.URIs.*;
  */
 public class RedirectServlet extends BaseHTTPServlet {
 
+	private static final long serialVersionUID = -8085731266021729954L;
+
 	/** The required initialization parameter "redirectURI" specifying the redirect URI. */
 	public final String REDIRECT_URI_PARAMETER = "redirectURI";
 

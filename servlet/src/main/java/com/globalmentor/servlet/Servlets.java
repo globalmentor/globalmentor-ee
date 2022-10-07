@@ -53,26 +53,30 @@ public class Servlets {
 
 	/**
 	 * The custom parameter that can be used to override the locale with a locale string.
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static final String LOCALE_PARAMETER = "locale";
 
 	/**
 	 * The custom attribute that can be used to store a specified locale object.
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static final String LOCALE_ATTRIBUTE = LOCALE_PARAMETER;
 
 	/**
 	 * The custom cookie that can be used to store a locale with a locale string.
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static final String LOCALE_COOKIE = LOCALE_PARAMETER;
 
 	/**
 	 * The absolute application context-based base directory for icons.
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static final String ICON_DIRECTORY = "/images/icons/";
 
 	/**
@@ -209,8 +213,9 @@ public class Servlets {
 	 * @param iconID The ID of the icon; currently this must be its simple filename.
 	 * @return The absolute application context-based path to the icon.
 	 * @throws IllegalArgumentException if the icon ID contains the path separator, as this could cause security issues be walking the directory.
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static String getIconPath(final String iconID) {
 		if(iconID.indexOf(URIs.PATH_SEPARATOR) >= 0) { //if the ID contains a path separator
 			throw new IllegalArgumentException("Icon ID may not contain the path separator: " + iconID);

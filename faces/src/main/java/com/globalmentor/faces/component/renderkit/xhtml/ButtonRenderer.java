@@ -118,8 +118,8 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 
 			//TODO del getLogger().trace("encoding command {} client id {}", command, clientID);
 			writer.writeAttribute(ATTRIBUTE_NAME, clientID, CLIENT_ID_ATTRIBUTE); //write the client ID as the name
-			final Map attributeMap = component.getAttributes(); //get the map of attributes
-			final String type; //we'll deterine the type to generate
+			final Map<String, Object> attributeMap = component.getAttributes(); //get the map of attributes
+			final String type; //we'll determine the type to generate
 			if(USE_JAVASCRIPT) { //if we should use JavaScript to compensate for a buggy browser
 				type = BUTTON_TYPE_BUTTON; //always use the button type for JavaScript form submission
 			} else { //if we should use normal buttons
@@ -248,19 +248,19 @@ public class ButtonRenderer extends AbstractXHTMLRenderer {
 	 */
 	public void decode(final FacesContext context, UIComponent component) {
 		if(isMutable(component)) { //if the component is mutable
-			final Map requestParameterMap = context.getExternalContext().getRequestParameterMap(); //get the request parameters
+			final Map<String, String> requestParameterMap = context.getExternalContext().getRequestParameterMap(); //get the request parameters
 			final String clientID = component.getClientId(context); //get the component's client ID
 			final boolean isClientIDMatch; //we'll deterine whether there is a client ID match
 			if(USE_JAVASCRIPT) { //if we should use JavaScript to compensate for a buggy browser
 				final String hiddenFieldClientID = getHiddenFieldClientID(context, component); //get the client ID of the hidden field
-				final String hiddenFieldValue = (String)requestParameterMap.get(hiddenFieldClientID); //see if there is a value for our hidden field
+				final String hiddenFieldValue = requestParameterMap.get(hiddenFieldClientID); //see if there is a value for our hidden field
 				/*TODO del
 				getLogger().trace("hidden field value: {}", hiddenFieldValue);
 				getLogger().trace("expecting value of client ID: {}", clientID);
 				*/
 				isClientIDMatch = clientID.equals(hiddenFieldValue); //record whether the the hidden field value contains our client ID
 			} else { //if we're not using JavaScript
-				final String value = (String)requestParameterMap.get(clientID); //see if there is a value for our component
+				final String value = requestParameterMap.get(clientID); //see if there is a value for our component
 				isClientIDMatch = value != null; //see if there was a value returned for our client ID
 			}
 

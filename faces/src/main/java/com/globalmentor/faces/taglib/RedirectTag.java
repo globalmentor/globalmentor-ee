@@ -39,6 +39,8 @@ import com.globalmentor.faces.FacesValues;
  */
 public class RedirectTag extends FacesTagSupport {
 
+	private static final long serialVersionUID = 2071167228798654648L;
+
 	/** @return <code>null</code> indicating that this tag does not use a renderer. */
 	/*TODO del
 		public String getRendererType()

@@ -112,7 +112,7 @@ public class DataRenderer extends AbstractXHTMLRenderer {
 					if(rowElementName != null) { //if there is an element name for this row
 						writer.startElement(rowElementName, component); //start the element for the row
 					}
-					final Iterator childIterator = component.getChildren().iterator(); //get an iterator to the children
+					final Iterator<UIComponent> childIterator = component.getChildren().iterator(); //get an iterator to the children
 					while(childIterator.hasNext()) { //while there are more children
 						final UIComponent child = (UIComponent)childIterator.next(); //get the next child
 						if(child instanceof UIColumn) { //if the child is a column

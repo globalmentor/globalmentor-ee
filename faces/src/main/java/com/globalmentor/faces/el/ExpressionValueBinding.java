@@ -93,7 +93,7 @@ public class ExpressionValueBinding extends ValueBinding {
 	 * @throws PropertyNotFoundException if a specified property name does not exist.
 	 * @see Expression#getType(FacesContext)
 	 */
-	public Class getType(final FacesContext context) throws EvaluationException, PropertyNotFoundException {
+	public Class<?> getType(final FacesContext context) throws EvaluationException, PropertyNotFoundException {
 		return getExpression().getType(context); //return the expression type
 	}
 

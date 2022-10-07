@@ -46,6 +46,8 @@ import org.xml.sax.SAXException;
  */
 public abstract class AbstractWebDAVServlet<R extends Resource> extends AbstractHTTPServlet<R> { //TODO address http://lists.w3.org/Archives/Public/w3c-dist-auth/1999OctDec/0343.html
 
+	private static final long serialVersionUID = 8486813460771286083L;
+
 	/**
 	 * Services an HTTP request based upon its method. This version provides support for WebDAV methods.
 	 * @param method The HTTP method being serviced.

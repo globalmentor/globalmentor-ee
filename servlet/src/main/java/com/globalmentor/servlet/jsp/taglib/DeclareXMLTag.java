@@ -58,6 +58,8 @@ import static com.globalmentor.xml.spec.XML.*;
  */
 public class DeclareXMLTag extends TagSupport {
 
+	private static final long serialVersionUID = 6383222709376395474L;
+
 	/** The document content type. */
 	private String contentType;
 

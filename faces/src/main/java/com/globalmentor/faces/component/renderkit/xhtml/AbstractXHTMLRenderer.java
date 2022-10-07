@@ -103,14 +103,14 @@ public abstract class AbstractXHTMLRenderer extends Renderer {
 		super.encodeBegin(context, component); //do the default encoding
 		if(component.isRendered()) { //if the component should be rendered
 			final ResponseWriter writer = context.getResponseWriter(); //get the response writer
-			final Map attributeMap = component.getAttributes(); //get the map of attributes
+			final Map<String, Object> attributeMap = component.getAttributes(); //get the map of attributes
 			writer.startElement(getComponentElementName(), component); //write the starting tag
 			writeIDAttribute(context, writer, component); //write the ID attribute
 			final String styleClass = (String)attributeMap.get(STYLE_CLASS_ATTRIBUTE); //get the style class, if there is one
 			if(styleClass != null) { //if there is a style class attribute
 				writer.writeAttribute(ATTRIBUTE_CLASS, styleClass, STYLE_CLASS_ATTRIBUTE); //write the style class attribute
 			}
-			renderPassthroughAttributes(writer, component, (String[])getPassthroughAttributeSet().toArray(new String[getPassthroughAttributeSet().size()])); //render the XHTML passthrough attributes
+			renderPassthroughAttributes(writer, component, getPassthroughAttributeSet().toArray(new String[getPassthroughAttributeSet().size()])); //render the XHTML passthrough attributes
 			//TODO fix        Util.renderBooleanPassThruAttributes(writer, component);
 		}
 	}

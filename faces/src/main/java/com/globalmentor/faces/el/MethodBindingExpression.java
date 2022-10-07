@@ -59,7 +59,7 @@ public class MethodBindingExpression<T> implements Expression<T> {
 		//TODO del			if(methodBinding==null)	//if we haven't created the method-binding, yet
 		{
 			final Expression<?>[] parameterExpressions = getParameterExpressions(); //get the parameter expressions
-			final Class[] parameterTypes = new Class[parameterExpressions.length]; //create an array of classes, indicating parameter types
+			final Class<?>[] parameterTypes = new Class<?>[parameterExpressions.length]; //create an array of classes, indicating parameter types
 			for(int i = 0; i < parameterExpressions.length; ++i) { //look at each parameter expression
 				parameterTypes[i] = parameterExpressions[i].getType(context); //get the type of this parameter
 				/*TODO fix
@@ -210,7 +210,7 @@ public class MethodBindingExpression<T> implements Expression<T> {
 	 * @throws PropertyNotFoundException if the value specifies a property name that does not exist or is not readable.
 	 * @throws MethodNotFoundException if the value specifies a method that cannot be found.
 	 */
-	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
+	public Class<?> getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
 		/*TODO del
 		getLogger().trace("getting type of a method-binding expression: {}", getExpressionString());
 		getLogger().trace("type: {}", getMethodBinding(context).getType(context));

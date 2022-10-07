@@ -147,7 +147,7 @@ public class FacesComponents {
 	 * @param parentClass The class of parent to find (e.g. <code>UIForm.class</code>.
 	 * @return The first parent of the given component that is an instance of the given class, or <code>null</code> if no such parent could be found.
 	 */
-	public static UIComponent getParent(UIComponent component, final Class parentClass) {
+	public static UIComponent getParent(UIComponent component, final Class<?> parentClass) {
 		do {
 			component = component.getParent(); //look at the component's parent
 			if(parentClass.isInstance(component)) { //if the component is an instance of the requested parent class
@@ -486,7 +486,7 @@ public class FacesComponents {
 	 * @param parameterTypes The parameter types of the method-binding expression.
 	 */
 	public static void setMethodBindingAttribute(final UIComponent component, final String attributeName, final String attributeValue,
-			final Class... parameterTypes) {
+			final Class<?>... parameterTypes) {
 		if(attributeValue != null) { //if there is an attribute value
 			final Application application = FacesContext.getCurrentInstance().getApplication(); //get the JSF application
 			final MethodBinding methodBinding = application.createMethodBinding(attributeValue, parameterTypes); //create a method binding for the attribute value

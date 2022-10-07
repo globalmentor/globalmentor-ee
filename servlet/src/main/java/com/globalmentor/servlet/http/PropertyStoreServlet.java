@@ -67,6 +67,8 @@ import com.globalmentor.xml.spec.XML;
  */
 public class PropertyStoreServlet extends BaseHTTPServlet {
 
+	private static final long serialVersionUID = -7173801031395896343L;
+
 	/** The maximum length for a property value, 1024. This may be configurable in a future version. */
 	public static final int MAX_PROPERTY_VALUE_LENGTH = 1 << 10;
 
@@ -118,7 +120,7 @@ public class PropertyStoreServlet extends BaseHTTPServlet {
 			if(!supportedPropertyNames.contains(propertyName)) { //make sure we support this property
 				throw new IllegalArgumentException("Unsupported property: " + propertyName);
 			}
-			propertyUpdate.put(propertyName, formatList(COMMA_CHAR, parameterEntry.getValue())); //combine the values into a single comma-separated value and store it
+			propertyUpdate.put(propertyName, formatList(COMMA_CHAR, (Object[])parameterEntry.getValue())); //combine the values into a single comma-separated value and store it
 		}
 		getPropertyMap().putAll(propertyUpdate); //update the property map with the new values; this is a thread-safe, atomic operation 
 	}

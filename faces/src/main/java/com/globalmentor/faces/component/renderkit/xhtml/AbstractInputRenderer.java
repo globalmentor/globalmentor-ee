@@ -61,7 +61,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 		if(component.isRendered()) { //if the component should be rendered
 			final UIInput input = (UIInput)component; //get the component as an input component
 			final ResponseWriter writer = context.getResponseWriter(); //get the response writer
-			final Map attributeMap = component.getAttributes(); //get the map of attributes
+			final Map<String, Object> attributeMap = component.getAttributes(); //get the map of attributes
 			writer.writeAttribute(ATTRIBUTE_NAME, component.getClientId(context), CLIENT_ID_ATTRIBUTE); //write the client ID as the name
 			writer.writeAttribute(ELEMENT_INPUT_ATTRIBUTE_TYPE, getType(), null); //write the input type
 			final Object renderValue = getRenderValue(input); //get the current value to be rendered
@@ -109,6 +109,7 @@ public abstract class AbstractInputRenderer extends AbstractXHTMLRenderer {
 	public void decode(final FacesContext context, final UIComponent component) {
 		//TODO this code should go in a generic AbstractInputRenderer---or maybe even something more general than that
 		if(isMutable(component)) { //if the component is mutable
+			//TODO fix; this was implemented before generics, and may depend on the ability to pass non-string objects as values; see RequestParametersFacesContextDecorator.RequestParametersExternalContextDecorator.getRequestParameterMap()
 			final Map requestParameterMap = context.getExternalContext().getRequestParameterMap(); //get the request parameters
 			final String clientID = component.getClientId(context); //get the component's client ID
 			final Object value = requestParameterMap.get(clientID); //see if there is a value for our component

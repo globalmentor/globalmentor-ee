@@ -36,6 +36,8 @@ import static java.util.Objects.*;
  */
 public class DefaultHTTPServlet extends AbstractHTTPServlet<DefaultHTTPServlet.HTTPServletResource> { //TODO implement writing using the resource URL methods
 
+	private static final long serialVersionUID = -1448413574818504869L;
+
 	//TODO fix checks for WEB-INF
 
 	/**

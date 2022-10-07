@@ -57,7 +57,7 @@ public class UIBasicForm extends UIForm implements Clogged {
 	protected static final String HIDDEN_FIELD_ID = "button";
 
 	/** The map of encode-scope variables and values. */
-	private final Map<?, ?> encodeMap = new HashMap();
+	private final Map<?, ?> encodeMap = new HashMap<>();
 
 	/**
 	 * @return A mutable <code>Map</code> representing the encode scope attributes for the current response rendering.

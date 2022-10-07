@@ -69,6 +69,8 @@ import static com.globalmentor.servlet.http.HTTPServlets.*;
  */
 public class BaseHTTPServlet extends HttpServlet implements Clogged {
 
+	private static final long serialVersionUID = -7775451621358615903L;
+
 	/**
 	 * The init parameter, {@value #DEBUG_INIT_PARAMETER}, used to specify whether the servlet is in debug mode; should be "true" or "false"; sets the log level
 	 * to debug if not explicitly set.

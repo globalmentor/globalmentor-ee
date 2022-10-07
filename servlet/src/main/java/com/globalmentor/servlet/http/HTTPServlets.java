@@ -98,7 +98,7 @@ public class HTTPServlets {
 		final List<MediaType> contentTypeList = new ArrayList<MediaType>(); //create a list of content types
 		final Enumeration<String> acceptEnumeration = getAccept(request); //get the accept headers
 		while(acceptEnumeration.hasMoreElements()) { //while there are more accept headers
-			final String accept = (String)acceptEnumeration.nextElement(); //get the next accept header
+			final String accept = acceptEnumeration.nextElement(); //get the next accept header
 			final StringTokenizer stringTokenizer = new StringTokenizer(accept, String.valueOf(LIST_DELIMITER)); //get the individual content types indicated
 			while(stringTokenizer.hasMoreTokens()) { //while there are more tokens
 				final String token = stringTokenizer.nextToken(); //get the next token
@@ -193,7 +193,7 @@ public class HTTPServlets {
 		final List<Locale> localeList = new ArrayList<Locale>(); //create a list of content types
 		final Enumeration<String> acceptLanguageEnumeration = getAcceptLanguage(request); //get the accept language headers
 		while(acceptLanguageEnumeration.hasMoreElements()) { //while there are more accept headers
-			final String acceptLanguage = (String)acceptLanguageEnumeration.nextElement(); //get the next accept header
+			final String acceptLanguage = acceptLanguageEnumeration.nextElement(); //get the next accept header
 			final StringTokenizer stringTokenizer = new StringTokenizer(acceptLanguage, String.valueOf(LIST_DELIMITER)); //get the individual content types indicated
 			while(stringTokenizer.hasMoreTokens()) { //while there are more tokens
 				final String token = stringTokenizer.nextToken(); //get the next token
@@ -328,8 +328,9 @@ public class HTTPServlets {
 	 * @see Servlets#LOCALE_ATTRIBUTE
 	 * @see Servlets#LOCALE_COOKIE
 	 * @see Servlets#LOCALE_PARAMETER
-	 * @deprecated
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static Locale getLocale(final HttpServletRequest request) {
 		final String requestLocaleString = request.getParameter(LOCALE_PARAMETER); //see  if the locale was passed as a parameter string
 		if(requestLocaleString != null) //if there was a locale parameter
@@ -351,7 +352,9 @@ public class HTTPServlets {
 	 * @param response The HTTP response.
 	 * @see Servlets#LOCALE_ATTRIBUTE
 	 * @see Servlets#LOCALE_COOKIE
+	 * @deprecated to be removed.
 	 */
+	@Deprecated
 	public static void setLocale(final Locale locale, final HttpServletRequest request, final HttpServletResponse response) {
 		final HttpSession session = request.getSession(); //get the current session or, if there is no session, create one
 		session.setAttribute(LOCALE_ATTRIBUTE, locale); //store the locale in the current session for quick lookup

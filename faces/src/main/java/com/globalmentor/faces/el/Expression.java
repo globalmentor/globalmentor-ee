@@ -70,7 +70,7 @@ public interface Expression<T> {
 	 * @throws PropertyNotFoundException if the value specifies a property name that does not exist or is not readable.
 	 * @throws MethodNotFoundException if the value specifies a method that cannot be found.
 	 */
-	public Class getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException;
+	public Class<?> getType(FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException;
 
 	/**
 	 * @return the (possibly <code>null</code>) expression string, with leading and trailing delimiters, from which this expression was built.

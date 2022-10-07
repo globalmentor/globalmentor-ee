@@ -63,13 +63,7 @@ public class RequestParametersFacesContextDecorator extends FacesContextDecorato
 		externalContextDecorator = new RequestParametersExternalContextDecorator(facesContext.getExternalContext());
 	}
 
-	/**
-	 * <p>
-	 * Return the {@link ExternalContext} instance for this <code>FacesContext</code> instance.
-	 * </p>
-	 *
-	 * @throws IllegalStateException if this method is called after this instance has been released
-	 */
+	@Override
 	public ExternalContext getExternalContext() {
 		super.getExternalContext(); //call the super method to make sure we throw an illegal state exception if needed
 		return getExternalContextDecorator(); //return our external context decorator
@@ -89,43 +83,14 @@ public class RequestParametersFacesContextDecorator extends FacesContextDecorato
 			super(externalContext); //save the decorated external context
 		}
 
-		/**
-		 * <p>
-		 * Return an immutable <code>Map</code> whose keys are the set of request parameters names included in the current request, and whose values (of type
-		 * String) are the first (or only) value for each parameter name returned by the underlying request. The returned <code>Map</code> must implement the entire
-		 * contract for an unmodifiable map as described in the JavaDocs for <code>java.util.Map</code>.
-		 * </p>
-		 *
-		 * <p>
-		 * <em>Servlet:</em> This must be the set of parameters available via the <code>javax.servlet.ServletRequest</code> methods <code>getParameter()</code> and
-		 * <code>getParameterNames()</code>.
-		 * </p>
-		 *
-		 * <p>
-		 * <em>Portlet:</em> This must be the set of parameters available via the <code>javax.portlet.PortletRequest</code> methods <code>getParameter()</code> and
-		 * <code>getParameterNames()</code>.
-		 * </p>
-		 */
+		@Override
 		public Map getRequestParameterMap() {
+			//TODO fix; this was implemented before generics, and may depend on being able to pass objects via putRequestParameter() above
 			return Collections.unmodifiableMap(getAllRequestParameterMap()); //return an unmodifiable copy of inclusive request parameter map
 		}
 
-		/**
-		 * <p>
-		 * Return an <code>Iterator</code> over the names of all request parameters included in the current request.
-		 * </p>
-		 *
-		 * <p>
-		 * <em>Servlet:</em> This must be an <code>Iterator</code> over the values returned by the <code>javax.servlet.ServletRequest</code> method
-		 * <code>getParameterNames()</code>.
-		 * </p>
-		 *
-		 * <p>
-		 * <em>Portlet:</em> This must be an <code>Iterator</code> over the values returned by the <code>javax.portlet.PortletRequest</code> method
-		 * <code>getParameterNames()</code>.
-		 * </p>
-		 */
-		public Iterator getRequestParameterNames() {
+		@Override
+		public Iterator<String> getRequestParameterNames() {
 			return getRequestParameterMap().keySet().iterator(); //return an iterator to the request parameter names
 		}
 

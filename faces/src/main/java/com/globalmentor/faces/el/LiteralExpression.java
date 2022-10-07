@@ -85,7 +85,7 @@ public class LiteralExpression<T> implements Expression<T> {
 	 * @throws PropertyNotFoundException if the value specifies a property name that does not exist or is not readable.
 	 * @throws MethodNotFoundException if the value specifies a method that cannot be found.
 	 */
-	public Class getType(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
+	public Class<?> getType(final FacesContext context) throws EvaluationException, NullPointerException, PropertyNotFoundException, MethodNotFoundException {
 		return value.getClass(); //return the type of the literal value
 	}
 
